@@ -1,0 +1,69 @@
+#pragma once
+#include <string>
+
+
+typedef void(*https_request_callback)(const std::string& data);
+
+
+#define CURL_BUF_MAX_LEN  4096
+#define CURL_NAME_MAX_LEN 128
+#define CURL_URL_MAX_LEN  128 
+
+enum curl_method
+{
+	CURL_METHOD_GET = 1,
+	CURL_METHOD_POST = 2,
+};
+
+struct curl_http_args_st
+{
+	curl_http_args_st()
+	{
+		curl_method = 0;
+		memset(url, 0x0, CURL_URL_MAX_LEN);
+		memset(file_name, 0x0, CURL_NAME_MAX_LEN);
+		file_fd = nullptr;
+		data_len = 0;
+		data = nullptr;
+		memset(post_data, 0x0, CURL_BUF_MAX_LEN);
+		memset(post_file, 0x0, CURL_NAME_MAX_LEN);
+	}
+
+	int  curl_method;	// curl 方法命令,enum curl_method
+	char url[CURL_URL_MAX_LEN];		// URL 
+
+	char file_name[CURL_NAME_MAX_LEN];	// 返回数据保存为文件
+	FILE *file_fd;						// 文件所指向的描述符, 用完后需要手动fclose
+
+	int  data_len;						// 文件数据保存在内存中的长度
+	char *data;							// 文件数据保存在内存中的指针, 用完后手动free 
+
+	char post_data[CURL_BUF_MAX_LEN];	// POST 表单数据
+	char post_file[CURL_NAME_MAX_LEN];	// POST 文件名
+};
+
+#define curlManagerInstance curlManager::instance()
+class curlManager
+{
+public:
+	curlManager();
+	~curlManager();
+
+	static curlManager* instance();
+	bool request(const char* url, const char* requestData, curl_method requestType, https_request_callback* callback = nullptr);
+	void test();
+	int curl_http_post();
+	bool isRunning(){ return m_running; }
+	
+
+protected:
+	void init();
+	void setRunning(bool b){ m_running = b; }
+
+protected:
+	https_request_callback* m_requestCallback = nullptr;
+	curl_http_args_st*		m_curl_args = nullptr;
+	bool					m_running = false;
+	
+};
+

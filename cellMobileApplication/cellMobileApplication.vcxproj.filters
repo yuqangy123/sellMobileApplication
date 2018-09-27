@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="curl">
+      <UniqueIdentifier>{82c76be0-e952-4079-b7ae-2b3816a0aa6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pthread">
+      <UniqueIdentifier>{35073540-8005-4f46-b19b-94ecaf908100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="openssl">
+      <UniqueIdentifier>{7a0cf6b3-5214-4f31-8231-6b3b6f567b67}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cellMobileApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cellMobileApplicationDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\easy.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\mprintf.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\multi.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\stdcheaders.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\typecheck-gcc.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\curl.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\curlbuild.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\curlrules.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\include\win32\curlver.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curlManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pthread\include\win32\sched.h">
+      <Filter>pthread</Filter>
+    </ClInclude>
+    <ClInclude Include="pthread\include\win32\semaphore.h">
+      <Filter>pthread</Filter>
+    </ClInclude>
+    <ClInclude Include="pthread\include\win32\pthread.h">
+      <Filter>pthread</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\asn1.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\asn1_mac.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\asn1t.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\async.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\bio.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\blowfish.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\bn.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\buffer.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\camellia.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\cast.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\cmac.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\cms.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\comp.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\conf.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\conf_api.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\crypto.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ct.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\des.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\dh.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\dsa.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\dtls1.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\e_os2.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ebcdic.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ec.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ecdh.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ecdsa.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\engine.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\err.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\evp.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\hmac.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\idea.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\kdf.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\lhash.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\md2.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\md4.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\md5.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\mdc2.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\modes.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\obj_mac.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\objects.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ocsp.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\opensslconf.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\opensslv.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ossl_typ.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\pem.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\pem2.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\pkcs7.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\pkcs12.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\rand.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\rc2.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\rc4.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\rc5.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ripemd.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\rsa.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\safestack.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\seed.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\sha.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\srp.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\srtp.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ssl.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ssl2.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ssl3.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\stack.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\symhacks.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\tls1.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ts.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\txt_db.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\ui.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\whrlpool.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\x509.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\x509_vfy.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\x509v3.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\__DECC_INCLUDE_EPILOGUE.H">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\__DECC_INCLUDE_PROLOGUE.H">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl\include\win32\openssl\aes.h">
+      <Filter>openssl</Filter>
+    </ClInclude>
+    <ClInclude Include="sellMobileSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cellMobileApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cellMobileApplicationDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="curlManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sellMobileSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cellMobileApplication.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\cellMobileApplication.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\cellMobileApplication.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
