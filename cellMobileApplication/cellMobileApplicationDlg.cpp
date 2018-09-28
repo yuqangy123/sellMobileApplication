@@ -1,5 +1,5 @@
 
-// cellMobileApplicationDlg.cpp : ÊµÏÖÎÄ¼þ
+// cellMobileApplicationDlg.cpp : å®žçŽ°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,8 +7,8 @@
 #include "cellMobileApplicationDlg.h"
 #include "afxdialogex.h"
 
-#include "curl.h"
-#include <pthread.h>
+#include "sellMobileSystem.h"
+#include "curlManager.h"
 
 
 #ifdef _DEBUG
@@ -25,15 +25,15 @@ enum curl_method{
 	CURL_METHOD_GET  = 1,	CURL_METHOD_POST = 2,
 }; 
 struct curl_http_args_st
-{	int  curl_method;	// curl ·½·¨ÃüÁî,
+{	int  curl_method;	// curl æ–¹æ³•å‘½ä»¤,
 	enum curl_method;
 	char url[CURL_URL_MAX_LEN];		// URL 		
-	char file_name[CURL_NAME_MAX_LEN];	// ·µ»ØÊý¾Ý±£´æÎªÎÄ¼þ
-	FILE *file_fd;						// ÎÄ¼þËùÖ¸ÏòµÄÃèÊö·û, ÓÃÍêºóÐèÒªÊÖ¶¯fclose
-	int  data_len;						// ÎÄ¼þÊý¾Ý±£´æÔÚÄÚ´æÖÐµÄ³¤¶È	
-	char *data;							// ÎÄ¼þÊý¾Ý±£´æÔÚÄÚ´æÖÐµÄÖ¸Õë, ÓÃÍêºóÊÖ¶¯free  	
-	char post_data[CURL_BUF_MAX_LEN];	// POST ±íµ¥Êý¾Ý	
-	char post_file[CURL_NAME_MAX_LEN];	// POST ÎÄ¼þÃû
+	char file_name[CURL_NAME_MAX_LEN];	// è¿”å›žæ•°æ®ä¿å­˜ä¸ºæ–‡ä»?
+	FILE *file_fd;						// æ–‡ä»¶æ‰€æŒ‡å‘çš„æè¿°ç¬¦, ç”¨å®ŒåŽéœ€è¦æ‰‹åŠ¨fclose
+	int  data_len;						// æ–‡ä»¶æ•°æ®ä¿å­˜åœ¨å†…å­˜ä¸­çš„é•¿åº?
+	char *data;							// æ–‡ä»¶æ•°æ®ä¿å­˜åœ¨å†…å­˜ä¸­çš„æŒ‡é’? ç”¨å®ŒåŽæ‰‹åŠ¨free  	
+	char post_data[CURL_BUF_MAX_LEN];	// POST è¡¨å•æ•°æ®	
+	char post_file[CURL_NAME_MAX_LEN];	// POST æ–‡ä»¶å?
 };
 
 size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
@@ -43,7 +43,7 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 
 	if (stream)
 	{
-		if (args->file_name[0])	// ÒªÐ´ÎÄ¼þ
+		if (args->file_name[0])	// è¦å†™æ–‡ä»¶
 		{
 			if (!args->file_fd)
 			{
@@ -56,7 +56,7 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 			}
 			fwrite(buffer, size, nmemb, args->file_fd);
 		}
-		args->data = (char*)realloc(args->data, args->data_len + len + 1);	// ¶à·ÖÅäÒ»¸ö×Ö½Ú, ÒÔ±£´æ\0 
+		args->data = (char*)realloc(args->data, args->data_len + len + 1);	// å¤šåˆ†é…ä¸€ä¸ªå­—èŠ? ä»¥ä¿å­˜\0 
 		if (!args->data)
 		{
 			curl_printf("%s[%d]: realloc failed!!\n", __FUNCTION__, __LINE__);
@@ -70,18 +70,18 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 }
 int curl_http_post(struct curl_http_args_st *args)
 {
-	//´´½¨curl¶ÔÏó 
+	//åˆ›å»ºcurlå¯¹è±¡ 
 	CURL *curl;
 	CURLcode return_code;
-	struct curl_httppost *formpost = NULL;	// POST ÐèÒªµÄ²ÎÊý
+	struct curl_httppost *formpost = NULL;	// POST éœ€è¦çš„å‚æ•°
 	struct curl_httppost *lastptr = NULL;
 	int ret = -1;
-	int post_type = 1; // POST ¿ÉÒÔÓÐÈýÖÖ·½·¨
+	int post_type = 1; // POST å¯ä»¥æœ‰ä¸‰ç§æ–¹æ³?
 
-	// Èç¹ûÒª±£´æÎªÎÄ¼þ, ÏÈ½¨Á¢ÎÄ¼þÄ¿Â¼
+	// å¦‚æžœè¦ä¿å­˜ä¸ºæ–‡ä»¶, å…ˆå»ºç«‹æ–‡ä»¶ç›®å½?
 	//if (args->file_name) create_dir(args->file_name);
 
-	//curl³õÊ¼»¯ 
+	//curlåˆå§‹åŒ?
 	curl = curl_easy_init();
 	if (!curl)
 	{
@@ -92,62 +92,62 @@ int curl_http_post(struct curl_http_args_st *args)
 	if (strncmp(args->url, "https://", 8) == 0)
 	{
 #if 1	
-		// ·½·¨1, Éè¶¨Îª²»ÑéÖ¤Ö¤ÊéºÍHOST
+		// æ–¹æ³•1, è®¾å®šä¸ºä¸éªŒè¯è¯ä¹¦å’ŒHOST
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 #else
-		// ·½·¨2, Éè¶¨Ò»¸öSSLÅÐ±ðÖ¤Êé
+		// æ–¹æ³•2, è®¾å®šä¸€ä¸ªSSLåˆ¤åˆ«è¯ä¹¦
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-		curl_easy_setopt(curl, CURLOPT_CAINFO, "ca-cert.pem"); 	// TODO: ÉèÖÃÒ»¸öÖ¤ÊéÎÄ¼þ
+		curl_easy_setopt(curl, CURLOPT_CAINFO, "ca-cert.pem"); 	// TODO: è®¾ç½®ä¸€ä¸ªè¯ä¹¦æ–‡ä»?
 #endif 
 	}
 
-	curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//ÉèÖÃhttpheader ½âÎö, ²»ÐèÒª½«HTTPÍ·Ð´´«Èë»Øµ÷º¯Êý
+	curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//è®¾ç½®httpheader è§£æž, ä¸éœ€è¦å°†HTTPå¤´å†™ä¼ å…¥å›žè°ƒå‡½æ•°
 
-	curl_easy_setopt(curl, CURLOPT_URL, args->url);	//ÉèÖÃÔ¶¶ËµØÖ· 
+	curl_easy_setopt(curl, CURLOPT_URL, args->url);	//è®¾ç½®è¿œç«¯åœ°å€ 
 
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);	// TODO: ´ò¿ªµ÷ÊÔÐÅÏ¢
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);	// TODO: æ‰“å¼€è°ƒè¯•ä¿¡æ¯
 
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);	//ÉèÖÃÔÊÐí302  Ìø×ª
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);	//è®¾ç½®å…è®¸302  è·³è½¬
 
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_cb); 	//Ö´ÐÐÐ´ÈëÎÄ¼þÁ÷²Ù×÷ µÄ»Øµ÷º¯Êý
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_cb); 	//æ‰§è¡Œå†™å…¥æ–‡ä»¶æµæ“ä½?çš„å›žè°ƒå‡½æ•?
 
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, args);	// ÉèÖÃ»Øµ÷º¯ÊýµÄµÚ4 ¸ö²ÎÊý
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, args);	// è®¾ç½®å›žè°ƒå‡½æ•°çš„ç¬¬4 ä¸ªå‚æ•?
 
-	curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);	//Éè±¸Îªipv4ÀàÐÍ
+	curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);	//è®¾å¤‡ä¸ºipv4ç±»åž‹
 
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30); 	//ÉèÖÃÁ¬½Ó³¬Ê±£¬µ¥Î»s, CURLOPT_CONNECTTIMEOUT_MS ºÁÃë
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30); 	//è®¾ç½®è¿žæŽ¥è¶…æ—¶ï¼Œå•ä½s, CURLOPT_CONNECTTIMEOUT_MS æ¯«ç§’
 
-	// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// Õû¸öCURL Ö´ÐÐµÄÊ±¼ä, µ¥Î»Ãë, CURLOPT_TIMEOUT_MSºÁÃë
+	// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// æ•´ä¸ªCURL æ‰§è¡Œçš„æ—¶é—? å•ä½ç§? CURLOPT_TIMEOUT_MSæ¯«ç§’
 
-	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);		//linux¶àÏß³ÌÇé¿öÓ¦×¢ÒâµÄÉèÖÃ(·ÀÖ¹curl±»alarmÐÅºÅ¸ÉÈÅ)
+	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);		//linuxå¤šçº¿ç¨‹æƒ…å†µåº”æ³¨æ„çš„è®¾ç½?é˜²æ­¢curlè¢«alarmä¿¡å·å¹²æ‰°)
 
 	if (post_type == 1)
 	{
-		// ·½·¨1, ÆÕÍ¨µÄPOST , application/x-www-form-urlencoded
-		curl_easy_setopt(curl, CURLOPT_POST, 1);		// ÉèÖÃ ÎªPOST ·½·¨
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST µÄÊý¾ÝÄÚÈÝ
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POSTµÄÊý¾Ý³¤¶È, ¿ÉÒÔ²»Òª´ËÑ¡Ïî
+		// æ–¹æ³•1, æ™®é€šçš„POST , application/x-www-form-urlencoded
+		curl_easy_setopt(curl, CURLOPT_POST, 1);		// è®¾ç½® ä¸ºPOST æ–¹æ³•
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST çš„æ•°æ®å†…å®?
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POSTçš„æ•°æ®é•¿åº? å¯ä»¥ä¸è¦æ­¤é€‰é¡¹
 	}
 	else if (post_type == 2)
 	{
-		//·½·¨2, multipart/formdataÇëÇó, POST args->post_data ÖÐµÄÊý¾Ý, Ò²¿ÉÒÔÊÇ½«ÎÄ¼þÄÚÈÝ¶ÁÈ¡µ½post_dataÖÐ		
-		curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);	// ÉèÖÃPOST ²ÎÊý
+		//æ–¹æ³•2, multipart/formdataè¯·æ±‚, POST args->post_data ä¸­çš„æ•°æ®, ä¹Ÿå¯ä»¥æ˜¯å°†æ–‡ä»¶å†…å®¹è¯»å–åˆ°post_dataä¸?	
+		curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);	// è®¾ç½®POST å‚æ•°
 		curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_PTRCONTENTS, args->post_data, CURLFORM_CONTENTSLENGTH, strlen(args->post_data), CURLFORM_END);
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 	}
 	else if (post_type == 3)
 	{
-		//Ìí¼ÓÄÚÈÝContent-Disposition: form-data; name="reqformat"....plain 
-		curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);// ÉèÖÃPOST ²ÎÊý
-		// Ìí¼ÓÉÏ´«ÎÄ¼þ,  Content-Disposition: form-data; name="file"; filename="1.jpg"; filenameÎªÄ¬ÈÏµÄÃû×Ö, content-type ÎªÄ¬ÈÏcurlÊ¶±ðµÄ
+		//æ·»åŠ å†…å®¹Content-Disposition: form-data; name="reqformat"....plain 
+		curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);// è®¾ç½®POST å‚æ•°
+		// æ·»åŠ ä¸Šä¼ æ–‡ä»¶,  Content-Disposition: form-data; name="file"; filename="1.jpg"; filenameä¸ºé»˜è®¤çš„åå­—, content-type ä¸ºé»˜è®¤curlè¯†åˆ«çš?
 		//curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_FILE, args->post_file, CURLFORM_END);
-		// Ìí¼ÓÉÏ´«ÎÄ¼þ,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameÎªÖ¸¶¨µÄÃû×Ö, content-type ÎªÄ¬ÈÏcurlÊ¶±ðµÄ
+		// æ·»åŠ ä¸Šä¼ æ–‡ä»¶,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameä¸ºæŒ‡å®šçš„åå­—, content-type ä¸ºé»˜è®¤curlè¯†åˆ«çš?
 		//curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_FILE, err_file, CURLFORM_FILENAME, "1.jpg", CURLFORM_END); 
-		// Ìí¼ÓÉÏ´«ÎÄ¼þ,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameÎªÖ¸¶¨µÄÃû×Ö, content-typeÎªÖ¸¶¨µÄÀàÐÍ
+		// æ·»åŠ ä¸Šä¼ æ–‡ä»¶,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameä¸ºæŒ‡å®šçš„åå­—, content-typeä¸ºæŒ‡å®šçš„ç±»åž‹
 		//curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_FILE, err_file, CURLFORM_FILENAME, "1.jpg", CURLFORM_CONTENTTYPE, "image/jpeg", CURLFORM_END);
 
-		// ÒýÓÃÒ³:  http://blog.csdn.net/zxgfa/article/details/8302059
+		// å¼•ç”¨é¡?  http://blog.csdn.net/zxgfa/article/details/8302059
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 	}
 
@@ -158,12 +158,12 @@ int curl_http_post(struct curl_http_args_st *args)
 		ret = 0;
 	}
 
-	if (args->file_fd)		// ÈôÐèÒªÔÙ´Î´¦ÀíÐ´ÈëµÄÎÄ¼þ, ÔÚ´Ë¿ÉÒÔÖ±½ÓÊ¹ÓÃ
+	if (args->file_fd)		// è‹¥éœ€è¦å†æ¬¡å¤„ç†å†™å…¥çš„æ–‡ä»¶, åœ¨æ­¤å¯ä»¥ç›´æŽ¥ä½¿ç”¨
 	{
-		//¹Ø±ÕÎÄ¼þÁ÷
+		//å…³é—­æ–‡ä»¶æµ?
 		fclose(args->file_fd);
 	}
-	if (args->data)		// ÈôÒª¶Ô·µ»ØµÄÄÚÈÝ½øÐÐ´¦Àí, ¿ÉÔÚ´Ë´¦Àí
+	if (args->data)		// è‹¥è¦å¯¹è¿”å›žçš„å†…å®¹è¿›è¡Œå¤„ç†, å¯åœ¨æ­¤å¤„ç?
 	{
 		curl_printf("data_len:%d\n%s\n", args->data_len, args->data);
 		free(args->data);
@@ -172,7 +172,7 @@ int curl_http_post(struct curl_http_args_st *args)
 
 	curl_easy_cleanup(curl);
 
-	if (post_type == 2 || post_type == 3)	// ÓÃÕâÁ½ÖÖ·½·¨ÐèÒªÊÍ·ÅPOSTÊý¾Ý. 
+	if (post_type == 2 || post_type == 3)	// ç”¨è¿™ä¸¤ç§æ–¹æ³•éœ€è¦é‡Šæ”¾POSTæ•°æ®. 
 		curl_formfree(formpost);
 
 	return ret;
@@ -196,37 +196,38 @@ BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CcellMobileApplicationDlg ÏûÏ¢´¦Àí³ÌÐò
+// CcellMobileApplicationDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CcellMobileApplicationDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌÐòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ÐÐ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃÐ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€? å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æž¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½?
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ?
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ?
 
-	
+	sellMobileSystemInstance;
+	curlManagerInstance;
 
 
-	return TRUE;  // ³ý·Ç½«½¹µãÉèÖÃµ½¿Ø¼þ£¬·ñÔò·µ»Ø TRUE
+	return TRUE;  // é™¤éžå°†ç„¦ç‚¹è®¾ç½®åˆ°æŽ§ä»¶ï¼Œå¦åˆ™è¿”å›?TRUE
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îÐ¡»¯°´Å¥£¬ÔòÐèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£  ¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ÐÍµÄ MFC Ó¦ÓÃ³ÌÐò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æžœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€? å¯¹äºŽä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡åž‹çš?MFC åº”ç”¨ç¨‹åºï¼?
+//  è¿™å°†ç”±æ¡†æž¶è‡ªåŠ¨å®Œæˆã€?
 
 void CcellMobileApplicationDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºŽç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØÐÎÖÐ¾ÓÖÐ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -234,7 +235,7 @@ void CcellMobileApplicationDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -243,8 +244,8 @@ void CcellMobileApplicationDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îÐ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊýÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€?
 HCURSOR CcellMobileApplicationDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -254,7 +255,8 @@ HCURSOR CcellMobileApplicationDlg::OnQueryDragIcon()
 
 void CcellMobileApplicationDlg::OnBnClickedOk()
 {
-	
+	sellMobileSystemInstance->setMchInfo("1000000013", "qu9k3vxsy2uc69u86iybirpu14coj34z");
+	sellMobileSystemInstance->requestMicropay();
 	// TODO: Add your control notification handler code here
-	CDialogEx::OnOK();
+	//CDialogEx::OnOK();
 }

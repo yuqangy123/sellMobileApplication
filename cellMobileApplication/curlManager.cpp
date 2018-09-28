@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "curlManager.h"
 #include <pthread.h>
-
+#include "commonMicro.h"
 
 
 #include <openssl/crypto.h>
@@ -14,10 +14,9 @@ static curlManager* g_curManagerInstance = nullptr;
 /* we have this global to let the callback get easy access to it */
 static pthread_mutex_t *g_lockarray;
 static pthread_mutex_t g_mutex;
-static pthread_cond_t g_work_cond;//Ìõ¼ş±äÁ¿
+static pthread_cond_t g_work_cond;//æ¡ä»¶å˜é‡
 
-#define safe_delete(p)		{if(p != nullptr){delete p; p = nullptr;};}
-#define empty_break(obj)	{if(!obj) break;}
+
 
 
 
@@ -91,7 +90,7 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 
 	if (stream)
 	{
-		if (args->file_name[0])	// ÒªĞ´ÎÄ¼ş
+		if (args->file_name[0])	// è¦å†™æ–‡ä»¶
 		{
 			if (!args->file_fd)
 			{
@@ -104,7 +103,7 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 			}
 			fwrite(buffer, size, nmemb, args->file_fd);
 		}
-		args->data = (char*)realloc(args->data, args->data_len + len + 1);	// ¶à·ÖÅäÒ»¸ö×Ö½Ú, ÒÔ±£´æ\0 
+		args->data = (char*)realloc(args->data, args->data_len + len + 1);	// å¤šåˆ†é…ä¸€ä¸ªå­—èŠ‚, ä»¥ä¿å­˜\0 
 		if (!args->data)
 		{
 			printf("%s[%d]: realloc failed!!\n", __FUNCTION__, __LINE__);
@@ -127,18 +126,18 @@ int curlManager::curl_http_post()
 		empty_break(args);
 
 
-		//´´½¨curl¶ÔÏó 
+		//åˆ›å»ºcurlå¯¹è±¡ 
 		CURL *curl;
 		CURLcode return_code;
-		struct curl_httppost *formpost = NULL;	// POST ĞèÒªµÄ²ÎÊı
+		struct curl_httppost *formpost = NULL;	// POST éœ€è¦çš„å‚æ•°
 		struct curl_httppost *lastptr = NULL;
 
-		int post_type = 1; // POST ¿ÉÒÔÓĞÈıÖÖ·½·¨
+		int post_type = 1; // POST å¯ä»¥æœ‰ä¸‰ç§æ–¹æ³•
 
-		// Èç¹ûÒª±£´æÎªÎÄ¼ş, ÏÈ½¨Á¢ÎÄ¼şÄ¿Â¼
+		// å¦‚æœè¦ä¿å­˜ä¸ºæ–‡ä»¶, å…ˆå»ºç«‹æ–‡ä»¶ç›®å½•
 		//if (args->file_name) create_dir(args->file_name);
 
-		//curl³õÊ¼»¯ 
+		//curlåˆå§‹åŒ– 
 		curl = curl_easy_init();
 		if (!curl)
 		{
@@ -149,62 +148,62 @@ int curlManager::curl_http_post()
 		if (strncmp(args->url, "https://", 8) == 0)
 		{
 #if 1	
-			// ·½·¨1, Éè¶¨Îª²»ÑéÖ¤Ö¤ÊéºÍHOST
+			// æ–¹æ³•1, è®¾å®šä¸ºä¸éªŒè¯è¯ä¹¦å’ŒHOST
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 #else
-			// ·½·¨2, Éè¶¨Ò»¸öSSLÅĞ±ğÖ¤Êé
+			// æ–¹æ³•2, è®¾å®šä¸€ä¸ªSSLåˆ¤åˆ«è¯ä¹¦
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-			curl_easy_setopt(curl, CURLOPT_CAINFO, "ca-cert.pem"); 	// TODO: ÉèÖÃÒ»¸öÖ¤ÊéÎÄ¼ş
+			curl_easy_setopt(curl, CURLOPT_CAINFO, "ca-cert.pem"); 	// TODO: è®¾ç½®ä¸€ä¸ªè¯ä¹¦æ–‡ä»¶
 #endif 
 		}
 
-		curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//ÉèÖÃhttpheader ½âÎö, ²»ĞèÒª½«HTTPÍ·Ğ´´«Èë»Øµ÷º¯Êı
+		curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//è®¾ç½®httpheader è§£æ, ä¸éœ€è¦å°†HTTPå¤´å†™ä¼ å…¥å›è°ƒå‡½æ•°
 
-		curl_easy_setopt(curl, CURLOPT_URL, args->url);	//ÉèÖÃÔ¶¶ËµØÖ· 
+		curl_easy_setopt(curl, CURLOPT_URL, args->url);	//è®¾ç½®è¿œç«¯åœ°å€ 
 
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);	// TODO: ´ò¿ªµ÷ÊÔĞÅÏ¢
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);	// TODO: æ‰“å¼€è°ƒè¯•ä¿¡æ¯
 
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);	//ÉèÖÃÔÊĞí302  Ìø×ª
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);	//è®¾ç½®å…è®¸302  è·³è½¬
 
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_cb); 	//Ö´ĞĞĞ´ÈëÎÄ¼şÁ÷²Ù×÷ µÄ»Øµ÷º¯Êı
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_cb); 	//æ‰§è¡Œå†™å…¥æ–‡ä»¶æµæ“ä½œ çš„å›è°ƒå‡½æ•°
 
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, args);	// ÉèÖÃ»Øµ÷º¯ÊıµÄµÚ4 ¸ö²ÎÊı
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, args);	// è®¾ç½®å›è°ƒå‡½æ•°çš„ç¬¬4 ä¸ªå‚æ•°
 
-		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);	//Éè±¸Îªipv4ÀàĞÍ
+		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);	//è®¾å¤‡ä¸ºipv4ç±»å‹
 
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30); 	//ÉèÖÃÁ¬½Ó³¬Ê±£¬µ¥Î»s, CURLOPT_CONNECTTIMEOUT_MS ºÁÃë
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30); 	//è®¾ç½®è¿æ¥è¶…æ—¶ï¼Œå•ä½s, CURLOPT_CONNECTTIMEOUT_MS æ¯«ç§’
 
-		// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// Õû¸öCURL Ö´ĞĞµÄÊ±¼ä, µ¥Î»Ãë, CURLOPT_TIMEOUT_MSºÁÃë
+		// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// æ•´ä¸ªCURL æ‰§è¡Œçš„æ—¶é—´, å•ä½ç§’, CURLOPT_TIMEOUT_MSæ¯«ç§’
 
-		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);		//linux¶àÏß³ÌÇé¿öÓ¦×¢ÒâµÄÉèÖÃ(·ÀÖ¹curl±»alarmĞÅºÅ¸ÉÈÅ)
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);		//linuxå¤šçº¿ç¨‹æƒ…å†µåº”æ³¨æ„çš„è®¾ç½®(é˜²æ­¢curlè¢«alarmä¿¡å·å¹²æ‰°)
 
 		if (post_type == 1)
 		{
-			// ·½·¨1, ÆÕÍ¨µÄPOST , application/x-www-form-urlencoded
-			curl_easy_setopt(curl, CURLOPT_POST, 1);		// ÉèÖÃ ÎªPOST ·½·¨
-			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST µÄÊı¾İÄÚÈİ
-			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POSTµÄÊı¾İ³¤¶È, ¿ÉÒÔ²»Òª´ËÑ¡Ïî
+			// æ–¹æ³•1, æ™®é€šçš„POST , application/x-www-form-urlencoded
+			curl_easy_setopt(curl, CURLOPT_POST, 1);		// è®¾ç½® ä¸ºPOST æ–¹æ³•
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST çš„æ•°æ®å†…å®¹
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POSTçš„æ•°æ®é•¿åº¦, å¯ä»¥ä¸è¦æ­¤é€‰é¡¹
 		}
 		else if (post_type == 2)
 		{
-			//·½·¨2, multipart/formdataÇëÇó, POST args->post_data ÖĞµÄÊı¾İ, Ò²¿ÉÒÔÊÇ½«ÎÄ¼şÄÚÈİ¶ÁÈ¡µ½post_dataÖĞ		
-			curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);	// ÉèÖÃPOST ²ÎÊı
+			//æ–¹æ³•2, multipart/formdataè¯·æ±‚, POST args->post_data ä¸­çš„æ•°æ®, ä¹Ÿå¯ä»¥æ˜¯å°†æ–‡ä»¶å†…å®¹è¯»å–åˆ°post_dataä¸­		
+			curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);	// è®¾ç½®POST å‚æ•°
 			curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_PTRCONTENTS, args->post_data, CURLFORM_CONTENTSLENGTH, strlen(args->post_data), CURLFORM_END);
 			curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 		}
 		else if (post_type == 3)
 		{
-			//Ìí¼ÓÄÚÈİContent-Disposition: form-data; name="reqformat"....plain 
-			curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);// ÉèÖÃPOST ²ÎÊı
-			// Ìí¼ÓÉÏ´«ÎÄ¼ş,  Content-Disposition: form-data; name="file"; filename="1.jpg"; filenameÎªÄ¬ÈÏµÄÃû×Ö, content-type ÎªÄ¬ÈÏcurlÊ¶±ğµÄ
+			//æ·»åŠ å†…å®¹Content-Disposition: form-data; name="reqformat"....plain 
+			curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "reqformat", CURLFORM_PTRCONTENTS, "plain", CURLFORM_END);// è®¾ç½®POST å‚æ•°
+			// æ·»åŠ ä¸Šä¼ æ–‡ä»¶,  Content-Disposition: form-data; name="file"; filename="1.jpg"; filenameä¸ºé»˜è®¤çš„åå­—, content-type ä¸ºé»˜è®¤curlè¯†åˆ«çš„
 			//curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_FILE, args->post_file, CURLFORM_END);
-			// Ìí¼ÓÉÏ´«ÎÄ¼ş,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameÎªÖ¸¶¨µÄÃû×Ö, content-type ÎªÄ¬ÈÏcurlÊ¶±ğµÄ
+			// æ·»åŠ ä¸Šä¼ æ–‡ä»¶,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameä¸ºæŒ‡å®šçš„åå­—, content-type ä¸ºé»˜è®¤curlè¯†åˆ«çš„
 			//curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_FILE, err_file, CURLFORM_FILENAME, "1.jpg", CURLFORM_END); 
-			// Ìí¼ÓÉÏ´«ÎÄ¼ş,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameÎªÖ¸¶¨µÄÃû×Ö, content-typeÎªÖ¸¶¨µÄÀàĞÍ
+			// æ·»åŠ ä¸Šä¼ æ–‡ä»¶,  //Content-Disposition: form-data; name="file"; filename="1.jpg".,   filenameä¸ºæŒ‡å®šçš„åå­—, content-typeä¸ºæŒ‡å®šçš„ç±»å‹
 			//curl_formadd(&formpost, &lastptr, CURLFORM_PTRNAME, "file", CURLFORM_FILE, err_file, CURLFORM_FILENAME, "1.jpg", CURLFORM_CONTENTTYPE, "image/jpeg", CURLFORM_END);
 
-			// ÒıÓÃÒ³:  http://blog.csdn.net/zxgfa/article/details/8302059
+			// å¼•ç”¨é¡µ:  http://blog.csdn.net/zxgfa/article/details/8302059
 			curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 		}
 
@@ -215,17 +214,18 @@ int curlManager::curl_http_post()
 			ret = 0;
 		}
 
-		if (args->file_fd)		// ÈôĞèÒªÔÙ´Î´¦ÀíĞ´ÈëµÄÎÄ¼ş, ÔÚ´Ë¿ÉÒÔÖ±½ÓÊ¹ÓÃ
+		if (args->file_fd)		// è‹¥éœ€è¦å†æ¬¡å¤„ç†å†™å…¥çš„æ–‡ä»¶, åœ¨æ­¤å¯ä»¥ç›´æ¥ä½¿ç”¨
 		{
-			//¹Ø±ÕÎÄ¼şÁ÷
+			//å…³é—­æ–‡ä»¶æµ
 			fclose(args->file_fd);
 		}
-		if (args->data)		// ÈôÒª¶Ô·µ»ØµÄÄÚÈİ½øĞĞ´¦Àí, ¿ÉÔÚ´Ë´¦Àí
+		if (args->data)		// è‹¥è¦å¯¹è¿”å›çš„å†…å®¹è¿›è¡Œå¤„ç†, å¯åœ¨æ­¤å¤„ç†
 		{
 			//printf("data_len:%d\n%s\n", args->data_len, args->data);
 			if (nullptr != m_requestCallback)
 			{
 				std::string responseData;
+				responseData.assign(args->data, args->data_len);
 				(*m_requestCallback)(responseData);
 			}
 			free(args->data);
@@ -234,7 +234,7 @@ int curlManager::curl_http_post()
 
 		curl_easy_cleanup(curl);
 
-		if (post_type == 2 || post_type == 3)	// ÓÃÕâÁ½ÖÖ·½·¨ĞèÒªÊÍ·ÅPOSTÊı¾İ. 
+		if (post_type == 2 || post_type == 3)	// ç”¨è¿™ä¸¤ç§æ–¹æ³•éœ€è¦é‡Šæ”¾POSTæ•°æ®. 
 			curl_formfree(formpost);
 	} while (false);
 
@@ -283,8 +283,8 @@ void curlManager::init()
 		fprintf(stderr, "Couldn't run mainWait thread errno %d\n", error);
 	}
 
-	//error = pthread_join(tid, NULL);//¿É½áºÏÏß³Ì£¬×èÈû
-	pthread_detach(waitTid);//·ÖÀëÏß³Ì£¬·Ç×èÈû£¬ »òÕßÔÚÏß³ÌÀïµ÷ÓÃpthread_detach(pthread_self());
+	//error = pthread_join(tid, NULL);//å¯ç»“åˆçº¿ç¨‹ï¼Œé˜»å¡
+	pthread_detach(waitTid);//åˆ†ç¦»çº¿ç¨‹ï¼Œéé˜»å¡ï¼Œ æˆ–è€…åœ¨çº¿ç¨‹é‡Œè°ƒç”¨pthread_detach(pthread_self());
 }
 
 void curlManager::test()
@@ -292,7 +292,7 @@ void curlManager::test()
 	
 }
 
-bool curlManager::request(const char* url, const char* requestData, curl_method requestType, https_request_callback* callback)
+bool curlManager::request(const char* url, const char* requestData, curl_method requestType, std::function<void(const std::string& data)>* callback)
 {
 	//init_locks();
 

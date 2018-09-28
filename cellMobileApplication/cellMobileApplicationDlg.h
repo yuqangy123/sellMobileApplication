@@ -1,29 +1,29 @@
 
-// cellMobileApplicationDlg.h : Í·ÎÄ¼ş
+// cellMobileApplicationDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
 
 
-// CcellMobileApplicationDlg ¶Ô»°¿ò
+// CcellMobileApplicationDlg å¯¹è¯æ¡†
 class CcellMobileApplicationDlg : public CDialogEx
 {
-// ¹¹Ôì
+// æ„é€ 
 public:
-	CcellMobileApplicationDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
+	CcellMobileApplicationDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_CELLMOBILEAPPLICATION_DIALOG };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();

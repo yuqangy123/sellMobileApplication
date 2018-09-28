@@ -21,7 +21,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -105,8 +105,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CCValue.h" />
     <ClInclude Include="cellMobileApplication.h" />
     <ClInclude Include="cellMobileApplicationDlg.h" />
+    <ClInclude Include="commonMicro.h" />
     <ClInclude Include="curlManager.h" />
     <ClInclude Include="curl\include\win32\curl.h" />
     <ClInclude Include="curl\include\win32\curlbuild.h" />
@@ -200,8 +202,10 @@
     <ClInclude Include="sellMobileSystem.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCValue.cpp" />
     <ClCompile Include="cellMobileApplication.cpp" />
     <ClCompile Include="cellMobileApplicationDlg.cpp" />
     <ClCompile Include="curlManager.cpp" />
@@ -211,6 +215,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="cellMobileApplication.rc" />

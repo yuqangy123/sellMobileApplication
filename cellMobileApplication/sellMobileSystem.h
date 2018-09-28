@@ -16,9 +16,12 @@ public:
 protected:
 	void init();
 	std::string makeSign(const std::map<std::string, std::string>& paramsMap);
+	std::string mapToXml(const std::map<std::string, std::string>& paramsMap);
 
 protected:
 	std::string mch_id;
 	std::string mch_key;
+	
+	std::map<std::string, std::string> m_api;
 };
 

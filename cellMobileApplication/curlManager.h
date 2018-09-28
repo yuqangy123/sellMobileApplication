@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
+#include <functional>
 
 
-typedef void(*https_request_callback)(const std::string& data);
 
 
 #define CURL_BUF_MAX_LEN  4096
@@ -29,17 +29,17 @@ struct curl_http_args_st
 		memset(post_file, 0x0, CURL_NAME_MAX_LEN);
 	}
 
-	int  curl_method;	// curl ·½·¨ÃüÁî,enum curl_method
+	int  curl_method;	// curl æ–¹æ³•å‘½ä»¤,enum curl_method
 	char url[CURL_URL_MAX_LEN];		// URL 
 
-	char file_name[CURL_NAME_MAX_LEN];	// ·µ»ØÊı¾İ±£´æÎªÎÄ¼ş
-	FILE *file_fd;						// ÎÄ¼şËùÖ¸ÏòµÄÃèÊö·û, ÓÃÍêºóĞèÒªÊÖ¶¯fclose
+	char file_name[CURL_NAME_MAX_LEN];	// è¿”å›æ•°æ®ä¿å­˜ä¸ºæ–‡ä»¶
+	FILE *file_fd;						// æ–‡ä»¶æ‰€æŒ‡å‘çš„æè¿°ç¬¦, ç”¨å®Œåéœ€è¦æ‰‹åŠ¨fclose
 
-	int  data_len;						// ÎÄ¼şÊı¾İ±£´æÔÚÄÚ´æÖĞµÄ³¤¶È
-	char *data;							// ÎÄ¼şÊı¾İ±£´æÔÚÄÚ´æÖĞµÄÖ¸Õë, ÓÃÍêºóÊÖ¶¯free 
+	int  data_len;						// æ–‡ä»¶æ•°æ®ä¿å­˜åœ¨å†…å­˜ä¸­çš„é•¿åº¦
+	char *data;							// æ–‡ä»¶æ•°æ®ä¿å­˜åœ¨å†…å­˜ä¸­çš„æŒ‡é’ˆ, ç”¨å®Œåæ‰‹åŠ¨free 
 
-	char post_data[CURL_BUF_MAX_LEN];	// POST ±íµ¥Êı¾İ
-	char post_file[CURL_NAME_MAX_LEN];	// POST ÎÄ¼şÃû
+	char post_data[CURL_BUF_MAX_LEN];	// POST è¡¨å•æ•°æ®
+	char post_file[CURL_NAME_MAX_LEN];	// POST æ–‡ä»¶å
 };
 
 #define curlManagerInstance curlManager::instance()
@@ -50,7 +50,7 @@ public:
 	~curlManager();
 
 	static curlManager* instance();
-	bool request(const char* url, const char* requestData, curl_method requestType, https_request_callback* callback = nullptr);
+	bool request(const char* url, const char* requestData, curl_method requestType, std::function<void(const std::string& data)>* callback = nullptr);
 	void test();
 	int curl_http_post();
 	bool isRunning(){ return m_running; }
@@ -61,7 +61,7 @@ protected:
 	void setRunning(bool b){ m_running = b; }
 
 protected:
-	https_request_callback* m_requestCallback = nullptr;
+	std::function<void(const std::string& data)>* m_requestCallback = nullptr;
 	curl_http_args_st*		m_curl_args = nullptr;
 	bool					m_running = false;
 	
