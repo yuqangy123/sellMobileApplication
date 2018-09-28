@@ -115,6 +115,8 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 
 	return len;
 }
+
+
 int curlManager::curl_http_post()
 {
 	int ret = -1;
@@ -225,8 +227,14 @@ int curlManager::curl_http_post()
 			if (nullptr != m_requestCallback)
 			{
 				std::string responseData;
+
+				std::string ansi = KS_UTF8_to_ANSI(args->data);
+				const char* xmlend = "</xml>";
+				std::size_t found = ansi.find(xmlend);
+				if (found != std::string::npos)
+					ansi = ansi.substr(0, found+strlen(xmlend));
 				responseData.assign(args->data, args->data_len);
-				(*m_requestCallback)(responseData);
+				(*m_requestCallback)(ansi);
 			}
 			free(args->data);
 			args->data = NULL;

@@ -208,22 +208,18 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图�?
 	SetIcon(m_hIcon, FALSE);		// 设置小图�?
 
-	sellMobileSystemInstance;
+	sellMobileSystemInstance->setMchInfo("1000000013", "qu9k3vxsy2uc69u86iybirpu14coj34z");;
 	curlManagerInstance;
 
 
-	return TRUE;  // 除非将焦点设置到控件，否则返�?TRUE
+	return TRUE;
 }
-
-// 如果向对话框添加最小化按钮，则需要下面的代码
-//  来绘制该图标�? 对于使用文档/视图模型�?MFC 应用程序�?
-//  这将由框架自动完成�?
 
 void CcellMobileApplicationDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 用于绘制的设备上下文
+		CPaintDC dc(this); 
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
@@ -255,8 +251,11 @@ HCURSOR CcellMobileApplicationDlg::OnQueryDragIcon()
 
 void CcellMobileApplicationDlg::OnBnClickedOk()
 {
-	sellMobileSystemInstance->setMchInfo("1000000013", "qu9k3vxsy2uc69u86iybirpu14coj34z");
-	sellMobileSystemInstance->requestMicropay();
+	if (sellState::none == sellMobileSystemInstance->getState())
+		sellMobileSystemInstance->requestMicropay();
+	else if (sellState::paying == sellMobileSystemInstance->getState())
+		sellMobileSystemInstance->requestOrderQuery();
+
 	// TODO: Add your control notification handler code here
 	//CDialogEx::OnOK();
 }

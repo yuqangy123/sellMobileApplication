@@ -1,1 +1,4 @@
 https://blog.csdn.net/rankun1/article/details/53932571
+
+
+<xml>    <bank_type>CFT</bank_type>    <body>chunjifuzhuang</body>    <fee_type>CNY</fee_type>    <mch_id>1000000013</mch_id>    <order_no>83020180928221213476749930496302</order_no>    <out_trade_no>12177525012007023336841</out_trade_no>    <retcode>0</retcode>    <retmsg>SUCCESS</retmsg>    <sub_openid>oRs4YwlwrT17u2o43BJJY3f1q9kY</sub_openid>    <time_end>2018-09-28 23:06:43</time_end>    <total_fee>1</total_fee>    <trade_state>SUCCESS</trade_state>    <trade_type>WXPAY.MICROPAY</trade_type>    <sign>B8883B664171D10A18E72B82F4B93F74</sign></xml>
