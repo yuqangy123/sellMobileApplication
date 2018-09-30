@@ -33,7 +33,14 @@ std::string CFileUnit::ExcludeTrailingPathDelimiter(const std::string &s)
 	}
 	else
 	{
-		return s;
+		if ("/" == s.substr(s.length() - 1, s.length()))
+		{
+			return std::string(s.substr(0, s.length() - 1));
+		}
+		else
+		{
+			return s;
+		}
 	}
 }
 
@@ -47,7 +54,11 @@ bool CFileUnit::DirectoryExists(const char *ApFileName)
 
 std::string CFileUnit::ExtractFilePath(const std::string &AFileName)
 {
-	return Getwstring(AFileName, ("\\"), true);
+	std::string str_a = Getwstring(AFileName, ("\\"), true);
+	std::string str_b = Getwstring(AFileName, ("/"), true);
+	if (str_a.empty())
+		return str_b;
+	return str_a;
 }
 
 std::string CFileUnit::Getwstring(const std::string &s, const std::string &Sing, bool Forwar /*= true*/)

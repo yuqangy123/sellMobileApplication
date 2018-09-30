@@ -99,7 +99,7 @@ void CcellMobileApplicationDlg::OnBnClickedOk()
 {
 
 #if 1
-	sellMobileSystemInstance->requestRefundQuery();
+	sellMobileSystemInstance->requestDownloadOrder();
 	//bool bl = ::SendMessage(::GetActiveWindow(), UM_TIPS_MESSAGE, 0, 0);
 #else
 	//showTipsDialog("tt");

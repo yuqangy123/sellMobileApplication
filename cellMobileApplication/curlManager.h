@@ -51,11 +51,11 @@ public:
 
 	static curlManager* instance();
 	bool request(const char* url, const char* requestData, curl_method requestType, std::function<void(const std::string& data)>* callback = nullptr);
-	void test();
+	bool download(const char* url, const char* requestData, const char* savefile, std::function<void(const std::string& data)>* callback = nullptr);
 	int curl_http_post();
-	int curl_http_write_file();
+	int curl_http_download_file();
 	bool isRunning(){ return m_running; }
-	
+	const curl_http_args_st* const getCurlHttpArgs() { return m_curl_args; }
 
 protected:
 	void init();

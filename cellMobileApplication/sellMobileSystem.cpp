@@ -52,6 +52,8 @@ void sellMobileSystem::init()
 	sprintf_s(parone, "%srefundquery", sysDomain.c_str());
 	m_api["refundquery"] = parone;
 	
+	sprintf_s(parone, "%sdownload", sysDomain.c_str());
+	m_api["downloadOrder"] = parone;
 }
 
 void sellMobileSystem::setMchInfo(const char* id, const char* key)
@@ -273,6 +275,58 @@ bool sellMobileSystem::requestRefundQuery()
 	};
 	curlManager::instance()->request(m_api["refundquery"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
 	setState(sellState::refundquerying);
+	return true;
+}
+
+//下载对账单
+bool sellMobileSystem::requestDownloadOrder()
+{
+	char randChar[32] = { 0 };
+	long rd = getRandom(99999999);
+
+	char refund_no[32] = { 0 };
+	rd = getRandom(99999999);
+	sprintf_s(refund_no, "12w2s753s70233368%d", rd);
+
+	m_nonce_str = "5K8264ILTKCH16CQ";
+
+	map<string, string> params;
+	params["mch_id"] = m_mch_id;
+	params["nonce_str"] = m_nonce_str;
+	params["start_date"] = "20180926";
+	params["end_date"] = "20180926";
+	params["billtype"] = "1";	
+	params["sign"] = makeSign(params);
+
+	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
+	*responseCallback = [this](const std::string& data)
+	{
+		printf("%d,%s", data.length(), data.c_str());
+		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
+		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
+		if (errorId != 0) {
+			printf("xml 解析失败");
+		}
+
+		string retcode = getXmlNode(pDoc, "retcode");
+		string retmsg = getXmlNode(pDoc, "retmsg");
+		string status = getXmlNode(pDoc, "status");
+		if (!retcode.empty())
+		{
+			int nret = atoi(retcode.c_str());
+			if (0 <= nret)
+			{
+				//::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
+			}
+			else
+			{
+				setState(sellState::none);
+				sendTipsMessage(retmsg.c_str(), retmsg.length());
+			}
+		}
+	};
+	curlManager::instance()->download(m_api["downloadOrder"].c_str(), mapToXml(params).c_str(), "D:/cell/download/file/d.rar", responseCallback);
+	setState(sellState::downloadOrder);
 	return true;
 }
 

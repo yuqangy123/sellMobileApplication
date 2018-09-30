@@ -76,7 +76,11 @@ static void *wait_task_thread(void *url)
 		pthread_mutex_lock(&g_mutex);
 		pthread_cond_wait(&g_work_cond, &g_mutex);
 
-		curlManager::instance()->curl_http_post();
+		const curl_http_args_st* const st = curlManager::instance()->getCurlHttpArgs();
+		if(st->file_name[0] == 0)
+			curlManager::instance()->curl_http_post();
+		else
+			curlManager::instance()->curl_http_download_file();
 		
 		pthread_mutex_unlock(&g_mutex);
 
@@ -265,7 +269,7 @@ int curlManager::curl_http_post()
 	return ret;
 }
 
-int curlManager::curl_http_write_file()
+int curlManager::curl_http_download_file()
 {
 	int ret = -1;
 	do
@@ -294,9 +298,13 @@ int curlManager::curl_http_write_file()
 
 		FileUnitInstance->ForceDirectories( FileUnitInstance->ExtractFilePath(args->file_name) );
 		
-		args->file_fd = fopen(args->file_name, "wb");
+		fopen_s(&args->file_fd, args->file_name, "wb");
 		false_break(args->file_fd);
 
+		// 方法1, 普通的POST , application/x-www-form-urlencoded
+		curl_easy_setopt(curl, CURLOPT_POST, 1);		// 设置 为POST 方法
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST 的数据内容
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POST的数据长度, 可以不要此选项
 
 		curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//设置httpheader 解析, 不需要将HTTP头写传入回调函数
 
@@ -314,7 +322,7 @@ int curlManager::curl_http_write_file()
 
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30); 	//设置连接超时，单位s, CURLOPT_CONNECTTIMEOUT_MS 毫秒
 
-九江庐山青春来家庭旅馆		// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// 整个CURL 执行的时间, 单位秒, CURLOPT_TIMEOUT_MS毫秒
+		// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// 整个CURL 执行的时间, 单位秒, CURLOPT_TIMEOUT_MS毫秒
 
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);		//linux多线程情况应注意的设置(防止curl被alarm信号干扰)
 
@@ -369,12 +377,10 @@ curlManager::curlManager()
 	curl_global_init(CURL_GLOBAL_ALL);
 }
 
-
 curlManager::~curlManager()
 {
 	curl_global_cleanup();
 }
-
 
 curlManager* curlManager::instance()
 {
@@ -406,11 +412,6 @@ void curlManager::init()
 	pthread_detach(waitTid);//分离线程，非阻塞， 或者在线程里调用pthread_detach(pthread_self());
 }
 
-void curlManager::test()
-{
-	
-}
-
 bool curlManager::request(const char* url, const char* requestData, curl_method requestType, std::function<void(const std::string& data)>* callback)
 {
 	//init_locks();
@@ -430,6 +431,36 @@ bool curlManager::request(const char* url, const char* requestData, curl_method 
 	m_requestCallback = callback;
 
 	
+	pthread_mutex_lock(&g_mutex);
+
+	setRunning(true);
+
+	pthread_cond_signal(&g_work_cond);
+
+	pthread_mutex_unlock(&g_mutex);
+
+	//kill_locks();
+
+	return true;
+}
+
+bool curlManager::download(const char* url, const char* requestData, const char* savefile, std::function<void(const std::string& data)>* callback)
+{
+	if (isRunning())
+	{
+		printf("curlManager download error, is running\r\n");
+		return false;
+	}
+
+	safe_delete(m_curl_args);
+	m_curl_args = new curl_http_args_st();
+
+	strncpy_s(m_curl_args->url, url, sizeof(m_curl_args->url));
+	strncpy_s(m_curl_args->post_data, requestData, sizeof(m_curl_args->post_data));
+	strncpy_s(m_curl_args->file_name, savefile, sizeof(m_curl_args->file_name));
+	m_requestCallback = callback;
+
+
 	pthread_mutex_lock(&g_mutex);
 
 	setRunning(true);

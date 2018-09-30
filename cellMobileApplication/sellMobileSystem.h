@@ -10,6 +10,7 @@ enum sellState
 	orderquerying,
 	refunding,
 	refundquerying,
+	downloadOrder,
 	fail,
 };
 
@@ -24,6 +25,7 @@ public:
 	bool requestOrderQuery();
 	bool requestRefundOrder();
 	bool requestRefundQuery();
+	bool requestDownloadOrder();
 
 	void setMchInfo(const char* id, const char* key);
 	sellState getState() { return m_state; }
