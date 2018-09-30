@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "curlManager.h"
 #include <pthread.h>
 #include "commonMicro.h"
@@ -8,6 +8,9 @@
 #include <time.h>
 #include <curl.h>
 #include <string>
+#include "cellMobileApplicationDlg.h"
+
+#include "FileUnit.h"
 
 static curlManager* g_curManagerInstance = nullptr;
 
@@ -76,6 +79,7 @@ static void *wait_task_thread(void *url)
 		curlManager::instance()->curl_http_post();
 		
 		pthread_mutex_unlock(&g_mutex);
+
 	}
 
 	pthread_cond_destroy(&g_work_cond);
@@ -116,16 +120,25 @@ size_t curl_write_data_cb(void *buffer, size_t size, size_t nmemb, void *stream)
 	return len;
 }
 
+int my_progress_func(char *progress_data,
+	double t, /* dltotal */
+	double d, /* dlnow */
+	double ultotal,
+	double ulnow)
+{
+	printf("%s %g / %g (%g %%)\n", progress_data, d, t, d*100.0 / t);
+	return 0;
+}
 
 int curlManager::curl_http_post()
 {
 	int ret = -1;
 	do
 	{
-		empty_break(curlManagerInstance->isRunning());
+		false_break(curlManagerInstance->isRunning());
 
 		struct curl_http_args_st *args = curlManager::instance()->m_curl_args;
-		empty_break(args);
+		false_break(args);
 
 
 		//创建curl对象 
@@ -144,7 +157,7 @@ int curlManager::curl_http_post()
 		if (!curl)
 		{
 			printf("%s[%d]: curl easy init failed\n", __FUNCTION__, __LINE__);
-			empty_break(false);
+			false_break(false);
 		}
 
 		if (strncmp(args->url, "https://", 8) == 0)
@@ -244,6 +257,104 @@ int curlManager::curl_http_post()
 
 		if (post_type == 2 || post_type == 3)	// 用这两种方法需要释放POST数据. 
 			curl_formfree(formpost);
+	} while (false);
+
+	safe_delete(m_curl_args);
+	setRunning(false);
+
+	return ret;
+}
+
+int curlManager::curl_http_write_file()
+{
+	int ret = -1;
+	do
+	{
+		false_break(curlManagerInstance->isRunning());
+
+		struct curl_http_args_st *args = curlManager::instance()->m_curl_args;
+		false_break(args);
+
+
+		//创建curl对象 
+		CURL *curl;
+		CURLcode return_code;
+		// 如果要保存为文件, 先建立文件目录
+		//if (args->file_name) create_dir(args->file_name);
+
+		//curl初始化 
+		curl = curl_easy_init();
+		if (!curl)
+		{
+			printf("%s[%d]: curl easy init failed\n", __FUNCTION__, __LINE__);
+			false_break(false);
+		}
+
+		false_break(args->file_name[0] != 0);
+
+		FileUnitInstance->ForceDirectories( FileUnitInstance->ExtractFilePath(args->file_name) );
+		
+		args->file_fd = fopen(args->file_name, "wb");
+		false_break(args->file_fd);
+
+
+		curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//设置httpheader 解析, 不需要将HTTP头写传入回调函数
+
+		curl_easy_setopt(curl, CURLOPT_URL, args->url);	//设置远端地址 
+
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);	// TODO: 打开调试信息
+
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);	//设置允许302  跳转
+
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_cb); 	//执行写入文件流操作 的回调函数
+
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, args);	// 设置回调函数的第4 个参数
+
+		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);	//设备为ipv4类型
+
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30); 	//设置连接超时，单位s, CURLOPT_CONNECTTIMEOUT_MS 毫秒
+
+九江庐山青春来家庭旅馆		// curl_easy_setopt(curl,CURLOPT_TIMEOUT, 5);			// 整个CURL 执行的时间, 单位秒, CURLOPT_TIMEOUT_MS毫秒
+
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);		//linux多线程情况应注意的设置(防止curl被alarm信号干扰)
+
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);//设为false 下面才能设置进度响应函数
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, my_progress_func);//进度响应函数
+		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, "*");//指定的参数将作为CURLOPT_PROGRESSFUNCTION指定函数的参数.
+
+		return_code = curl_easy_perform(curl);
+		if (CURLE_OK != return_code)
+		{
+			printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(return_code));
+			ret = 0;
+		}
+
+		if (args->file_fd)		// 若需要再次处理写入的文件, 在此可以直接使用
+		{
+			//关闭文件流
+			fclose(args->file_fd);
+		}
+		if (args->data)		// 若要对返回的内容进行处理, 可在此处理
+		{
+			//printf("data_len:%d\n%s\n", args->data_len, args->data);
+			if (nullptr != m_requestCallback)
+			{
+				std::string responseData;
+
+				std::string ansi = KS_UTF8_to_ANSI(args->data);
+				const char* xmlend = "</xml>";
+				std::size_t found = ansi.find(xmlend);
+				if (found != std::string::npos)
+					ansi = ansi.substr(0, found + strlen(xmlend));
+				responseData.assign(args->data, args->data_len);
+				(*m_requestCallback)(ansi);
+			}
+			free(args->data);
+			args->data = NULL;
+		}
+
+		curl_easy_cleanup(curl);
+
 	} while (false);
 
 	safe_delete(m_curl_args);

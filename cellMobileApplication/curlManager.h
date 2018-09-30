@@ -53,6 +53,7 @@ public:
 	bool request(const char* url, const char* requestData, curl_method requestType, std::function<void(const std::string& data)>* callback = nullptr);
 	void test();
 	int curl_http_post();
+	int curl_http_write_file();
 	bool isRunning(){ return m_running; }
 	
 

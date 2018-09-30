@@ -28,3 +28,9 @@ char* KS_ANSI_to_UTF8(const char* szAnsi)
 	::WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)bstrTmp, -1, pUTF8, nLen, NULL, NULL);
 	return pUTF8;
 }
+
+int getRandom(unsigned int r)
+{
+	srand(time(NULL));
+	return rand() % r;
+}

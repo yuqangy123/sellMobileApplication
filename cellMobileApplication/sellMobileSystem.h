@@ -1,12 +1,15 @@
 #pragma once
 #include <string>
 #include <map>
+#include "tinyxml2.h"
 
 enum sellState 
 {
 	none = 0,
 	paying,
 	orderquerying,
+	refunding,
+	refundquerying,
 	fail,
 };
 
@@ -19,14 +22,20 @@ public:
 	static sellMobileSystem* instance();
 	bool requestMicropay();
 	bool requestOrderQuery();
+	bool requestRefundOrder();
+	bool requestRefundQuery();
+
 	void setMchInfo(const char* id, const char* key);
 	sellState getState() { return m_state; }
+	void setMainDialogHwnd(HWND hnd);
 
 protected:
 	void init();
 	void setState(sellState st) { m_state = st; };
 	std::string makeSign(const std::map<std::string, std::string>& paramsMap);
 	std::string mapToXml(const std::map<std::string, std::string>& paramsMap);
+	std::string getXmlNode(tinyxml2::XMLDocument *pDoc, const char* nodename);
+	void sendTipsMessage(const char* msg, unsigned int len);
 
 protected:
 	std::string m_mch_id;
@@ -37,5 +46,7 @@ protected:
 	std::map<std::string, std::string> m_api;
 
 	sellState m_state;
+
+	HWND m_mainHwnd;
 };
 

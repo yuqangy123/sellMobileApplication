@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html class='mb-event' data-server-country='CN' lang='zh-Hans-CN'>
+<head>
+<meta content='text/html;charset=utf-8' http-equiv='Content-Type'>
+<meta content='width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover' name='viewport'>
+<meta content='yes' name='apple-mobile-web-app-capable'>
+<meta content='yes' name='mobile-web-app-capable'>
+<meta content='black-translucent' name='apple-mobile-web-app-status-bar-style'>
+<meta content='webkit' name='renderer'>
+<meta content='#F55D54' name='theme-color'>
+<title>
+收银助手
+</title>
+<link href='images/icon_android.png' rel='icon' sizes='192x192'>
+<link href='images/icon_retina.png' rel='apple-touch-icon' sizes='120x120'>
+<link href='images/icon_retina3x.png' rel='apple-touch-icon' sizes='180x180'>
+<link href='images/icon_ipad.png' rel='apple-touch-icon' sizes='144x144'>
+<link href='images/icon_ipad.png' rel='apple-touch-icon' sizes='152x152'>
+<link href='images/splashes/retina.png' media='(device-width: 320px) and (device-height: 568px)' rel='apple-touch-startup-image'>
+<link href='images/splashes/iphone6_portrait_retina.png' media='(device-width: 375px) and (device-height: 667px)' rel='apple-touch-startup-image'>
+<link href='images/splashes/iphone6plus_portrait_retina.png' media='(device-width: 414px) and (device-height: 736px)' rel='apple-touch-startup-image'>
+<link href='images/splashes/iphonex_portrait_retina.png' media='(device-width: 375px) and (device-height: 812px)' rel='apple-touch-startup-image'>
+<link href='images/splashes/ipad_portrait_retina.png' media='(device-width: 768px) and (device-height: 1024px)  and (orientation:portrait)' rel='apple-touch-startup-image'>
+<link href='images/splashes/ipad_landscape_retina.png' media='(device-width: 768px) and (device-height: 1024px)  and (orientation:landscape)' rel='apple-touch-startup-image'>
+<style>
+  /* line 1, (__TEMPLATE__) */
+  html, body {
+    font-family: -apple-system, "SF UI Text", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Zen Hei", sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 18px;
+    overflow: hidden;
+    height: 100%; }
+  
+  /* line 10, (__TEMPLATE__) */
+  html.is-full-screen {
+    height: 100vh; }
+  
+  /* line 13, (__TEMPLATE__) */
+  body {
+    background: #F5F5F5;
+    color: #525E71; }
+    /* line 16, (__TEMPLATE__) */
+    body.mobile {
+      background-color: white; }
+  
+  /* line 19, (__TEMPLATE__) */
+  #download, #header {
+    display: none; }
+  
+  /* line 21, (__TEMPLATE__) */
+  #notification {
+    position: fixed;
+    top: -70px;
+    left: 0; }
+  
+  /* line 26, (__TEMPLATE__) */
+  .notice {
+    padding: 10px;
+    font-size: 14px; }
+    /* line 29, (__TEMPLATE__) */
+    .notice p {
+      margin-bottom: 10px; }
+  
+  /* line 31, (__TEMPLATE__) */
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: rgba(51, 54, 58, 0.6) transparent;
+    border-radius: 100%;
+    transform-origin: 50% 50% 0px;
+    -webkit-animation: mb-spin 0.8s infinite linear;
+    animation: mb-spin 0.8s infinite linear;
+    display: inline-block; }
+  
+  @-webkit-keyframes mb-spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg); }
+    100% {
+      -webkit-transform: rotate(359deg);
+      transform: rotate(359deg); } }
+  @keyframes mb-spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg); }
+    100% {
+      -webkit-transform: rotate(359deg);
+      transform: rotate(359deg); } }
+  /* line 58, (__TEMPLATE__) */
+  #safemode, #logo, #device {
+    display: none; }
+  
+  /* line 60, (__TEMPLATE__) */
+  #font-preload {
+    position: absolute;
+    top: -65535px;
+    left: -65535px;
+    font-size: 12px;
+    pointer-events: none; }
+    /* line 66, (__TEMPLATE__) */
+    #font-preload .aw {
+      position: absolute;
+      width: auto;
+      white-space: nowrap; }
+    /* line 70, (__TEMPLATE__) */
+    #font-preload .ah {
+      position: absolute;
+      height: auto;
+      word-break: break-word;
+      word-wrap: break-word; }
+      /* line 75, (__TEMPLATE__) */
+      #font-preload .ah p {
+        margin-bottom: 5px;
+        white-space: pre-wrap; }
+        /* line 78, (__TEMPLATE__) */
+        #font-preload .ah p:last-child {
+          margin-bottom: 0px; }
+    /* line 80, (__TEMPLATE__) */
+    #font-preload .auto-size {
+      white-space: pre;
+      width: -webkit-fit-content;
+      width: -moz-fit-content;
+      width: fit-content; }
+  
+  /* line 86, (__TEMPLATE__) */
+  #loading {
+    width: 86px;
+    height: 86px;
+    z-index: 2;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    margin-left: -43px;
+    text-align: center;
+    font-size: 12px; }
+    /* line 96, (__TEMPLATE__) */
+    #loading .logo, #loading .indicator {
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      width: 86px;
+      height: 86px;
+      overflow: hidden;
+      background: url("images/logo-lg.svg");
+      background-size: 86px 86px; }
+    /* line 105, (__TEMPLATE__) */
+    #loading .logo {
+      opacity: 0.3; }
+    /* line 107, (__TEMPLATE__) */
+    #loading .indicator {
+      opacity: 1;
+      -webkit-transition: all 0.5s ease-in-out;
+      -moz-transition: all 0.5s ease-in-out;
+      transition: all 0.5s ease-in-out;
+      height: 0%; }
+    /* line 113, (__TEMPLATE__) */
+    #loading span {
+      position: absolute;
+      width: 300px;
+      left: 50%;
+      top: 110px;
+      margin-left: -150px;
+      font-size: 14px;
+      line-height: 28px;
+      color: #F77D77; }
+</style>
+<style>
+  /* line 1, (__TEMPLATE__) */
+  ::-webkit-scrollbar-track {
+    background-color: transparent; }
+  
+  /* line 4, (__TEMPLATE__) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px; }
+  
+  /* line 8, (__TEMPLATE__) */
+  ::-webkit-scrollbar-thumb {
+    background-color: #DEDEE4;
+    border-radius: 4px; }
+  
+  /* line 12, (__TEMPLATE__) */
+  ::-webkit-scrollbar-corner {
+    background-color: transparent; }
+</style>
+
+<style>
+  /* line 1, (__TEMPLATE__) */
+  #splash {
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f0f0f2; }
+    /* line 10, (__TEMPLATE__) */
+    #splash.is-landscape img {
+      top: 50%;
+      left: 50%;
+      width: 100vh;
+      height: 100vw;
+      transform: translate(-50%, -50%) rotate(-90deg); }
+    /* line 17, (__TEMPLATE__) */
+    #splash img {
+      position: absolute;
+      top: 0px;
+      left: 0;
+      width: 100%;
+      height: 100%; }
+    /* line 24, (__TEMPLATE__) */
+    #splash .spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -15px;
+      margin-left: -15px; }
+</style>
+
+
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="6zYy0GThi5Re+kMdAOOChLcQYDb4ufuQzWr8WpmIIjQGT4FNf/4nDY+IfsvfaD4KBtOxywhuMk4RoC9wqd6IDw==" />
+</head>
+<body>
+<div id='font-preload'>
+<span class='dora'>check</span>
+<span class='md'>check</span>
+<span class='mb icon-save'></span>
+<span class='fa fa-user'></span>
+<span class='lh'></span>
+<div class='aw'></div>
+<div class='ah'></div>
+<div class='auto-size'></div>
+</div>
+
+<div id='loading'>
+<div class='logo'></div>
+<div class='indicator'></div>
+<span>
+正在读取 收银助手...
+</span>
+</div>
+<div data-user='null' id='workspace'></div>
+<div class='safe-mask' id='safemode'>
+<div class='indicator restore'>
+<div class='spinner'></div>
+<div class='text'>
+此操作可能需要几分钟，请您耐心等待…
+<span class='progress'>0%</span>
+</div>
+</div>
+</div>
+
+
+<link rel="stylesheet" media="screen" href="webpack/font-icons-8be930333cb54a56fac9.css" />
+<link href='css/hosted-fonts.css' media='screen' rel='stylesheet'>
+
+<link rel="stylesheet" media="screen" href="assets/sharing-61fd12528d0aa55d6d258a17fa7d4f9ed78279edaa308b35ac28d3067cf4c008.css" />
+<link rel="stylesheet" media="screen" href="webpack/lib-preview-44d90251f7e9160abab9.css" />
+<link rel="stylesheet" media="screen" href="webpack/preview-4f4347b2d14854495ed4.css" />
+<script>
+  var RELEASE_HASH = '014326a3af525947ed70cf418aba6b8433f3b62d'
+  var MBServer = 'modao.cc'
+  document.getElementsByClassName('indicator')[0].style.height = '30%'
+</script>
+<script src="webpack/webpack-runtime-37e60f8b6004c5d2804d.js"></script>
+<script src="webpack/i18n-zh-CN-256ca2ed955116c8f056.js"></script>
+<script src="webpack/vendor-ab0c790231bf727073f6.js"></script>
+<script src="assets/sharing-9a08a1e5822580f07f16c3262d3f77be36845e017dd4b1eb71a08d77e748dae0.js"></script>
+<script src="webpack/lib-preview-02bc5ad213d9e9b80343.js"></script>
+<script src="webpack/preview-e1fb76b129d4035e5674.js"></script>
+<script>
+  $(function () {
+    if (MB.isMobile()) {
+      $('body').addClass('mobile')
+      MB.ga('send', 'event', 'goal', '在移动端打开了应用')
+    }
+  
+    MB.isInApp = false
+  
+    MB.load({
+      token: 'nOQXbXd91D3YSHfWiL0Zd6L6sgV2Pkz',
+      encryptedPassword: '',
+      isPasswordRequired: false,
+      installerProject: {"name":"收银助手","accessToken":"nOQXbXd91D3YSHfWiL0Zd6L6sgV2Pkz","iconUrl":"images/icon_retina3x.png","userPlan":"startup","updatedAt":"2018-09-14T17:32:00+08:00","exportable":true,"passwordRequired":false,"password":null,"ios_client_url":"https://itunes.apple.com/cn/app/mockingbot/id1050565468?ls=1\u0026mt=8","android_client_url":"http://a.app.qq.com/o/simple.jsp?pkgname=com.mockingbot"}
+    })
+  })
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-29613374-1', 'auto');
+  ga('set', 'userId', '');
+  ga('require', 'ec');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>
+
+<script src="data/project.json"></script>
+<script src="data/artboards.json"></script>
