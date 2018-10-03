@@ -6,12 +6,13 @@
 
 #include "Node.h"
 #include "resource.h"
+#include "afxcmn.h"
+#include "MenuDownloadOrderDialog.h"
+#include "MenuRefundOrderDialog.h"
+#include "MenuSettingDialog.h"
 
-#define UM_TIPS_MESSAGE			(WM_USER + 100)
-#define UM_ORDER_QUERY			(WM_USER + 101)
-#define UM_PAY_SUCCESS_NOTIFY	(WM_USER + 102)
 
-#define TIMER_ID_ORDER_QUERY	1
+
 
 // CcellMobileApplicationDlg 对话框
 class CcellMobileApplicationDlg : public CDialogEx , public CNode
@@ -39,13 +40,22 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg LRESULT OnTipsMessage(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnOrderQuery(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnPaySuccess(WPARAM wParam, LPARAM lParam);
+	
+	afx_msg LRESULT OnDownloadWaiting(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 public:
 	afx_msg void OnBnClickedOk();
 
 protected:
-	UINT_PTR m_timer_orderQuery;
+	int m_CurSelTab;
+
+public:
+	CTabCtrl m_tabMenu;
+	CMenuDownloadOrderDialog m_menuDownloadOrderDlg;
+	CMenuRefundOrderDialog m_menuRefundOrderDlg;
+	CMenuSettingDialog m_menuSettingDlg;
+
+	afx_msg void OnTcnSelchangeTabMenu(NMHDR *pNMHDR, LRESULT *pResult);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

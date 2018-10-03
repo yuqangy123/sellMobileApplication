@@ -84,12 +84,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)curl\include\win32\;$(ProjectDir)pthread\include\win32\;$(ProjectDir)openssl\include\win32\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -120,8 +123,11 @@
     <ClInclude Include="curl\include\win32\multi.h" />
     <ClInclude Include="curl\include\win32\stdcheaders.h" />
     <ClInclude Include="curl\include\win32\typecheck-gcc.h" />
+    <ClInclude Include="DownloadOrderResultDialog.h" />
     <ClInclude Include="FileUnit.h" />
     <ClInclude Include="md5.h" />
+    <ClInclude Include="MenuDownloadOrderDialog.h" />
+    <ClInclude Include="MenuSettingDialog.h" />
     <ClInclude Include="MessageQueue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="openssl\include\win32\openssl\aes.h" />
@@ -202,7 +208,11 @@
     <ClInclude Include="pthread\include\win32\pthread.h" />
     <ClInclude Include="pthread\include\win32\sched.h" />
     <ClInclude Include="pthread\include\win32\semaphore.h" />
+    <ClInclude Include="QRCodePayDialog.h" />
+    <ClInclude Include="MenuRefundOrderDialog.h" />
+    <ClInclude Include="RefundResultDialog.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResultPayDialog.h" />
     <ClInclude Include="sellMobileSystem.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
@@ -216,10 +226,17 @@
     <ClCompile Include="cellMobileApplicationDlg.cpp" />
     <ClCompile Include="commonMicro.cpp" />
     <ClCompile Include="curlManager.cpp" />
+    <ClCompile Include="DownloadOrderResultDialog.cpp" />
     <ClCompile Include="FileUnit.cpp" />
     <ClCompile Include="md5.cpp" />
+    <ClCompile Include="MenuDownloadOrderDialog.cpp" />
+    <ClCompile Include="MenuSettingDialog.cpp" />
     <ClCompile Include="MessageQueue.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="QRCodePayDialog.cpp" />
+    <ClCompile Include="MenuRefundOrderDialog.cpp" />
+    <ClCompile Include="RefundResultDialog.cpp" />
+    <ClCompile Include="ResultPayDialog.cpp" />
     <ClCompile Include="sellMobileSystem.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -236,7 +253,12 @@
     <None Include="res\cellMobileApplication.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="f110.png" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
     <Image Include="res\cellMobileApplication.ico" />
+    <Image Include="res\f110.png" />
+    <Image Include="res\icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

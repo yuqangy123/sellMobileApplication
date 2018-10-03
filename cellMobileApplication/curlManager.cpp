@@ -2,7 +2,7 @@
 #include "curlManager.h"
 #include <pthread.h>
 #include "commonMicro.h"
-
+#include <functional>
 
 #include <openssl/crypto.h>
 #include <time.h>
@@ -134,6 +134,7 @@ int my_progress_func(char *progress_data,
 	return 0;
 }
 
+
 int curlManager::curl_http_post()
 {
 	int ret = -1;
@@ -240,19 +241,13 @@ int curlManager::curl_http_post()
 		}
 		if (args->data)		// 若要对返回的内容进行处理, 可在此处理
 		{
-			//printf("data_len:%d\n%s\n", args->data_len, args->data);
-			if (nullptr != m_requestCallback)
-			{
-				std::string responseData;
-
-				std::string ansi = KS_UTF8_to_ANSI(args->data);
-				const char* xmlend = "</xml>";
-				std::size_t found = ansi.find(xmlend);
-				if (found != std::string::npos)
-					ansi = ansi.substr(0, found+strlen(xmlend));
-				responseData.assign(args->data, args->data_len);
-				(*m_requestCallback)(ansi);
-			}
+			std::string ansi = KS_UTF8_to_ANSI(args->data);
+			const char* xmlend = "</xml>";
+			std::size_t found = ansi.find(xmlend);
+			if (found != std::string::npos)
+				ansi = ansi.substr(0, found+strlen(xmlend));
+			stackHttpCallback(ansi);
+			
 			free(args->data);
 			args->data = NULL;
 		}
@@ -300,12 +295,12 @@ int curlManager::curl_http_download_file()
 		
 		fopen_s(&args->file_fd, args->file_name, "wb");
 		false_break(args->file_fd);
-
+		/*
 		// 方法1, 普通的POST , application/x-www-form-urlencoded
 		curl_easy_setopt(curl, CURLOPT_POST, 1);		// 设置 为POST 方法
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST 的数据内容
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POST的数据长度, 可以不要此选项
-
+		*/
 		curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//设置httpheader 解析, 不需要将HTTP头写传入回调函数
 
 		curl_easy_setopt(curl, CURLOPT_URL, args->url);	//设置远端地址 
@@ -344,19 +339,13 @@ int curlManager::curl_http_download_file()
 		}
 		if (args->data)		// 若要对返回的内容进行处理, 可在此处理
 		{
-			//printf("data_len:%d\n%s\n", args->data_len, args->data);
-			if (nullptr != m_requestCallback)
-			{
-				std::string responseData;
+			std::string ansi = KS_UTF8_to_ANSI(args->data);
+			const char* xmlend = "</xml>";
+			std::size_t found = ansi.find(xmlend);
+			if (found != std::string::npos)
+				ansi = ansi.substr(0, found + strlen(xmlend));
+			stackHttpCallback(ansi);
 
-				std::string ansi = KS_UTF8_to_ANSI(args->data);
-				const char* xmlend = "</xml>";
-				std::size_t found = ansi.find(xmlend);
-				if (found != std::string::npos)
-					ansi = ansi.substr(0, found + strlen(xmlend));
-				responseData.assign(args->data, args->data_len);
-				(*m_requestCallback)(ansi);
-			}
 			free(args->data);
 			args->data = NULL;
 		}
@@ -428,7 +417,7 @@ bool curlManager::request(const char* url, const char* requestData, curl_method 
 	strncpy_s(m_curl_args->url, url, sizeof(m_curl_args->url));
 	strncpy_s(m_curl_args->post_data, requestData, sizeof(m_curl_args->post_data));
 	m_curl_args->curl_method = requestType;
-	m_requestCallback = callback;
+	m_curl_args->requestCallback = callback;
 
 	
 	pthread_mutex_lock(&g_mutex);
@@ -458,7 +447,7 @@ bool curlManager::download(const char* url, const char* requestData, const char*
 	strncpy_s(m_curl_args->url, url, sizeof(m_curl_args->url));
 	strncpy_s(m_curl_args->post_data, requestData, sizeof(m_curl_args->post_data));
 	strncpy_s(m_curl_args->file_name, savefile, sizeof(m_curl_args->file_name));
-	m_requestCallback = callback;
+	m_curl_args->requestCallback = callback;
 
 
 	pthread_mutex_lock(&g_mutex);
@@ -472,4 +461,40 @@ bool curlManager::download(const char* url, const char* requestData, const char*
 	//kill_locks();
 
 	return true;
+}
+
+struct stackHttpCallback_args
+{
+	stackHttpCallback_args() :callback(nullptr){};
+	std::function<void(const std::string& data)>* callback;
+	std::string msg;
+};
+void *stack_http_callback_thread(void *param)
+{
+	stackHttpCallback_args* args = (stackHttpCallback_args*)param;
+	if (args->callback)
+	{
+		(*args->callback)(args->msg);
+	}
+	safe_delete(args);
+	return 0;
+}
+void curlManager::stackHttpCallback(std::string& msg)
+{
+	pthread_t tid;
+	stackHttpCallback_args* args = new stackHttpCallback_args();
+	args->callback = m_curl_args->requestCallback;
+	args->msg = msg;
+
+	int error = pthread_create(&tid,
+		NULL, /* default attributes please */
+		stack_http_callback_thread,
+		(void *)args);
+
+	if (0 != error)
+	{
+		fprintf(stderr, "Couldn't run stackHttpCallback thread errno %d\n", error);
+	}
+
+	pthread_detach(tid);
 }

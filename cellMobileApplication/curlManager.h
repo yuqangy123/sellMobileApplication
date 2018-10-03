@@ -6,8 +6,8 @@
 
 
 #define CURL_BUF_MAX_LEN  4096
-#define CURL_NAME_MAX_LEN 128
-#define CURL_URL_MAX_LEN  128 
+#define CURL_NAME_MAX_LEN 256
+#define CURL_URL_MAX_LEN  256 
 
 enum curl_method
 {
@@ -27,6 +27,7 @@ struct curl_http_args_st
 		data = nullptr;
 		memset(post_data, 0x0, CURL_BUF_MAX_LEN);
 		memset(post_file, 0x0, CURL_NAME_MAX_LEN);
+		requestCallback = nullptr;
 	}
 
 	int  curl_method;	// curl 方法命令,enum curl_method
@@ -40,6 +41,8 @@ struct curl_http_args_st
 
 	char post_data[CURL_BUF_MAX_LEN];	// POST 表单数据
 	char post_file[CURL_NAME_MAX_LEN];	// POST 文件名
+
+	std::function<void(const std::string& data)>* requestCallback;
 };
 
 #define curlManagerInstance curlManager::instance()
@@ -60,9 +63,9 @@ public:
 protected:
 	void init();
 	void setRunning(bool b){ m_running = b; }
+	void stackHttpCallback(std::string& msg);
 
 protected:
-	std::function<void(const std::string& data)>* m_requestCallback = nullptr;
 	curl_http_args_st*		m_curl_args = nullptr;
 	bool					m_running = false;
 	

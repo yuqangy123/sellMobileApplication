@@ -6,7 +6,7 @@
 #include <functional>
 #include "md5.h"
 #include "commonMicro.h"
-#include "cellMobileApplicationDlg.h"
+
 
 using namespace std;
 
@@ -53,7 +53,7 @@ void sellMobileSystem::init()
 	m_api["refundquery"] = parone;
 	
 	sprintf_s(parone, "%sdownload", sysDomain.c_str());
-	m_api["downloadOrder"] = parone;
+	m_api["queryDownloadOrder"] = parone;
 }
 
 void sellMobileSystem::setMchInfo(const char* id, const char* key)
@@ -67,7 +67,7 @@ void sellMobileSystem::setMainDialogHwnd(HWND hnd)
 	m_mainHwnd = hnd;
 }
 
-//提交刷卡支付
+//订单查询
 bool sellMobileSystem::requestOrderQuery()
 {
 	if (sellState::paying != getState())
@@ -120,27 +120,25 @@ bool sellMobileSystem::requestOrderQuery()
 	setState(sellState::orderquerying);
 }
 
-//查询订单
-bool sellMobileSystem::requestMicropay()
+//提交刷卡支付
+bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* order_no, const char* auth_code)
 {
-	char randChar[32] = {0};
-	long rd = getRandom(99999999);
-	sprintf_s(randChar, "121775250120070233368%d", getRandom(99999999));
-	m_order_no = randChar;
-	
+	m_order_no = order_no;
 	m_nonce_str = "5K8264ILTKCH16CQ";
+	m_microPayHwnd = objHwnd;
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["trade_type"] = "WXPAY.MICROPAY";
 	params["out_trade_no"] = m_order_no;
 	params["total_fee"] = "1";
-	params["auth_code"] = "135009603620112104";
+	params["auth_code"] = auth_code;
 	params["body"] = "chunjifuzhuang";
 	params["spbill_create_ip"] = "123.12.12.123";
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
 	
+
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>(); 
 	*responseCallback = [this](const std::string& data)
 	{
@@ -158,13 +156,13 @@ bool sellMobileSystem::requestMicropay()
 			int nret = atoi(retcode.c_str());
 			if (0 <= nret || -2010 == nret)
 			{
-				::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
+				::PostMessage(m_microPayHwnd, UM_ORDER_QUERY, 0, 0);
 			}
 			else
 			{
-				setState(sellState::none);
 				sendTipsMessage(retmsg.c_str(), retmsg.length());
 			}
+			setState(sellState::none);
 		}
 	};
 	curlManager::instance()->request(m_api["micropay"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
@@ -314,9 +312,28 @@ bool sellMobileSystem::requestDownloadOrder()
 		if (!retcode.empty())
 		{
 			int nret = atoi(retcode.c_str());
-			if (0 <= nret)
+			if (0 == nret)//开始下载，之后30秒查询一次
 			{
-				//::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
+				::PostMessage(m_mainHwnd, UM_PAY_DOWNLOAD_WAITING_NOTIFY, 0, 0);
+			}
+			else if(10002 == nret)//文件已生成，进行下载
+			{
+				if (status == "1")
+				{
+					string httppath = getXmlNode(pDoc, "httppath");
+					string sftppath = getXmlNode(pDoc, "sftppath");
+					sftppath.insert(0, "D:/cell/download/file");
+					function<void(const std::string& data)>* doloadCallback = new function<void(const std::string& data)>();
+					*doloadCallback = [this](const std::string& data)
+					{
+						printf("%d,%s", data.length(), data.c_str());
+					};
+					curlManager::instance()->download(httppath.c_str(), "", sftppath.c_str(), doloadCallback);
+				}					
+			}
+			else if (10012 == nret)//表示正在生成中
+			{
+
 			}
 			else
 			{
@@ -325,7 +342,7 @@ bool sellMobileSystem::requestDownloadOrder()
 			}
 		}
 	};
-	curlManager::instance()->download(m_api["downloadOrder"].c_str(), mapToXml(params).c_str(), "D:/cell/download/file/d.rar", responseCallback);
+	curlManager::instance()->request(m_api["queryDownloadOrder"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
 	setState(sellState::downloadOrder);
 	return true;
 }

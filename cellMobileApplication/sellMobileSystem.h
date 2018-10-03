@@ -21,7 +21,7 @@ public:
 	sellMobileSystem();
 	~sellMobileSystem();
 	static sellMobileSystem* instance();
-	bool requestMicropay();
+	bool requestMicropay(HWND objHwnd, const char* order_no, const char* auth_code);
 	bool requestOrderQuery();
 	bool requestRefundOrder();
 	bool requestRefundQuery();
@@ -50,5 +50,6 @@ protected:
 	sellState m_state;
 
 	HWND m_mainHwnd;
+	HWND m_microPayHwnd;
 };
 
