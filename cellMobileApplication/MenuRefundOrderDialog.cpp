@@ -25,7 +25,7 @@ void CMenuRefundOrderDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_ORDER_ID, m_orderNoCtrl);
-	DDX_Control(pDX, IDC_EDIT_PAY_FEE, m_willFeeCtrl);
+	DDX_Control(pDX, IDC_EDIT_PAY_FEE, m_totalFeeCtrl);
 	DDX_Control(pDX, IDC_EDIT_REFUND_FEE, m_feeCtrl);
 }
 
@@ -58,6 +58,15 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CRefundResultDialog dlg;
+	CString orderNo;
+	m_orderNoCtrl.GetWindowText(orderNo);
+
+	CString totalfee;
+	m_totalFeeCtrl.GetWindowText(totalfee);
+
+	CString fee;
+	m_feeCtrl.GetWindowText(fee);
+	dlg.requestRefundOrder(orderNo, orderNo, totalfee, fee);
 	dlg.DoModal();
 
 }
@@ -70,7 +79,7 @@ BOOL CMenuRefundOrderDialog::OnInitDialog()
 	long rd = getRandom(99999999);
 	sprintf_s(randChar, "121775250120070233368%d", rd);
 	m_orderNoCtrl.SetWindowText(CString(randChar));
-	m_willFeeCtrl.SetWindowText(CString("0.01"));
+	m_totalFeeCtrl.SetWindowText(CString("0.01"));
 	m_feeCtrl.SetWindowText(CString("0.01"));
 #endif
 

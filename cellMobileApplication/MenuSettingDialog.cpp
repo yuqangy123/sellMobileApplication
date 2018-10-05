@@ -5,6 +5,7 @@
 #include "MenuSettingDialog.h"
 #include "afxdialogex.h"
 #include "commonMicro.h"
+#include "DataManager.h"
 
 #include <Sensapi.h>
 #include <Wininet.h> 
@@ -22,6 +23,8 @@ CMenuSettingDialog::CMenuSettingDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_MENU_SETTING, pParent)
 {
 	m_bConnect = false;
+	m_bPrinter = false;
+	m_bScanner = false;
 }
 
 CMenuSettingDialog::~CMenuSettingDialog()
@@ -32,6 +35,9 @@ void CMenuSettingDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_NETWORK_STATE, m_networkStateCtrl);
+	DDX_Control(pDX, IDC_STATIC_MCH_ID, m_MachIdCtrl);
+	DDX_Control(pDX, IDC_STATIC_PRINTER_STATE, m_printerStateCtrl);
+	DDX_Control(pDX, IDC_STATIC_SCAN_STATE, m_scannerStateCtrl);
 	
 }
 
@@ -107,6 +113,7 @@ void* CMenuSettingDialog::pthread_checkNet(void* arg)
 	return 0;
 }
 
+//https://blog.csdn.net/yy16808/article/details/49022821
 void CMenuSettingDialog::checkNetwork()
 {
 	pthread_t tid;
@@ -130,6 +137,10 @@ BOOL CMenuSettingDialog::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	checkNetwork();
 	OnNetworkStateNotify(0, 0);
+	
+	m_MachIdCtrl.SetWindowText(CString(DataMgrInstanceEx.MchId.c_str()));
+	m_printerStateCtrl.SetWindowText(m_bPrinter ? L"未连接" : L"未连接");
+	m_scannerStateCtrl.SetWindowText(m_bScanner ? L"未连接" : L"未连接");
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -141,10 +152,14 @@ HBRUSH CMenuSettingDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
 	// TODO:  在此更改 DC 的任何特性
-	if (pWnd->GetDlgCtrlID() == IDC_STATIC_NETWORK_STATE)
+	int id;
+	switch (pWnd->GetDlgCtrlID())
 	{
-		pDC->SetTextColor(m_bConnect ? RGB(34, 177, 76) : RGB(255, 0, 0));
+	case IDC_STATIC_NETWORK_STATE: {pDC->SetTextColor(m_bConnect ? RGB(34, 177, 76) : RGB(255, 0, 0));}break;
+	case IDC_STATIC_PRINTER_STATE: {pDC->SetTextColor(m_bPrinter ? RGB(34, 177, 76) : RGB(255, 0, 0)); }break;
+	case IDC_STATIC_SCAN_STATE: {pDC->SetTextColor(m_bScanner ? RGB(34, 177, 76) : RGB(255, 0, 0)); }break;
 	}
+
 
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;

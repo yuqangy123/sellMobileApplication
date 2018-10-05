@@ -123,6 +123,7 @@
     <ClInclude Include="curl\include\win32\multi.h" />
     <ClInclude Include="curl\include\win32\stdcheaders.h" />
     <ClInclude Include="curl\include\win32\typecheck-gcc.h" />
+    <ClInclude Include="DataManager.h" />
     <ClInclude Include="DownloadOrderResultDialog.h" />
     <ClInclude Include="FileUnit.h" />
     <ClInclude Include="md5.h" />
@@ -226,6 +227,7 @@
     <ClCompile Include="cellMobileApplicationDlg.cpp" />
     <ClCompile Include="commonMicro.cpp" />
     <ClCompile Include="curlManager.cpp" />
+    <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="DownloadOrderResultDialog.cpp" />
     <ClCompile Include="FileUnit.cpp" />
     <ClCompile Include="md5.cpp" />

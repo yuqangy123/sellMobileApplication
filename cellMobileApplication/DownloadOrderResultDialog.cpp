@@ -111,6 +111,7 @@ void CDownloadOrderResultDialog::updateUI_DoDataExchange()
 	{
 	case DOWNLOAD_OK: {
 		KillTimer(m_timer_downloading_updateUI);
+		KillTimer(m_timer_downloadWaiting);
 		m_replayDownloadBtn.ShowWindow(SW_HIDE);
 		CImage image;
 		image.Load(L"res/payok.png");
@@ -130,6 +131,7 @@ void CDownloadOrderResultDialog::updateUI_DoDataExchange()
 	}break;
 	case DOWNLOAD_FAIL: {
 		KillTimer(m_timer_downloading_updateUI);
+		KillTimer(m_timer_downloadWaiting);
 		CImage image;
 		image.Load(L"res/payfail.png");
 		HBITMAP hBmp = image.Detach();

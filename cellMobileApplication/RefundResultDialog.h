@@ -37,12 +37,13 @@ public:
 	afx_msg void OnBnClickedButtonReplayRefund();
 	afx_msg LRESULT OnRefundOrderNotify(WPARAM wParam, LPARAM lParam);
 	void updateUI_OnInitDialog();
-	void requestRefundOrder(const CString& order_no, const CString& refund_no, const CString& fee);
+	void requestRefundOrder(const CString& order_no, const CString& refund_no, const CString& totalfee, const CString& fee);
 
 protected:
 	int m_refundState;
 	CString m_desc;
 	CStringA m_orderNo;
 	CStringA m_refundNo;
+	CStringA m_totalfee;
 	CStringA m_fee;
 };

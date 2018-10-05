@@ -50,6 +50,7 @@ void CResultPayDialog::updateUI_DoDataExchange()
 		image.Load(imgPath);
 		HBITMAP hBmp = image.Detach();
 		m_payOK_ctrl.SetBitmap(hBmp);
+		m_btn.SetFocus();
 	}break;
 	case PAY_FAIL: {
 		imgPath = L"res/payfail.png";
@@ -70,6 +71,7 @@ void CResultPayDialog::updateUI_InitDialog()
 	case PAY_OK: {
 		m_payingCtrl.ShowWindow(SW_HIDE);
 
+		m_payResultCtrl.SetWindowText(L"收款成功");
 		m_payResultCtrl.ShowWindow(SW_SHOW);
 		m_payFeeCtrl.ShowWindow(SW_SHOW);
 		m_btn.ShowWindow(SW_SHOW);
@@ -172,15 +174,16 @@ void CResultPayDialog::OnBnClickedButtonClose()
 	switch (m_payResult)
 	{
 	case PAY_OK: {
+		::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
 	}break;
 	case PAY_FAIL: {
-		 
+		m_payResult = PAY_PAYING;
+		updateUI_InitDialog();
+		sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), m_payTotalFee.GetString(), m_strAOrderNoCode.GetString(), m_strAAuthCode.GetString());
 	}break;
 	default:
 		break;
 	}
-	//::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
-	
 }
 
 

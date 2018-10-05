@@ -31,7 +31,13 @@ public:
 
 protected:
 	bool m_bConnect;
+	bool m_bPrinter;
+	bool m_bScanner;
 	CStatic m_networkStateCtrl;
+	CStatic m_MachIdCtrl;
+	CStatic m_printerStateCtrl;
+	CStatic m_scannerStateCtrl;
+
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	

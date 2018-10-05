@@ -64,7 +64,7 @@ BOOL CRefundResultDialog::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 	updateUI_OnInitDialog();
-	sellMobileSystemInstance->requestRefundOrder(GetSafeHwnd(), m_orderNo.GetString(), m_refundNo.GetString(), m_fee.GetString());
+	sellMobileSystemInstance->requestRefundOrder(GetSafeHwnd(), m_orderNo.GetString(), m_refundNo.GetString(), m_totalfee.GetString(), m_fee.GetString());
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -119,7 +119,7 @@ void CRefundResultDialog::OnBnClickedButtonReplayRefund()
 {
 	m_refundState = REFUND_REFUNDING;
 	updateUI_OnInitDialog();
-	sellMobileSystemInstance->requestRefundOrder(GetSafeHwnd(), m_orderNo.GetString(), m_refundNo.GetString(), m_fee.GetString());
+	sellMobileSystemInstance->requestRefundOrder(GetSafeHwnd(), m_orderNo.GetString(), m_refundNo.GetString(), m_totalfee.GetString(), m_fee.GetString());
 	// TODO: 在此添加控件通知处理程序代码
 }
 LRESULT CRefundResultDialog::OnRefundOrderNotify(WPARAM wParam, LPARAM lParam)
@@ -146,9 +146,10 @@ LRESULT CRefundResultDialog::OnRefundOrderNotify(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-void CRefundResultDialog::requestRefundOrder(const CString& order_no, const CString& refund_no, const CString& fee)
+void CRefundResultDialog::requestRefundOrder(const CString& order_no, const CString& refund_no, const CString& totalfee, const CString& fee)
 {
 	m_orderNo = order_no;
 	m_refundNo = refund_no;
+	m_totalfee = totalfee;
 	m_fee = fee;
 }

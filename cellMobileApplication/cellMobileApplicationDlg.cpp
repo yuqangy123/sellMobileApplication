@@ -5,15 +5,14 @@
 #include "stdafx.h"
 #include "cellMobileApplication.h"
 #include "cellMobileApplicationDlg.h"
-#include "QRCodePayDialog.h"
 #include "afxdialogex.h"
 
 #include "commonMicro.h"
 #include "sellMobileSystem.h"
 #include "curlManager.h"
 #include "TopDialog.h"
-#include "ResultPayDialog.h"
 #include "QRCodePayDialog.h"
+#include "DataManager.h"
 
 #include "HookDll\HookDll.h"
 
@@ -55,7 +54,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 
 	
 
-	sellMobileSystemInstance->setMchInfo("1000000013", "qu9k3vxsy2uc69u86iybirpu14coj34z");
+	sellMobileSystemInstance->setMchInfo(DataMgrInstanceEx.MchId.c_str(), DataMgrInstanceEx.MchKey.c_str());
 	sellMobileSystemInstance->setMainDialogHwnd(GetSafeHwnd());
 	curlManagerInstance;
 
@@ -86,7 +85,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 
 	m_tabMenu.SetCurSel(m_CurSelTab);
 	
-	/*
+	
 	//hook keyboard
 	typedef void(*HOOKPROC)(HWND hwnd);
 	HOOKPROC lpfnDllFuncHook;    // Function pointer
@@ -97,7 +96,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 			lpfnDllFuncHook(m_hWnd);
 		}
 	}
-	*/
+	
 	return TRUE;
 }
 
@@ -230,7 +229,12 @@ LRESULT CcellMobileApplicationDlg::DefWindowProc(UINT message, WPARAM wParam, LP
 
 LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM lParam)
 {
+	/*
 	b_show = !b_show;
 	this->ShowWindow(b_show ? SW_SHOW : SW_HIDE);
+	*/
+
+	CQRCodePayDialog dlg;
+	dlg.DoModal();
 	return 0;
 }

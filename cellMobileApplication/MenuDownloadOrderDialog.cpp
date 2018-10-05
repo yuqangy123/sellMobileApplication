@@ -105,7 +105,5 @@ void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 	dlg.requestDownloader(startDate, endDate, payType);
 	dlg.DoModal();
 
-	//CString strTime = time.Format("%Y-%m-%d")
-	//CQRCodePayDialog dlg;
-	//dlg.DoModal();
+	
 }

@@ -185,12 +185,13 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 }
 
 //申请退款
-bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, const char* refund_no, const char* cfee)
+bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, const char* refund_no, const char* ctotalfee, const char* cfee)
 {
 	m_refundorderHwnd = objHwnd;
 
 	m_nonce_str = "5K8264ILTKCH16CQ";
 	string strfee = atoFee(cfee);
+	string strtotalfee = atoFee(ctotalfee);
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
@@ -198,7 +199,7 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 	params["out_trade_no"] = order_no;
 	params["out_refund_no"] = refund_no;//由三部分组成
 	params["refund_fee"] = strfee;
-	params["total_fee"] = strfee;
+	params["total_fee"] = strtotalfee;
 	params["sign"] = makeSign(params);
 
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
@@ -266,12 +267,17 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 			int nret = atoi(retcode.c_str());
 			if (0 == nret)
 			{
-				//::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
+				setState(sellState::none);
+				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 1, 0);
 			}
 			else
 			{
 				setState(sellState::none);
-				sendTipsMessage(retmsg.c_str(), retmsg.length());
+				char* msgbuff = new char[256];
+				memset(msgbuff, 0x0, 256);
+				memcpy_s(msgbuff, 256, retmsg.c_str(), retmsg.length());
+				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, -1, (LPARAM)msgbuff);
+
 			}
 		}
 	};
