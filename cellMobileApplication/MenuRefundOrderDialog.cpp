@@ -5,6 +5,7 @@
 #include "MenuRefundOrderDialog.h"
 #include "afxdialogex.h"
 #include "RefundResultDialog.h"
+#include "commonMicro.h"
 
 // CMenuRefundOrderDialog ¶Ô»°¿ò
 
@@ -23,6 +24,9 @@ CMenuRefundOrderDialog::~CMenuRefundOrderDialog()
 void CMenuRefundOrderDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT_ORDER_ID, m_orderNoCtrl);
+	DDX_Control(pDX, IDC_EDIT_PAY_FEE, m_willFeeCtrl);
+	DDX_Control(pDX, IDC_EDIT_REFUND_FEE, m_feeCtrl);
 }
 
 
@@ -56,4 +60,19 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	CRefundResultDialog dlg;
 	dlg.DoModal();
 
+}
+
+BOOL CMenuRefundOrderDialog::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+#ifdef DEBUG_MODE	
+	char randChar[32] = { 0 };
+	long rd = getRandom(99999999);
+	sprintf_s(randChar, "121775250120070233368%d", rd);
+	m_orderNoCtrl.SetWindowText(CString(randChar));
+	m_willFeeCtrl.SetWindowText(CString("0.01"));
+	m_feeCtrl.SetWindowText(CString("0.01"));
+#endif
+
+	return true;
 }

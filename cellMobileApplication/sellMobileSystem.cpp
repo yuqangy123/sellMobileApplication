@@ -24,6 +24,14 @@ sellMobileSystem::~sellMobileSystem()
 {
 }
 
+std::string atoFee(const char* fee)
+{
+	double nfee = atof(fee);
+	nfee *= 100;
+	char cfee[16] = { 0 };
+	sprintf_s(cfee, "%d", (int)nfee);
+	return string(cfee);
+}
 
 sellMobileSystem* sellMobileSystem::instance()
 {
@@ -68,14 +76,9 @@ void sellMobileSystem::setMainDialogHwnd(HWND hnd)
 }
 
 //订单查询
-bool sellMobileSystem::requestOrderQuery()
+bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 {
-	if (sellState::paying != getState())
-	{
-		setState(sellState::none);
-		return false;
-	}
-
+	m_orderQueryHwnd = objHwnd;
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["out_trade_no"] = m_order_no;
@@ -103,25 +106,30 @@ bool sellMobileSystem::requestOrderQuery()
 				//requestOrderQuery();
 				if (!trade_state.compare("SUCCESS"))
 				{
-					setState(sellState::none);
-					::PostMessage(m_mainHwnd, UM_PAY_SUCCESS_NOTIFY, 0, 0);
+					::PostMessage(m_orderQueryHwnd, UM_PAY_SUCCESS_NOTIFY, 0, 0);
 				}
 			}
 			else
 			{
 				setState(sellState::none);
-				sendTipsMessage(retmsg.c_str(), retmsg.length());
+
+				char* msgbuff = new char[256];
+				memset(msgbuff, 0x0, 256);
+				memcpy_s(msgbuff, 256, retmsg.c_str(), retmsg.length());
+				::PostMessage(m_microPayHwnd, UM_PAY_SUCCESS_NOTIFY, -1, (LPARAM)msgbuff);
+				//sendTipsMessage(retmsg.c_str(), retmsg.length());
 			}
-			//::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
+			
 		}
 		
 	};
 	curlManager::instance()->request(m_api["orderquery"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
 	setState(sellState::orderquerying);
+	return true;
 }
 
 //提交刷卡支付
-bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* order_no, const char* auth_code)
+bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char* order_no, const char* auth_code)
 {
 	m_order_no = order_no;
 	m_nonce_str = "5K8264ILTKCH16CQ";
@@ -131,7 +139,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* order_no, const
 	params["mch_id"] = m_mch_id;
 	params["trade_type"] = "WXPAY.MICROPAY";
 	params["out_trade_no"] = m_order_no;
-	params["total_fee"] = "1";
+	params["total_fee"] = atoFee(fee);
 	params["auth_code"] = auth_code;
 	params["body"] = "chunjifuzhuang";
 	params["spbill_create_ip"] = "123.12.12.123";
@@ -156,13 +164,19 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* order_no, const
 			int nret = atoi(retcode.c_str());
 			if (0 <= nret || -2010 == nret)
 			{
-				::PostMessage(m_microPayHwnd, UM_ORDER_QUERY, 0, 0);
+				::PostMessage(m_microPayHwnd, UM_ORDER_REQUEST_OK_NOTIFY, 0, 0);
 			}
 			else
 			{
-				sendTipsMessage(retmsg.c_str(), retmsg.length());
+				setState(sellState::none);
+
+				char* msgbuff = new char[256];
+				memset(msgbuff, 0x0, 256);
+				memcpy_s(msgbuff, 256, retmsg.c_str(), retmsg.length());
+				::PostMessage(m_microPayHwnd, UM_ORDER_REQUEST_OK_NOTIFY, -1, (LPARAM)msgbuff);
+				//sendTipsMessage(retmsg.c_str(), retmsg.length());
 			}
-			setState(sellState::none);
+			
 		}
 	};
 	curlManager::instance()->request(m_api["micropay"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
@@ -171,26 +185,20 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* order_no, const
 }
 
 //申请退款
-bool sellMobileSystem::requestRefundOrder()
+bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, const char* refund_no, const char* cfee)
 {
-	char randChar[32] = { 0 };
-	long rd = getRandom(99999999);
-	sprintf_s(randChar, "121775250120070233368%d", rd);
-	m_order_no = randChar;
-
-	char out_refund_no[32] = { 0 };
-	rd = getRandom(99999999);
-	sprintf_s(out_refund_no, "12w2s753s70233368%d", rd);
+	m_refundorderHwnd = objHwnd;
 
 	m_nonce_str = "5K8264ILTKCH16CQ";
+	string strfee = atoFee(cfee);
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["nonce_str"] = m_nonce_str;
-	params["out_trade_no"] = m_order_no;
-	params["out_refund_no"] = out_refund_no;//由三部分组成
-	params["refund_fee"] = "100";
-	params["total_fee"] = "100";
+	params["out_trade_no"] = order_no;
+	params["out_refund_no"] = refund_no;//由三部分组成
+	params["refund_fee"] = strfee;
+	params["total_fee"] = strfee;
 	params["sign"] = makeSign(params);
 
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
@@ -208,14 +216,17 @@ bool sellMobileSystem::requestRefundOrder()
 		if (!retcode.empty())
 		{
 			int nret = atoi(retcode.c_str());
-			if (0 <= nret)
+			if (0 == nret)
 			{
-				//::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
+				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 0, 0);
 			}
 			else
 			{
 				setState(sellState::none);
-				sendTipsMessage(retmsg.c_str(), retmsg.length());
+				char* msgbuff = new char[256];
+				memset(msgbuff, 0x0, 256);
+				memcpy_s(msgbuff, 256, retmsg.c_str(), retmsg.length());
+				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, -1, (LPARAM)msgbuff);
 			}
 		}
 	};
@@ -225,23 +236,16 @@ bool sellMobileSystem::requestRefundOrder()
 }
 
 //查询退款
-bool sellMobileSystem::requestRefundQuery()
+bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, const char* refund_no)
 {
-	char randChar[32] = { 0 };
-	long rd = getRandom(99999999);
-	sprintf_s(randChar, "121775250120070233368%d", rd);
-	m_order_no = randChar;
-
-	char refund_no[32] = { 0 };
-	rd = getRandom(99999999);
-	sprintf_s(refund_no, "12w2s753s70233368%d", rd);
+	m_refundorderHwnd = objHwnd;
 
 	m_nonce_str = "5K8264ILTKCH16CQ";
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["nonce_str"] = m_nonce_str;
-	params["out_trade_no"] = m_order_no;
+	params["out_trade_no"] = order_no;
 	params["refund_no"] = refund_no;//由三部分组成
 	params["sign"] = makeSign(params);
 
@@ -260,7 +264,7 @@ bool sellMobileSystem::requestRefundQuery()
 		if (!retcode.empty())
 		{
 			int nret = atoi(retcode.c_str());
-			if (0 <= nret || -2010 == nret)
+			if (0 == nret)
 			{
 				//::PostMessage(m_mainHwnd, UM_ORDER_QUERY, 0, 0);
 			}
@@ -277,23 +281,18 @@ bool sellMobileSystem::requestRefundQuery()
 }
 
 //下载对账单
-bool sellMobileSystem::requestDownloadOrder()
+bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate, const char* endDate, const char* type)
 {
-	char randChar[32] = { 0 };
-	long rd = getRandom(99999999);
-
-	char refund_no[32] = { 0 };
-	rd = getRandom(99999999);
-	sprintf_s(refund_no, "12w2s753s70233368%d", rd);
+	m_downloadorderHwnd = objHwnd;
 
 	m_nonce_str = "5K8264ILTKCH16CQ";
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["nonce_str"] = m_nonce_str;
-	params["start_date"] = "20180926";
-	params["end_date"] = "20180926";
-	params["billtype"] = "1";	
+	params["start_date"] = startDate;
+	params["end_date"] = endDate;
+	params["billtype"] = type;
 	params["sign"] = makeSign(params);
 
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
@@ -314,7 +313,7 @@ bool sellMobileSystem::requestDownloadOrder()
 			int nret = atoi(retcode.c_str());
 			if (0 == nret)//开始下载，之后30秒查询一次
 			{
-				::PostMessage(m_mainHwnd, UM_PAY_DOWNLOAD_WAITING_NOTIFY, 0, 0);
+				::PostMessage(m_downloadorderHwnd, UM_PAY_DOWNLOAD_REQUEST_NOTIFY, 0, 0);
 			}
 			else if(10002 == nret)//文件已生成，进行下载
 			{
@@ -326,7 +325,12 @@ bool sellMobileSystem::requestDownloadOrder()
 					function<void(const std::string& data)>* doloadCallback = new function<void(const std::string& data)>();
 					*doloadCallback = [this](const std::string& data)
 					{
-						printf("%d,%s", data.length(), data.c_str());
+						setState(sellState::none);
+
+						char* msgbuff = new char[256];
+						memset(msgbuff, 0x0, 256);
+						memcpy_s(msgbuff, 256, data.c_str(), data.length());
+						::PostMessage(m_downloadorderHwnd, UM_PAY_DOWNLOAD_REQUEST_NOTIFY, 1, (LPARAM)msgbuff);
 					};
 					curlManager::instance()->download(httppath.c_str(), "", sftppath.c_str(), doloadCallback);
 				}					
@@ -339,6 +343,7 @@ bool sellMobileSystem::requestDownloadOrder()
 			{
 				setState(sellState::none);
 				sendTipsMessage(retmsg.c_str(), retmsg.length());
+				::PostMessage(m_downloadorderHwnd, UM_PAY_DOWNLOAD_REQUEST_NOTIFY, -1, 0);
 			}
 		}
 	};

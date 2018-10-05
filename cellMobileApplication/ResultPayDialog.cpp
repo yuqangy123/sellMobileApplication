@@ -27,11 +27,23 @@ void CResultPayDialog::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PICURE_PAY_OK, m_payOK_ctrl);
 
+	
+	updateUI_DoDataExchange();
+
+	DDX_Control(pDX, IDC_STATIC_PAY_FEE, m_payFeeCtrl);
+	DDX_Control(pDX, IDC_BUTTON_CLOSE, m_btn);
+	DDX_Control(pDX, IDC_STATIC_PAY_RESULT, m_payResultCtrl);
+	DDX_Control(pDX, IDC_STATIC_PAYING, m_payingCtrl);
+}
+
+void CResultPayDialog::updateUI_DoDataExchange()
+{
 	CString imgPath = L"";
 	switch (m_payResult)
 	{
 	case PAY_OK: {
 		imgPath = L"res/payok.png";
+		KillTimer(m_close_timer_ID);
 		m_close_timer_ID = SetTimer(TIMER_ID_BUTTON_COUNTDOWN, 1000 * 1, NULL);
 		m_countdownTime = 3;
 		CImage image;
@@ -49,22 +61,53 @@ void CResultPayDialog::DoDataExchange(CDataExchange* pDX)
 	default:
 		break;
 	}
-
-	
-
-	DDX_Control(pDX, IDC_STATIC_PAY_FEE, m_payFeeCtrl);
-	DDX_Control(pDX, IDC_BUTTON_CLOSE, m_btn);
-	DDX_Control(pDX, IDC_STATIC_PAY_RESULT, m_payResultCtrl);
-	DDX_Control(pDX, IDC_STATIC_PAYING, m_payingCtrl);
 }
 
+void CResultPayDialog::updateUI_InitDialog()
+{
+	switch (m_payResult)
+	{
+	case PAY_OK: {
+		m_payingCtrl.ShowWindow(SW_HIDE);
+
+		m_payResultCtrl.ShowWindow(SW_SHOW);
+		m_payFeeCtrl.ShowWindow(SW_SHOW);
+		m_btn.ShowWindow(SW_SHOW);
+
+		CString freeStr(m_payTotalFee);
+		freeStr.Insert(0, L"￥");
+		m_payFeeCtrl.SetWindowText(freeStr);
+		
+	}break;
+	case PAY_FAIL: {
+		m_payingCtrl.ShowWindow(SW_HIDE);
+		m_payResultCtrl.SetWindowText(L"收款失败");
+		m_payFeeCtrl.SetWindowText(CString(m_payResultDesc));
+		m_btn.SetWindowText(L"重新查询");
+
+		m_payResultCtrl.ShowWindow(SW_SHOW);
+		m_payFeeCtrl.ShowWindow(SW_SHOW);
+		m_btn.ShowWindow(SW_SHOW);
+	}break;
+	case PAY_PAYING: {
+		m_payingCtrl.ShowWindow(SW_SHOW);
+		m_payResultCtrl.ShowWindow(SW_HIDE);
+		m_payFeeCtrl.ShowWindow(SW_HIDE);
+		m_btn.ShowWindow(SW_HIDE);
+	}break;
+	default:
+		break;
+	}
+}
 
 BEGIN_MESSAGE_MAP(CResultPayDialog, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BUTTON_CLOSE, &CResultPayDialog::OnBnClickedButtonClose)
-	ON_MESSAGE(UM_ORDER_QUERY, &CResultPayDialog::OnOrderQuery)
+	ON_MESSAGE(UM_ORDER_REQUEST_OK_NOTIFY, &CResultPayDialog::OnOrderRequestOk)
 	ON_MESSAGE(UM_PAY_SUCCESS_NOTIFY, &CResultPayDialog::OnPaySuccess)
 	ON_WM_TIMER()
+	ON_WM_CLOSE()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -78,26 +121,9 @@ BOOL CResultPayDialog::OnInitDialog()
 
 
 	// TODO:  在此添加额外的初始化
-	switch (m_payResult)
-	{
-	case PAY_OK: {
-		m_payingCtrl.ShowWindow(SW_HIDE);
-	}break;
-	case PAY_FAIL: {
-		m_payingCtrl.ShowWindow(SW_HIDE);
-		m_payResultCtrl.SetWindowText(L"收款失败");
-		m_payFeeCtrl.SetWindowText(L"失败原因：请求超时");
-		m_btn.SetWindowText(L"重新查询");
-	}break;
-	case PAY_PAYING: {
-		m_payResultCtrl.ShowWindow(SW_HIDE);
-		m_payFeeCtrl.ShowWindow(SW_HIDE);
-		m_btn.ShowWindow(SW_HIDE);
-	}break;
-	default:
-		break;
-	}
+	updateUI_InitDialog();
 
+	sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), m_payTotalFee.GetString(), m_strAOrderNoCode.GetString(), m_strAAuthCode.GetString());
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -153,7 +179,7 @@ void CResultPayDialog::OnBnClickedButtonClose()
 	default:
 		break;
 	}
-	::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
+	//::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
 	
 }
 
@@ -164,11 +190,7 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent)
 	{
 	case TIMER_ID_ORDER_QUERY: {
-		sellMobileSystemInstance->requestOrderQuery();
-	}break;
-	case TIMER_ID_DOWNLOAD_WAITING:
-	{
-		sellMobileSystemInstance->requestDownloadOrder();
+		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd());
 	}break;
 	case TIMER_ID_BUTTON_COUNTDOWN: {
 		m_countdownTime = m_countdownTime - 1;
@@ -186,34 +208,80 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 	CDialogEx::OnTimer(nIDEvent);
 }
 
-void CResultPayDialog::requestOrder(const CString &orderNo, const CString &authCode)
+void CResultPayDialog::requestPay(const CString& fee, const CString &orderNo, const CString &authCode)
 {
-	CStringA  strAOrderNoCode(orderNo);
-	CStringA  strAAuthCode(authCode);
-	sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), strAOrderNoCode.GetString(), strAAuthCode.GetString());
+	m_payTotalFee = fee;
+	m_strAOrderNoCode = orderNo;
+	m_strAAuthCode = authCode;
+	m_payResult = PAY_PAYING;	
 }
 
 
-LRESULT CResultPayDialog::OnOrderQuery(WPARAM wParam, LPARAM lParam)
+LRESULT CResultPayDialog::OnOrderRequestOk(WPARAM wParam, LPARAM lParam)
 {
-
-	m_timer_orderQuery = SetTimer(TIMER_ID_ORDER_QUERY, 1000 * 3, NULL);
-
-	sellMobileSystemInstance->requestOrderQuery();
-
+	if (wParam == 0)
+	{
+		m_timer_orderQuery = SetTimer(TIMER_ID_ORDER_QUERY, 1000 * 3, NULL);
+		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd());
+	}
+	else if(-1 == wParam)
+	{
+		char* msg = (char*)lParam;
+		m_payResultDesc = msg;
+		safe_delete(msg);
+		KillTimer(m_timer_orderQuery);
+		m_payResult = PAY_FAIL;
+		updateUI_DoDataExchange();
+		updateUI_InitDialog();
+	}
+	
 	return 0;
 }
 
 
 LRESULT CResultPayDialog::OnPaySuccess(WPARAM wParam, LPARAM lParam)
 {
-	if (m_payResult == PAY_PAYING)
+	if (0 == wParam)
 	{
-		KillTimer(m_timer_orderQuery);
-		m_payResult = PAY_OK;
+		if (m_payResult == PAY_PAYING)
+		{
+			m_payResult = PAY_OK;
+
+			KillTimer(m_timer_orderQuery);
+			updateUI_DoDataExchange();
+			updateUI_InitDialog();
+
+		}
 	}
+	else if(-1 == wParam)
+	{
+		char* msg = (char*)lParam;
+		m_payResultDesc = msg;
+		safe_delete(msg);
+		m_payResult = PAY_FAIL;
+
+		KillTimer(m_timer_orderQuery);
+		updateUI_DoDataExchange();
+		updateUI_InitDialog();
+	}
+
 	
-
-
 	return 0;
+}
+
+
+void CResultPayDialog::OnClose()
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	CDialogEx::OnClose();
+}
+
+
+void CResultPayDialog::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+	CWnd* parent = GetParent();
+	::PostMessage(parent->GetSafeHwnd(), WM_CLOSE, 0, 0);
+
+	// TODO: 在此处添加消息处理程序代码
 }

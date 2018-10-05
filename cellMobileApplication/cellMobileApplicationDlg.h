@@ -40,8 +40,7 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg LRESULT OnTipsMessage(WPARAM wParam, LPARAM lParam);
-	
-	afx_msg LRESULT OnDownloadWaiting(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnHookKeboardShowHide(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -49,7 +48,7 @@ public:
 
 protected:
 	int m_CurSelTab;
-
+	bool b_show;
 public:
 	CTabCtrl m_tabMenu;
 	CMenuDownloadOrderDialog m_menuDownloadOrderDlg;
@@ -58,4 +57,5 @@ public:
 
 	afx_msg void OnTcnSelchangeTabMenu(NMHDR *pNMHDR, LRESULT *pResult);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 };

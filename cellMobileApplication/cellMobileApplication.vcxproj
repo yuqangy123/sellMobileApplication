@@ -61,8 +61,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;$(ProjectDir)HookDll\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib;HookDll.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

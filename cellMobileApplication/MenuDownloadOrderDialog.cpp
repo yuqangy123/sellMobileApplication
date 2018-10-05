@@ -5,6 +5,7 @@
 #include "MenuDownloadOrderDialog.h"
 #include "afxdialogex.h"
 #include "DownloadOrderResultDialog.h"
+#include "DownloadOrderResultDialog.h"
 
 // CMenuDownloadOrderDialog 对话框
 
@@ -23,8 +24,9 @@ CMenuDownloadOrderDialog::~CMenuDownloadOrderDialog()
 void CMenuDownloadOrderDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_DATETIMEPICKER1, m_payTimeCtrl);
 	DDX_Control(pDX, IDC_COMBO_PAYTYPE, m_payTypeComboBox);
+	DDX_Control(pDX, IDC_DATETIMEPICKER_BEGIN, m_beginDataTimePicker);
+	DDX_Control(pDX, IDC_DATETIMEPICKER_END, m_endDataTimePicker);
 }
 
 
@@ -64,7 +66,7 @@ BOOL CMenuDownloadOrderDialog::PreTranslateMessage(MSG* pMsg)
 
 void CMenuDownloadOrderDialog::setTimeControlFocus()
 {
-	m_payTimeCtrl.SetFocus();
+	m_beginDataTimePicker.SetFocus();
 }
 
 BOOL CMenuDownloadOrderDialog::OnInitDialog()
@@ -74,8 +76,9 @@ BOOL CMenuDownloadOrderDialog::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	
 	m_payTypeComboBox.AddString(L"所有交易");
-	m_payTypeComboBox.AddString(L"个人交易");
-	m_payTypeComboBox.SetCurSel(1);
+	m_payTypeComboBox.AddString(L"支付成功的交易");
+	m_payTypeComboBox.AddString(L"退款的交易");
+	m_payTypeComboBox.SetCurSel(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -84,7 +87,25 @@ BOOL CMenuDownloadOrderDialog::OnInitDialog()
 
 void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	CTime timeBegin;
+	CString startDate;
+	m_beginDataTimePicker.GetTime(timeBegin);
+	startDate.Format(L"%04d%02d%02d", timeBegin.GetYear(), timeBegin.GetMonth(), timeBegin.GetDay());
+
+	CTime timeEnd;
+	CString endDate;
+	m_endDataTimePicker.GetTime(timeEnd);
+	endDate.Format(L"%04d%02d%02d", timeEnd.GetYear(), timeEnd.GetMonth(), timeEnd.GetDay());
+
+	int selectPayType = m_payTypeComboBox.GetCurSel() + 1;
+	CString payType;
+	payType.Format(L"%d", selectPayType);
+
 	CDownloadOrderResultDialog dlg;
+	dlg.requestDownloader(startDate, endDate, payType);
 	dlg.DoModal();
+
+	//CString strTime = time.Format("%Y-%m-%d")
+	//CQRCodePayDialog dlg;
+	//dlg.DoModal();
 }

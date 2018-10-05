@@ -339,11 +339,7 @@ int curlManager::curl_http_download_file()
 		}
 		if (args->data)		// 若要对返回的内容进行处理, 可在此处理
 		{
-			std::string ansi = KS_UTF8_to_ANSI(args->data);
-			const char* xmlend = "</xml>";
-			std::size_t found = ansi.find(xmlend);
-			if (found != std::string::npos)
-				ansi = ansi.substr(0, found + strlen(xmlend));
+			std::string ansi(args->file_name);
 			stackHttpCallback(ansi);
 
 			free(args->data);
@@ -475,6 +471,7 @@ void *stack_http_callback_thread(void *param)
 	if (args->callback)
 	{
 		(*args->callback)(args->msg);
+		safe_delete(args->callback);
 	}
 	safe_delete(args);
 	return 0;

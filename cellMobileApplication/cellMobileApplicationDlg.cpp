@@ -15,6 +15,7 @@
 #include "ResultPayDialog.h"
 #include "QRCodePayDialog.h"
 
+#include "HookDll\HookDll.h"
 
 
 #ifdef _DEBUG
@@ -25,6 +26,7 @@
 CcellMobileApplicationDlg::CcellMobileApplicationDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CcellMobileApplicationDlg::IDD, pParent)
 {
+	b_show = true;
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -40,14 +42,9 @@ BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDOK, &CcellMobileApplicationDlg::OnBnClickedOk)
 	ON_MESSAGE(UM_TIPS_MESSAGE, &CcellMobileApplicationDlg::OnTipsMessage)
-	ON_MESSAGE(UM_PAY_DOWNLOAD_WAITING_NOTIFY, &CcellMobileApplicationDlg::OnDownloadWaiting)
-	
+	ON_MESSAGE(UM_HOOK_KEYBOARD_SHOW_HIDE, &CcellMobileApplicationDlg::OnHookKeboardShowHide)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MENU, &CcellMobileApplicationDlg::OnTcnSelchangeTabMenu)
 END_MESSAGE_MAP()
-
-
-// CcellMobileApplicationDlg 娑堟伅澶勭悊绋嬪簭
-
 
 BOOL CcellMobileApplicationDlg::OnInitDialog()
 {
@@ -88,10 +85,19 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	m_menuSettingDlg.ShowWindow(m_CurSelTab == 2);
 
 	m_tabMenu.SetCurSel(m_CurSelTab);
-
-	CQRCodePayDialog dlg;
-	dlg.DoModal();
-
+	
+	/*
+	//hook keyboard
+	typedef void(*HOOKPROC)(HWND hwnd);
+	HOOKPROC lpfnDllFuncHook;    // Function pointer
+	HMODULE hDLL = LoadLibrary(_T("HookDll.dll"));//加载动态链接库
+	if (hDLL != NULL) {
+		lpfnDllFuncHook = (HOOKPROC)GetProcAddress(hDLL, "SetHook");
+		if (lpfnDllFuncHook != NULL) {			// call the function			
+			lpfnDllFuncHook(m_hWnd);
+		}
+	}
+	*/
 	return TRUE;
 }
 
@@ -161,22 +167,6 @@ LRESULT CcellMobileApplicationDlg::OnTipsMessage(WPARAM wParam, LPARAM lParam)
 
 void CcellMobileApplicationDlg::OnTimer(UINT nIDEvent)
 {
-	switch (nIDEvent)
-	{
-	case TIMER_ID_DOWNLOAD_WAITING:
-	{
-		sellMobileSystemInstance->requestDownloadOrder();
-	}break;
-	
-	default:
-		break;
-	}
-}
-
-LRESULT CcellMobileApplicationDlg::OnDownloadWaiting(WPARAM wParam, LPARAM lParam)
-{
-	m_timer_downloadWaiting = SetTimer(TIMER_ID_DOWNLOAD_WAITING, 1000*30, NULL);
-	return 0;
 }
 
 void CcellMobileApplicationDlg::OnTcnSelchangeTabMenu(NMHDR *pNMHDR, LRESULT *pResult)
@@ -224,4 +214,23 @@ BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 		
 
 	return __super::PreTranslateMessage(pMsg);
+}
+
+
+LRESULT CcellMobileApplicationDlg::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	//https://www.cnblogs.com/carekee/articles/3096713.html
+	if (message == 133)
+	{
+		this->ShowWindow(b_show ? SW_SHOW : SW_HIDE);
+	};
+	return __super::DefWindowProc(message, wParam, lParam);
+}
+
+LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM lParam)
+{
+	b_show = !b_show;
+	this->ShowWindow(b_show ? SW_SHOW : SW_HIDE);
+	return 0;
 }

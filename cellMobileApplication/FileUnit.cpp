@@ -61,6 +61,15 @@ std::string CFileUnit::ExtractFilePath(const std::string &AFileName)
 	return str_a;
 }
 
+std::string CFileUnit::ExtractFileName(const std::string &AFileName)
+{
+	std::string str_a = Getwstring(AFileName, ("\\"), false);
+	std::string str_b = Getwstring(AFileName, ("/"), false);
+	if (str_a.empty())
+		return str_b;
+	return str_a;
+}
+
 std::string CFileUnit::Getwstring(const std::string &s, const std::string &Sing, bool Forwar /*= true*/)
 {
 	std::string::size_type pos = s.rfind(Sing);

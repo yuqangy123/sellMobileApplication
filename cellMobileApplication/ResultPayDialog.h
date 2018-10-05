@@ -11,8 +11,7 @@ enum PAY_RESULT{
 };
 
 #define TIMER_ID_ORDER_QUERY		101
-#define TIMER_ID_DOWNLOAD_WAITING	102
-#define TIMER_ID_BUTTON_COUNTDOWN	103
+#define TIMER_ID_BUTTON_COUNTDOWN	102
 
 class CResultPayDialog : public CDialogEx
 {
@@ -22,7 +21,7 @@ public:
 	CResultPayDialog(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CResultPayDialog();
 	//void setState(PAY_RESULT r) { m_payResult = r; };
-	void requestOrder(const CString &orderNo, const CString &authCode);
+	void requestPay(const CString& fee, const CString &orderNo, const CString &authCode);
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME
@@ -36,9 +35,13 @@ public:
 	virtual BOOL OnInitDialog();	
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnBnClickedButtonClose();
-	afx_msg LRESULT OnOrderQuery(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnOrderRequestOk(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnPaySuccess(WPARAM wParam, LPARAM lParam);
+
+protected:
+	void updateUI_DoDataExchange();
+	void updateUI_InitDialog();
 
 protected:
 	UINT_PTR m_close_timer_ID;
@@ -46,11 +49,20 @@ protected:
 	PAY_RESULT m_payResult;
 
 	UINT_PTR m_timer_orderQuery;
-	UINT_PTR m_timer_downloadWaiting;
+
 public:
 	CStatic m_payOK_ctrl;
 	CStatic m_payResultCtrl;
 	CStatic m_payFeeCtrl;
 	CStatic m_payingCtrl;
 	CButton m_btn;
+
+protected:
+	CStringA  m_strAOrderNoCode;
+	CStringA  m_strAAuthCode;
+	CStringA  m_payResultDesc;
+	CStringA  m_payTotalFee;
+public:
+	afx_msg void OnClose();
+	afx_msg void OnDestroy();
 };

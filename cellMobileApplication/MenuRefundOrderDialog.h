@@ -23,4 +23,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButtonSure();
+	virtual BOOL OnInitDialog();
+	CEdit m_orderNoCtrl;
+	CEdit m_willFeeCtrl;
+	CEdit m_feeCtrl;
 };

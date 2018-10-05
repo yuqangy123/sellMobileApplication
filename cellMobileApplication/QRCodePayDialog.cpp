@@ -50,9 +50,8 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	long rd = getRandom(99999999);
 	sprintf_s(randChar, "121775250120070233368%d", rd);	
 	m_outTradeNoCtrl.SetWindowText(CString(randChar));
-	m_willPayFeeCtrl.SetWindowText(CString("1"));
-	m_payFeeCtrl.SetWindowText(CString("1"));
-
+	m_willPayFeeCtrl.SetWindowText(CString("0.01"));
+	m_payFeeCtrl.SetWindowText(CString("0.01"));
 #endif
 
 	m_authCodeCtrl.SetFocus();
@@ -73,18 +72,17 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->wParam)
 	{
-		CString strTradeNo;
-		m_outTradeNoCtrl.GetWindowText(strTradeNo);
-
 		CString strOrderNoCode;
 		m_outTradeNoCtrl.GetWindowText(strOrderNoCode);
-		CStringA strAOrderNoCode(strOrderNoCode);
-
+		
 		CString strAuthCode;
 		m_authCodeCtrl.GetWindowText(strAuthCode);
-		CStringA strAAuthCode(strAuthCode);
+		
+		CString strFee;
+		m_payFeeCtrl.GetWindowText(strFee);
 
 		CResultPayDialog dlg;
+		dlg.requestPay(strFee, strOrderNoCode, strAuthCode);
 		dlg.DoModal();
 
 		//

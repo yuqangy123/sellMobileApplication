@@ -39,27 +39,7 @@ const Value Value::Null;
 
 #define CC_SAFE_DELETE(p)           do { delete (p); (p) = nullptr; } while(0)
 
-#define MAX_ITOA_BUFFER_SIZE 256
-double atof(const char* str)
-{
-	if (str == nullptr)
-	{
-		return 0.0;
-	}
-
-	char buf[MAX_ITOA_BUFFER_SIZE];
-	strncpy_s(buf, str, MAX_ITOA_BUFFER_SIZE);
-
-	// strip string, only remain 7 numbers after '.'
-	char* dot = strchr(buf, '.');
-	if (dot != nullptr && dot - buf + 8 <  MAX_ITOA_BUFFER_SIZE)
-	{
-		dot[8] = '\0';
-	}
-
-	return ::atof(buf);
-}
-
+#define MAX_ITOA_BUFFER_SIZE 256 
 
 Value::Value()
 : _type(Type::NONE)

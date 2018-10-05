@@ -30,4 +30,6 @@ public:
 	CComboBox m_payTypeComboBox;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonDownload();
+	CDateTimeCtrl m_beginDataTimePicker;
+	CDateTimeCtrl m_endDataTimePicker;
 };

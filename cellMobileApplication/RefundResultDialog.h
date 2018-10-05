@@ -7,6 +7,7 @@
 enum {
 	REFUND_OK,
 	REFUND_FAIL,
+	REFUND_REFUNDING
 };
 
 class CRefundResultDialog : public CDialogEx
@@ -29,10 +30,19 @@ protected:
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	virtual BOOL OnInitDialog();
-	bool m_refundState;
 	CStatic m_pictureCtrl;
 	CStatic m_refundResultCtrl;
 	CStatic m_resultDescCtrl;
 	CButton m_replayRefundBtn;
 	afx_msg void OnBnClickedButtonReplayRefund();
+	afx_msg LRESULT OnRefundOrderNotify(WPARAM wParam, LPARAM lParam);
+	void updateUI_OnInitDialog();
+	void requestRefundOrder(const CString& order_no, const CString& refund_no, const CString& fee);
+
+protected:
+	int m_refundState;
+	CString m_desc;
+	CStringA m_orderNo;
+	CStringA m_refundNo;
+	CStringA m_fee;
 };
