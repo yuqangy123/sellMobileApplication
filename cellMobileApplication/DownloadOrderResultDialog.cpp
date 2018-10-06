@@ -16,10 +16,12 @@ CDownloadOrderResultDialog::CDownloadOrderResultDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_RESULT_DOWNLOAD_ORDER, pParent)
 {
 	m_state = DOWNLOAD_DOWNLOADING;
+	gif_init_member()
 }
 
 CDownloadOrderResultDialog::~CDownloadOrderResultDialog()
 {
+	gif_destory_member()
 }
 
 void CDownloadOrderResultDialog::DoDataExchange(CDataExchange* pDX)
@@ -61,6 +63,9 @@ BOOL CDownloadOrderResultDialog::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	startDownloader();
 	
+	gif_loadGif(L"res//loading.gif", 100);
+	gif_show(true);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -124,9 +129,10 @@ void CDownloadOrderResultDialog::updateUI_DoDataExchange()
 		CStringA desc;
 		std::string path = FileUnitInstance->ExtractFilePath(m_downloadFilePath.GetString());
 		std::string name = FileUnitInstance->ExtractFileName(m_downloadFilePath.GetString());
-		desc.Format("文件名：%s\r\n\r\n导出目录：%s", name.c_str(), path.c_str());
+		desc.Format("文件名：%s\r\n\r\n导出目录：\r\n%s", name.c_str(), path.c_str());
 		m_downloadFileCtrl.SetWindowText(CString(desc));
 		m_downloadFileCtrl.ShowWindow(SW_SHOW);
+		gif_show(false);
 
 	}break;
 	case DOWNLOAD_FAIL: {
@@ -141,6 +147,8 @@ void CDownloadOrderResultDialog::updateUI_DoDataExchange()
 		m_downloadResultCtrl.SetWindowText(L"导出失败");
 		m_downloadResultCtrl.ShowWindow(SW_SHOW);
 		m_replayDownloadBtn.ShowWindow(SW_SHOW);
+		gif_show(false);
+
 	}break;
 
 	case DOWNLOAD_DOWNLOADING: {
@@ -151,6 +159,7 @@ void CDownloadOrderResultDialog::updateUI_DoDataExchange()
 		m_replayDownloadBtn.ShowWindow(SW_HIDE);
 		m_picutreCtrl.ShowWindow(SW_HIDE);
 		m_downloadFileCtrl.ShowWindow(SW_HIDE);
+		gif_show(true);
 	}break;
 	default:
 		break;
@@ -184,17 +193,22 @@ void CDownloadOrderResultDialog::OnTimer(UINT_PTR nIDEvent)
 			sellMobileSystemInstance->requestDownloadOrder(GetSafeHwnd(), m_beginDate.GetString(), m_endDate.GetString(), m_type.GetString());
 		}break;
 	}
+
+	gif_draw_timer(190, 66)
 	CDialogEx::OnTimer(nIDEvent);
 }
 
 LRESULT CDownloadOrderResultDialog::OnDownloadRequestNotify(WPARAM wParam, LPARAM lParam)
 {
+	
 	if (0 == wParam)
 	{
 		m_timer_downloadWaiting = SetTimer(TIMER_ID_DOWNLOAD_REPEAT_QUREY, 1000 * 30, NULL);
 	}
 	else if (-1 == wParam)
 	{
+		char* pmsg = (char*)lParam;
+		safe_delete(pmsg);
 		downloaderFail();
 	}
 	else if (1 == wParam)

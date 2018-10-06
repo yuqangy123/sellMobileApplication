@@ -15,10 +15,12 @@ CRefundResultDialog::CRefundResultDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_RESULT_REFUND, pParent)
 {
 	m_refundState = REFUND_REFUNDING;
+	gif_init_member()
 }
 
 CRefundResultDialog::~CRefundResultDialog()
 {
+	gif_destory_member()
 }
 
 void CRefundResultDialog::DoDataExchange(CDataExchange* pDX)
@@ -37,6 +39,7 @@ BEGIN_MESSAGE_MAP(CRefundResultDialog, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BUTTON_REPLAY_REFUND, &CRefundResultDialog::OnBnClickedButtonReplayRefund)
 	ON_MESSAGE(UM_REFUND_ORDER_NOTIFY, &CRefundResultDialog::OnRefundOrderNotify)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -66,6 +69,8 @@ BOOL CRefundResultDialog::OnInitDialog()
 	updateUI_OnInitDialog();
 	sellMobileSystemInstance->requestRefundOrder(GetSafeHwnd(), m_orderNo.GetString(), m_refundNo.GetString(), m_totalfee.GetString(), m_fee.GetString());
 
+	gif_loadGif(L"res//loading.gif", 100);
+	gif_show(true);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -79,17 +84,20 @@ void CRefundResultDialog::updateUI_OnInitDialog()
 		m_replayRefundBtn.ShowWindow(SW_HIDE);
 		m_refundResultCtrl.SetWindowText(L"退款成功");
 		m_resultDescCtrl.SetWindowText(L"请提醒顾客注意查收");
+		gif_show(false);
 	}break;
 	case REFUND_FAIL: {
 		m_replayRefundBtn.ShowWindow(SW_SHOW);
 		m_refundResultCtrl.SetWindowText(L"退款失败");
 		m_resultDescCtrl.SetWindowText(m_desc);
+		gif_show(false);
 	}break;
 
 	case REFUND_REFUNDING: {
 		m_replayRefundBtn.ShowWindow(SW_HIDE);
 		m_refundResultCtrl.SetWindowText(L"退款中...");
 		m_resultDescCtrl.SetWindowText(L"");
+		gif_show(true);
 	}break;
 	default:
 		break;
@@ -103,12 +111,17 @@ void CRefundResultDialog::updateUI_OnInitDialog()
 		image.Load(L"res/payok.png");
 		HBITMAP hBmp = image.Detach();
 		m_pictureCtrl.SetBitmap(hBmp);
+		m_pictureCtrl.ShowWindow(SW_SHOW);
 	}break;
 	case REFUND_FAIL: {
 		CImage image;
 		image.Load(L"res/payfail.png");
 		HBITMAP hBmp = image.Detach();
 		m_pictureCtrl.SetBitmap(hBmp);
+		m_pictureCtrl.ShowWindow(SW_SHOW);
+	}break;
+	case REFUND_REFUNDING: {
+		m_pictureCtrl.ShowWindow(SW_HIDE);
 	}break;
 	default:
 		break;
@@ -152,4 +165,11 @@ void CRefundResultDialog::requestRefundOrder(const CString& order_no, const CStr
 	m_refundNo = refund_no;
 	m_totalfee = totalfee;
 	m_fee = fee;
+}
+
+void CRefundResultDialog::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	gif_draw_timer(190, 66)
+	CDialogEx::OnTimer(nIDEvent);
 }

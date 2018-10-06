@@ -85,7 +85,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 
 	m_tabMenu.SetCurSel(m_CurSelTab);
 	
-	
+	/*
 	//hook keyboard
 	typedef void(*HOOKPROC)(HWND hwnd);
 	HOOKPROC lpfnDllFuncHook;    // Function pointer
@@ -96,7 +96,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 			lpfnDllFuncHook(m_hWnd);
 		}
 	}
-	
+	*/
 	return TRUE;
 }
 
@@ -234,7 +234,6 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	this->ShowWindow(b_show ? SW_SHOW : SW_HIDE);
 	*/
 
-	CQRCodePayDialog dlg;
-	dlg.DoModal();
+	
 	return 0;
 }

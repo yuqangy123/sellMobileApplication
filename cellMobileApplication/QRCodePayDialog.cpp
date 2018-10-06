@@ -8,6 +8,7 @@
 #include "sellMobileSystem.h"
 #include "commonMicro.h"
 #include "ResultPayDialog.h"
+#include "DataManager.h"
 
 // CQRCodePayDialog 对话框
 
@@ -45,11 +46,16 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-#ifdef DEBUG_MODE	
+#ifdef DEBUG_MODE
+	std::string order;
+	DataMgrInstanceEx.getGoodsInfoOrder(order);
+	
 	char randChar[32] = { 0 };
 	long rd = getRandom(99999999);
-	sprintf_s(randChar, "121775250120070233368%d", rd);	
-	m_outTradeNoCtrl.SetWindowText(CString(randChar));
+	sprintf_s(randChar, "121775250120070233368%d", rd);
+	//order.assign(randChar);
+
+	m_outTradeNoCtrl.SetWindowText(CString(order.c_str()));
 	m_willPayFeeCtrl.SetWindowText(CString("0.01"));
 	m_payFeeCtrl.SetWindowText(CString("0.01"));
 #endif

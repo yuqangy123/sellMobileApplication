@@ -16,10 +16,12 @@ CResultPayDialog::CResultPayDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_RESULT_PAY, pParent)
 {
 	m_payResult = PAY_PAYING;
+	gif_init_member()
 }
 
 CResultPayDialog::~CResultPayDialog()
 {
+	gif_destory_member()
 }
 
 void CResultPayDialog::DoDataExchange(CDataExchange* pDX)
@@ -79,6 +81,8 @@ void CResultPayDialog::updateUI_InitDialog()
 		CString freeStr(m_payTotalFee);
 		freeStr.Insert(0, L"￥");
 		m_payFeeCtrl.SetWindowText(freeStr);
+		m_payOK_ctrl.ShowWindow(SW_SHOW);
+		gif_show(false);
 		
 	}break;
 	case PAY_FAIL: {
@@ -90,12 +94,18 @@ void CResultPayDialog::updateUI_InitDialog()
 		m_payResultCtrl.ShowWindow(SW_SHOW);
 		m_payFeeCtrl.ShowWindow(SW_SHOW);
 		m_btn.ShowWindow(SW_SHOW);
+		m_btn.SetFocus();
+		m_payOK_ctrl.ShowWindow(SW_SHOW);
+		gif_show(false);
+
 	}break;
 	case PAY_PAYING: {
 		m_payingCtrl.ShowWindow(SW_SHOW);
 		m_payResultCtrl.ShowWindow(SW_HIDE);
 		m_payFeeCtrl.ShowWindow(SW_HIDE);
 		m_btn.ShowWindow(SW_HIDE);
+		m_payOK_ctrl.ShowWindow(SW_HIDE);
+		gif_show(true);
 	}break;
 	default:
 		break;
@@ -124,6 +134,9 @@ BOOL CResultPayDialog::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 	updateUI_InitDialog();
+	
+	gif_loadGif(L"res//loading.gif", 100);
+	gif_show(true);
 
 	sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), m_payTotalFee.GetString(), m_strAOrderNoCode.GetString(), m_strAAuthCode.GetString());
 
@@ -208,6 +221,8 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 			
 	}break;
 	}
+
+	gif_draw_timer(190, 66)
 	CDialogEx::OnTimer(nIDEvent);
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "resource.h"
+#include "GifHelper.h"
 
 // CResultPayDialog ¶Ô»°¿ò
 
@@ -62,6 +63,7 @@ protected:
 	CStringA  m_strAAuthCode;
 	CStringA  m_payResultDesc;
 	CStringA  m_payTotalFee;
+	gif_declare_member()
 public:
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();

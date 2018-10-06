@@ -6,7 +6,7 @@
 #include <functional>
 #include "md5.h"
 #include "commonMicro.h"
-
+#include "DataManager.h"
 
 using namespace std;
 
@@ -92,7 +92,12 @@ bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
-			printf("xml 解析失败");
+			char* msgbuff = new char[256];
+			memset(msgbuff, 0x0, 256);
+			memcpy_s(msgbuff, 256, data.c_str(), data.length());
+			::PostMessage(m_orderQueryHwnd, UM_PAY_SUCCESS_NOTIFY, -1, (LPARAM)msgbuff);
+			setState(sellState::none);
+			return;
 		}
 
 		string retcode = getXmlNode(pDoc, "retcode");
@@ -142,7 +147,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 	params["total_fee"] = atoFee(fee);
 	params["auth_code"] = auth_code;
 	params["body"] = "chunjifuzhuang";
-	params["spbill_create_ip"] = "123.12.12.123";
+	params["spbill_create_ip"] = DataMgrInstanceEx.PosFontEndIP;
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
 	
@@ -154,7 +159,12 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
-			printf("xml 解析失败");
+			char* msgbuff = new char[256];
+			memset(msgbuff, 0x0, 256);
+			memcpy_s(msgbuff, 256, data.c_str(), data.length());
+			::PostMessage(m_microPayHwnd, UM_ORDER_REQUEST_OK_NOTIFY, -1, (LPARAM)msgbuff);
+			setState(sellState::none);
+			return;
 		}
 
 		string retcode = getXmlNode(pDoc, "retcode");
@@ -180,7 +190,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 		}
 	};
 	curlManager::instance()->request(m_api["micropay"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
-	setState(sellState::paying);	
+	setState(sellState::paying);
 	return true;
 }
 
@@ -209,7 +219,12 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
-			printf("xml 解析失败");
+			char* msgbuff = new char[256];
+			memset(msgbuff, 0x0, 256);
+			memcpy_s(msgbuff, 256, data.c_str(), data.length());
+			::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, -1, (LPARAM)msgbuff);
+			setState(sellState::none);
+			return;
 		}
 
 		string retcode = getXmlNode(pDoc, "retcode");
@@ -257,7 +272,12 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
-			printf("xml 解析失败");
+			char* msgbuff = new char[256];
+			memset(msgbuff, 0x0, 256);
+			memcpy_s(msgbuff, 256, data.c_str(), data.length());
+			::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, -1, (LPARAM)msgbuff);
+			setState(sellState::none);
+			return;
 		}
 
 		string retcode = getXmlNode(pDoc, "retcode");
@@ -308,7 +328,12 @@ bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate,
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
-			printf("xml 解析失败");
+			char* msgbuff = new char[256];
+			memset(msgbuff, 0x0, 256);
+			memcpy_s(msgbuff, 256, data.c_str(), data.length());
+			::PostMessage(m_downloadorderHwnd, UM_PAY_DOWNLOAD_REQUEST_NOTIFY, -1, (LPARAM)msgbuff);
+			setState(sellState::none);
+			return;
 		}
 
 		string retcode = getXmlNode(pDoc, "retcode");

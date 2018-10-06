@@ -1,6 +1,7 @@
 #pragma once
 #include "resource.h"
 #include "afxwin.h"
+#include "GifHelper.h"
 
 
 enum {
@@ -59,4 +60,7 @@ public:
 	CStringA m_type;
 	UINT_PTR m_timer_downloadWaiting;
 	CStringA m_downloadFilePath;
+
+public:
+	gif_declare_member()
 };

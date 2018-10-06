@@ -84,9 +84,15 @@ BOOL CMenuDownloadOrderDialog::OnInitDialog()
 				  // 异常: OCX 属性页应返回 FALSE
 }
 
-
+#include "QRCodePayDialog.h"
 void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 {
+#if 1
+	CQRCodePayDialog dlgtest;
+	dlgtest.DoModal();
+	return;
+#endif
+
 	CTime timeBegin;
 	CString startDate;
 	m_beginDataTimePicker.GetTime(timeBegin);

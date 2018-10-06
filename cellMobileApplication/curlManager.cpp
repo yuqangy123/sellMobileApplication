@@ -232,6 +232,9 @@ int curlManager::curl_http_post()
 		{
 			printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(return_code));
 			ret = 0;
+			char cmsg[64] = { 0 };
+			sprintf_s(cmsg, "request error(%d)", return_code);
+			stackHttpCallback(std::string(cmsg));
 		}
 
 		if (args->file_fd)		// 若需要再次处理写入的文件, 在此可以直接使用
@@ -329,6 +332,9 @@ int curlManager::curl_http_download_file()
 		if (CURLE_OK != return_code)
 		{
 			printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(return_code));
+			char cmsg[64] = { 0 };
+			sprintf_s(cmsg, "request error(%d)", return_code);
+			stackHttpCallback(std::string(cmsg));
 			ret = 0;
 		}
 

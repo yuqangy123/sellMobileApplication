@@ -360,6 +360,12 @@
     <ClInclude Include="DataManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParseIni.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GifHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cellMobileApplication.cpp">
@@ -426,6 +432,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DataManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParseIni.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

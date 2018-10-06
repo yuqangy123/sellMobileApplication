@@ -6,6 +6,7 @@
 #include "afxdialogex.h"
 #include "RefundResultDialog.h"
 #include "commonMicro.h"
+#include "DataManager.h"
 
 // CMenuRefundOrderDialog ¶Ô»°¿ò
 
@@ -61,12 +62,16 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	CString orderNo;
 	m_orderNoCtrl.GetWindowText(orderNo);
 
+	std::string strGuid;
+	DataMgrInstanceEx.guidToString(strGuid);
+	CString refundNo(strGuid.c_str());
+
 	CString totalfee;
 	m_totalFeeCtrl.GetWindowText(totalfee);
 
 	CString fee;
 	m_feeCtrl.GetWindowText(fee);
-	dlg.requestRefundOrder(orderNo, orderNo, totalfee, fee);
+	dlg.requestRefundOrder(orderNo, refundNo, totalfee, fee);
 	dlg.DoModal();
 
 }
@@ -78,7 +83,9 @@ BOOL CMenuRefundOrderDialog::OnInitDialog()
 	char randChar[32] = { 0 };
 	long rd = getRandom(99999999);
 	sprintf_s(randChar, "121775250120070233368%d", rd);
-	m_orderNoCtrl.SetWindowText(CString(randChar));
+	std::string strOrder;
+	DataMgrInstanceEx.getGoodsInfoOrder(strOrder);
+	m_orderNoCtrl.SetWindowText(CString(strOrder.c_str()));
 	m_totalFeeCtrl.SetWindowText(CString("0.01"));
 	m_feeCtrl.SetWindowText(CString("0.01"));
 #endif

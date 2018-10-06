@@ -1,6 +1,7 @@
 #pragma once
 #include "resource.h"
 #include "afxwin.h"
+#include "GifHelper.h"
 
 // CRefundResultDialog ¶Ô»°¿ò
 
@@ -46,4 +47,8 @@ protected:
 	CStringA m_refundNo;
 	CStringA m_totalfee;
 	CStringA m_fee;
+
+	gif_declare_member()
+public:
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
