@@ -34,3 +34,41 @@ int getRandom(unsigned int r)
 	srand(time(NULL));
 	return rand() % r;
 }
+
+bool stringIsNumber(const char* c)
+{
+	if (nullptr != c)
+	{
+		const char* pc = c;
+		bool rt = true;
+		do
+		{
+			if (!((*pc >= '0' && *pc <= '9') || '.' == *pc))
+			{
+				rt = false;
+				break;
+			}
+		} while (*(++pc) != 0);
+		return rt;
+	}
+	return false;
+}
+
+bool stringIsNumber(const wchar_t* c)
+{
+	if (nullptr != c)
+	{
+		const wchar_t* pc = c;
+		bool rt = true;
+		do
+		{
+			if (!((*pc >= L'0' && *pc <= L'9') || L'.' == *pc))
+			{
+				rt = false;
+				break;
+			}
+		} while (*(++pc) != 0);
+		return rt;
+	}
+	return false;
+}

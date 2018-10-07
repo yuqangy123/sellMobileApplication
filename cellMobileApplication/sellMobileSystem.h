@@ -30,9 +30,9 @@ public:
 	void setMchInfo(const char* id, const char* key);
 	sellState getState() { return m_state; }
 	void setMainDialogHwnd(HWND hnd);
+	void init(const char* domain);
 
 protected:
-	void init();
 	void setState(sellState st) { m_state = st; };
 	std::string makeSign(const std::map<std::string, std::string>& paramsMap);
 	std::string mapToXml(const std::map<std::string, std::string>& paramsMap);

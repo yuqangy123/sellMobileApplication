@@ -6,8 +6,6 @@
 DECLARE_SINGLETON_MEMBER(CDataManager);
 CDataManager::CDataManager()
 {
-	MchId = "1000000013";
-	MchKey = "qu9k3vxsy2uc69u86iybirpu14coj34z";
 	ErpSysId = "020098";
 	OrderStaticEnd = "000001";
 
@@ -16,6 +14,24 @@ CDataManager::CDataManager()
 	iniParse.ReadConfig("SellSystem.ini", valueMap, "SYSTEM");
 	NodeCode = valueMap["NodeCode"];
 	PosFontEndIP = valueMap["PosFontEndIP"];
+
+	valueMap.clear();
+	iniParse.ReadConfig("sellMobileAppConfig.ini", valueMap, "SYSTEM");
+	MchId = valueMap["mch_id"];
+	MchKey = valueMap["mch_key"];
+	Domain = valueMap["domain"];
+
+	char strModule[MAX_PATH * 2] = { 0 };
+	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
+	::PathRemoveFileSpecA(strModule);
+	wsprintfA(strModule + strlen(strModule), "\\bill");
+	DownloadOrderFilePath.assign(strModule);
+
+	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
+	::PathRemoveFileSpecA(strModule);
+	wsprintfA(strModule + strlen(strModule), "\\sellMobileLog");
+	LogFilePath.assign(strModule);
+	CreateDirectoryA(strModule, NULL);
 }
 
 
@@ -68,4 +84,29 @@ void CDataManager::guidToString(std::string& ret)
 	MD5 md5;
 	md5.update(buf);
 	ret = md5.toString();
+}
+
+void CDataManager::writeLog(const char* ret)
+{
+	char logbuf[2048] = { 0 };
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	sprintf_s(logbuf, 2048, "%04d%02d%02d-%02d:%02d:%02d\n%s\n\n",
+		time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, ret);
+
+
+	FILE* pf=nullptr;
+	char filename[MAX_PATH] = { 0 };
+	sprintf_s(filename, MAX_PATH, "%s/%04d%02d%02d.txt", LogFilePath.c_str(), time.wYear, time.wMonth, time.wDay);
+	fopen_s(&pf, filename, "a+");
+	if (pf == NULL)
+	{
+		return;
+	}
+
+	fwrite(logbuf, strlen(logbuf), 1, pf);
+
+	fflush(pf);
+	fclose(pf);
 }

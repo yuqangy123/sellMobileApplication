@@ -41,6 +41,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg LRESULT OnTipsMessage(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnHookKeboardShowHide(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 public:

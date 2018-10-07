@@ -7,11 +7,9 @@
 #include "md5.h"
 #include "commonMicro.h"
 #include "DataManager.h"
+#include <math.h>
 
 using namespace std;
-
-static const char* domain = "https://api.speedpos.cn/";
-static const char* domain_test = "http://betaapi.speedpos.snsshop.net/";
 
 static sellMobileSystem* g_sellMobileInstance = nullptr;
 sellMobileSystem::sellMobileSystem()
@@ -33,19 +31,41 @@ std::string atoFee(const char* fee)
 	return string(cfee);
 }
 
+void writeRequestParamsLog(const char* apiName, const map<string, string>& params)
+{
+	const size_t bufsize = 1024;
+	char buf[bufsize] = { 0 };
+	int dx = 0;
+	int len = strlen(apiName);
+	memcpy_s(buf + dx, bufsize - dx, apiName, len);
+	dx += len;
+
+	char onePar[128] = { 0 };
+	for (auto itr = params.begin(); itr != params.end(); ++itr)
+	{
+		sprintf_s(onePar, "%s:%s", itr->first.c_str(), itr->second.c_str());
+		len = strlen(onePar);
+		memcpy_s(buf + dx, bufsize - dx, onePar, len);
+		if (dx+len >= bufsize)break;
+		dx += len;
+	}
+	buf[dx>=bufsize ? bufsize-1:dx] = 0;
+
+	DataMgrInstanceEx.writeLog(buf);
+}
+
 sellMobileSystem* sellMobileSystem::instance()
 {
 	if (nullptr == g_sellMobileInstance)
 	{
 		g_sellMobileInstance = new sellMobileSystem();
-		g_sellMobileInstance->init();
 	}
 	return g_sellMobileInstance;
 }
 
-void sellMobileSystem::init()
+void sellMobileSystem::init(const char* domain)
 {
-	string sysDomain(domain_test);
+	string sysDomain(domain);
 	char parone[256] = { 0 };
 
 	sprintf_s(parone, "%smicropay", sysDomain.c_str());
@@ -88,7 +108,7 @@ bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
 	*responseCallback = [this](const std::string& data)
 	{
-		printf("%d,%s", data.length(), data.c_str());
+		DataMgrInstanceEx.writeLog(data.c_str());
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
@@ -129,6 +149,7 @@ bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 		
 	};
 	curlManager::instance()->request(m_api["orderquery"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
+	writeRequestParamsLog("orderquery", params);
 	setState(sellState::orderquerying);
 	return true;
 }
@@ -215,7 +236,7 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
 	*responseCallback = [this](const std::string& data)
 	{
-		printf("%d,%s", data.length(), data.c_str());
+		DataMgrInstanceEx.writeLog(data.c_str());
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
@@ -234,7 +255,8 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 			int nret = atoi(retcode.c_str());
 			if (0 == nret)
 			{
-				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 0, 0);
+				bool refundSuccess = !retmsg.compare("SUCCESS");
+				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, refundSuccess ? 1 : 0, 0);
 			}
 			else
 			{
@@ -247,6 +269,7 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 		}
 	};
 	curlManager::instance()->request(m_api["refundorder"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
+	writeRequestParamsLog("refundorder", params);
 	setState(sellState::refunding);
 	return true;
 }
@@ -268,7 +291,7 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
 	*responseCallback = [this](const std::string& data)
 	{
-		printf("%d,%s", data.length(), data.c_str());
+		DataMgrInstanceEx.writeLog(data.c_str());
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
@@ -282,13 +305,15 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 
 		string retcode = getXmlNode(pDoc, "retcode");
 		string retmsg = getXmlNode(pDoc, "retmsg");
+		string refund_status = getXmlNode(pDoc, "refund_status");
 		if (!retcode.empty())
 		{
 			int nret = atoi(retcode.c_str());
 			if (0 == nret)
 			{
 				setState(sellState::none);
-				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 1, 0);
+				bool refundSuccess = !refund_status.compare("SUCCESS");
+				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, refundSuccess ? 1:-1, 0);
 			}
 			else
 			{
@@ -302,6 +327,7 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 		}
 	};
 	curlManager::instance()->request(m_api["refundquery"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
+	writeRequestParamsLog("refundquery", params);
 	setState(sellState::refundquerying);
 	return true;
 }
@@ -324,7 +350,7 @@ bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate,
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
 	*responseCallback = [this](const std::string& data)
 	{
-		printf("%d,%s", data.length(), data.c_str());
+		DataMgrInstanceEx.writeLog(data.c_str());
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
@@ -352,10 +378,11 @@ bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate,
 				{
 					string httppath = getXmlNode(pDoc, "httppath");
 					string sftppath = getXmlNode(pDoc, "sftppath");
-					sftppath.insert(0, "D:/cell/download/file");
+					sftppath.insert(0, DataMgrInstanceEx.DownloadOrderFilePath.c_str());
 					function<void(const std::string& data)>* doloadCallback = new function<void(const std::string& data)>();
 					*doloadCallback = [this](const std::string& data)
 					{
+						DataMgrInstanceEx.writeLog(data.c_str());
 						setState(sellState::none);
 
 						char* msgbuff = new char[256];
@@ -373,12 +400,13 @@ bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate,
 			else
 			{
 				setState(sellState::none);
-				sendTipsMessage(retmsg.c_str(), retmsg.length());
+				//sendTipsMessage(retmsg.c_str(), retmsg.length());
 				::PostMessage(m_downloadorderHwnd, UM_PAY_DOWNLOAD_REQUEST_NOTIFY, -1, 0);
 			}
 		}
 	};
 	curlManager::instance()->request(m_api["queryDownloadOrder"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
+	writeRequestParamsLog("queryDownloadOrder", params);
 	setState(sellState::downloadOrder);
 	return true;
 }

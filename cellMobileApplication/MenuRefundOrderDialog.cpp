@@ -68,9 +68,21 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 
 	CString totalfee;
 	m_totalFeeCtrl.GetWindowText(totalfee);
+	if (!stringIsNumber(totalfee.GetString()))
+	{
+		MessageBox(L"原交易金额输入有误，请重新输入", L"提示");
+		m_totalFeeCtrl.SetFocus();
+		return;
+	}
 
 	CString fee;
 	m_feeCtrl.GetWindowText(fee);
+	if (!stringIsNumber(fee.GetString()))
+	{
+		MessageBox(L"退款金额输入有误，请重新输入", L"提示");
+		m_feeCtrl.SetFocus();
+		return;
+	}
 	dlg.requestRefundOrder(orderNo, refundNo, totalfee, fee);
 	dlg.DoModal();
 

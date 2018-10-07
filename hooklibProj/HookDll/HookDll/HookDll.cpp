@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "HookDll.h"
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,6 +19,9 @@ HWND g_hWnd = NULL;
 HHOOK g_hMouse = NULL;
 //HHOOK g_hKeyBoard = NULL;
 HHOOK g_hKeyBoardLL = NULL;
+std::vector<int> hookKeyboardArray;
+
+
 //鼠标钩子回调函数
 LRESULT CALLBACK MouseProc(int code, WPARAM wParam, LPARAM lParam) {
 	return 1; //return ture说明全部屏蔽
@@ -42,13 +46,16 @@ LRESULT CALLBACK KeyBoardLLProc(int code, WPARAM wParam, LPARAM lParam) {
 		KBDLLHOOKSTRUCT *kblp = (KBDLLHOOKSTRUCT*)lParam; //这个结构体暂时没怎么搞明白，官方msdn也写的不是很明白，有待琢磨
 		if (WM_KEYDOWN == wParam || WM_SYSKEYDOWN == wParam)  //如果按键为按下状态
 		{
-			if (kblp->vkCode == VK_F2)
+			for (auto itr = hookKeyboardArray.begin(); itr != hookKeyboardArray.end(); ++itr)
 			{
-				//当按下F2则退出调用这个dll的应用程序
-				::SendMessage(g_hWnd, UM_HOOK_KEYBOARD_SHOW_HIDE, 0, 0);
-				//UnhookWindowsHookEx(g_hMouse);
-				//UnhookWindowsHookEx(g_hKeyBoardLL);
-				return TRUE;
+				if (kblp->vkCode == *itr)//VK_F2
+				{
+					//当按下F2则退出调用这个dll的应用程序
+					::SendMessage(g_hWnd, UM_HOOK_KEYBOARD_SHOW_HIDE, kblp->vkCode, 0);
+					//UnhookWindowsHookEx(g_hMouse);
+					//UnhookWindowsHookEx(g_hKeyBoardLL);
+					return TRUE;
+				}
 			}
 		}
 	}
@@ -56,8 +63,45 @@ LRESULT CALLBACK KeyBoardLLProc(int code, WPARAM wParam, LPARAM lParam) {
 	//传给下一个钩子
 	return CallNextHookEx(g_hKeyBoardLL, code, wParam, lParam);
 }
-void SetHook(HWND hwnd) {
+
+void parseKeyboard(const char* hookKeyboard, int begin, int end)
+{
+	if (nullptr == hookKeyboard || end <= begin)
+		return;
+
+	char number[32];
+	memset(number, 0x0, 32);
+	char* pnum = number;
+	int size = end - begin + 1;
+	int strat = 0;
+	while ((*pnum++ = *(hookKeyboard + begin + strat)) && ++strat < size)
+	{
+		int n = 0;
+	}
+	*pnum = 0;
+	hookKeyboardArray.push_back(atoi(number));
+}
+
+void SetHook(HWND hwnd, const char* hookKeyboard, int hookKeyboardLen) {
 	g_hWnd = hwnd;
+	if (nullptr != hookKeyboard)
+	{
+		int begin = 0, end = 0;		
+		while (hookKeyboardLen > end)
+		{
+			if (*(hookKeyboard + end) == ',' && begin < end)
+			{
+				parseKeyboard(hookKeyboard, begin, end-1);
+				begin = end + 1;
+				end = begin;
+			}
+			else
+			{
+				++end;
+			}
+		}
+		parseKeyboard(hookKeyboard, begin, end-1);
+	}
 	//g_hMouse = SetWindowsHookEx(WH_MOUSE, MouseProc, GetModuleHandle(L"HookDll"), 0);
 	g_hKeyBoardLL = SetWindowsHookEx(WH_KEYBOARD_LL, KeyBoardLLProc, GetModuleHandle(L"HookDll"), 0);
 	//g_hKeyBoard = SetWindowsHookEx(WH_KEYBOARD, KeyBoardProc, GetModuleHandle("HookDll"), 0);

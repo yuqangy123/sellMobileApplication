@@ -11,7 +11,7 @@
 #include<windows.h>
 #include<stdio.h>
 #define DLL_API extern "C" __declspec(dllimport) //extern "C"保证导出函数的函数名不发生改变
-DLL_API void  SetHook(HWND hwnd);
+DLL_API void SetHook(HWND hwnd, const char* hookKeyboard, int hookKeyboardLen);
 
 
 // CHookDllApp

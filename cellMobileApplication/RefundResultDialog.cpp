@@ -88,6 +88,7 @@ void CRefundResultDialog::updateUI_OnInitDialog()
 	}break;
 	case REFUND_FAIL: {
 		m_replayRefundBtn.ShowWindow(SW_SHOW);
+		m_replayRefundBtn.SetFocus();
 		m_refundResultCtrl.SetWindowText(L"ÍË¿îÊ§°Ü");
 		m_resultDescCtrl.SetWindowText(m_desc);
 		gif_show(false);
@@ -95,6 +96,7 @@ void CRefundResultDialog::updateUI_OnInitDialog()
 
 	case REFUND_REFUNDING: {
 		m_replayRefundBtn.ShowWindow(SW_HIDE);
+		m_replayRefundBtn.SetFocus();
 		m_refundResultCtrl.SetWindowText(L"ÍË¿îÖÐ...");
 		m_resultDescCtrl.SetWindowText(L"");
 		gif_show(true);

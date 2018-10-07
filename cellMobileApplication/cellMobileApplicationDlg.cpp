@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CcellMobileApplicationDlg::OnBnClickedOk)
 	ON_MESSAGE(UM_TIPS_MESSAGE, &CcellMobileApplicationDlg::OnTipsMessage)
 	ON_MESSAGE(UM_HOOK_KEYBOARD_SHOW_HIDE, &CcellMobileApplicationDlg::OnHookKeboardShowHide)
+	ON_MESSAGE(UM_SHOWQRCODE_PAY_NOTIFY, &CcellMobileApplicationDlg::OnShowQRCodeDlg)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MENU, &CcellMobileApplicationDlg::OnTcnSelchangeTabMenu)
 END_MESSAGE_MAP()
 
@@ -53,7 +54,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);
 
 	
-
+	sellMobileSystemInstance->init(DataMgrInstanceEx.Domain.c_str());
 	sellMobileSystemInstance->setMchInfo(DataMgrInstanceEx.MchId.c_str(), DataMgrInstanceEx.MchKey.c_str());
 	sellMobileSystemInstance->setMainDialogHwnd(GetSafeHwnd());
 	curlManagerInstance;
@@ -85,18 +86,19 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 
 	m_tabMenu.SetCurSel(m_CurSelTab);
 	
-	/*
+	
 	//hook keyboard
-	typedef void(*HOOKPROC)(HWND hwnd);
+	typedef void(*HOOKPROC)(HWND hwnd, const char* hookKeyboard, int hookKeyboardLen);
 	HOOKPROC lpfnDllFuncHook;    // Function pointer
 	HMODULE hDLL = LoadLibrary(_T("HookDll.dll"));//加载动态链接库
 	if (hDLL != NULL) {
 		lpfnDllFuncHook = (HOOKPROC)GetProcAddress(hDLL, "SetHook");
-		if (lpfnDllFuncHook != NULL) {			// call the function			
-			lpfnDllFuncHook(m_hWnd);
+		if (lpfnDllFuncHook != NULL) {			// call the function
+			const char* hookKeyboardList = "113,114,115";
+			lpfnDllFuncHook(m_hWnd, hookKeyboardList, strlen(hookKeyboardList));
 		}
 	}
-	*/
+	
 	return TRUE;
 }
 
@@ -187,7 +189,7 @@ BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 	// TODO: 在此添加专用代码和/或调用基类
 	if (pMsg->message == WM_KEYDOWN)
 	{
-		if ((pMsg->wParam == VK_RETURN || pMsg->wParam == VK_DOWN) && pMsg->wParam)
+		if ((pMsg->wParam == VK_RETURN || pMsg->wParam == VK_DOWN || pMsg->wParam == VK_SPACE) && pMsg->wParam)
 		{
 			if (m_CurSelTab == 0)
 			{
@@ -222,18 +224,40 @@ LRESULT CcellMobileApplicationDlg::DefWindowProc(UINT message, WPARAM wParam, LP
 	//https://www.cnblogs.com/carekee/articles/3096713.html
 	if (message == 133)
 	{
-		this->ShowWindow(b_show ? SW_SHOW : SW_HIDE);
+		this->ShowWindow(b_show ? SW_NORMAL : SW_MINIMIZE);
 	};
 	return __super::DefWindowProc(message, wParam, lParam);
 }
 
 LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM lParam)
 {
-	/*
-	b_show = !b_show;
-	this->ShowWindow(b_show ? SW_SHOW : SW_HIDE);
-	*/
+	switch (wParam)
+	{
+	case 113: {
+		PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);
 
+	}break;
+	case 114: {
+		ShowWindow(SW_SHOW);
+		m_CurSelTab = 1;
+		m_tabMenu.SetCurSel(m_CurSelTab);
+		m_menuDownloadOrderDlg.ShowWindow(m_CurSelTab == 0 ? SW_SHOW : SW_HIDE);
+		m_menuRefundOrderDlg.ShowWindow(m_CurSelTab == 1 ? SW_SHOW : SW_HIDE);
+		m_menuSettingDlg.ShowWindow(m_CurSelTab == 2 ? SW_SHOW : SW_HIDE);
+	}break;
+	case 115: {
+		b_show = !b_show;
+		this->ShowWindow(b_show ? SW_NORMAL : SW_MINIMIZE);
+	}break;
+	}
 	
+	return 0;
+}
+
+LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
+{
+	
+	CQRCodePayDialog dlgtest;
+	dlgtest.DoModal();
 	return 0;
 }

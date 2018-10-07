@@ -20,6 +20,9 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
+	//将窗口调用到最上层，然后获取鼠标焦点
+	void SetActive(HWND hWnd);
+
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();

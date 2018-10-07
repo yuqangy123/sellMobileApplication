@@ -62,6 +62,8 @@ BOOL CQRCodePayDialog::OnInitDialog()
 
 	m_authCodeCtrl.SetFocus();
 
+	SetActive(m_hWnd);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -86,7 +88,12 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 		
 		CString strFee;
 		m_payFeeCtrl.GetWindowText(strFee);
-
+		if (!stringIsNumber(strFee.GetString()))
+		{
+			MessageBox(L"支付金额输入有误，请重新输入", L"提示");
+			m_payFeeCtrl.SetFocus();
+			return TRUE;
+		}
 		CResultPayDialog dlg;
 		dlg.requestPay(strFee, strOrderNoCode, strAuthCode);
 		dlg.DoModal();
@@ -95,4 +102,18 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 		return TRUE;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+void CQRCodePayDialog::SetActive(HWND hWnd)
+{
+	DWORD dwForeID;
+	DWORD dwCurID;
+	HWND hForeWnd = ::GetForegroundWindow();
+	dwCurID = ::GetCurrentThreadId();
+	dwForeID = ::GetWindowThreadProcessId( hForeWnd, NULL );
+	::AttachThreadInput( dwCurID, dwForeID, TRUE); //获取输入焦点?
+	::SetWindowPos(hWnd, HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE|SWP_NOMOVE ); //设置Z-Order?
+	::SetWindowPos(hWnd, HWND_NOTOPMOST, 0,0,0,0, SWP_NOSIZE|SWP_NOMOVE ); //还原Z-Order?
+	::SetForegroundWindow(hWnd);
+	::AttachThreadInput( dwCurID, dwForeID, FALSE); 
 }

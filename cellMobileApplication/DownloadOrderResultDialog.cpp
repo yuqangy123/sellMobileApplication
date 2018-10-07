@@ -147,6 +147,7 @@ void CDownloadOrderResultDialog::updateUI_DoDataExchange()
 		m_downloadResultCtrl.SetWindowText(L"µ¼³öÊ§°Ü");
 		m_downloadResultCtrl.ShowWindow(SW_SHOW);
 		m_replayDownloadBtn.ShowWindow(SW_SHOW);
+		m_replayDownloadBtn.SetFocus();
 		gif_show(false);
 
 	}break;
