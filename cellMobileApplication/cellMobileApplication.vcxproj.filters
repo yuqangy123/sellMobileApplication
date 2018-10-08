@@ -467,5 +467,11 @@
     <Image Include="res\f110.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

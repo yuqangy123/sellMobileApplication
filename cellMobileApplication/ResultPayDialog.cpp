@@ -138,6 +138,11 @@ BOOL CResultPayDialog::OnInitDialog()
 	gif_loadGif(L"res//loading.gif", 100);
 	gif_show(true);
 
+	m_payOK_ctrl.GetWindowRect(&m_gifrt); //获得window区域
+	ScreenToClient(&m_gifrt); //转到client
+	m_gifrt.bottom -= 15.f;
+	m_gifrt.right -= 15.f;
+
 	sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), m_payTotalFee.GetString(), m_strAOrderNoCode.GetString(), m_strAAuthCode.GetString());
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -222,7 +227,7 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 	}break;
 	}
 
-	gif_draw_timer(190, 66)
+	gif_draw_timer(m_gifrt.right, m_gifrt.bottom);
 	CDialogEx::OnTimer(nIDEvent);
 }
 

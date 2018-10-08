@@ -60,6 +60,7 @@ public:
 	CStringA m_type;
 	UINT_PTR m_timer_downloadWaiting;
 	CStringA m_downloadFilePath;
+	CRect m_gifrt;
 
 public:
 	gif_declare_member()

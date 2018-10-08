@@ -1,16 +1,15 @@
-#include "stdafx.h"
+ #include "stdafx.h"
 #include "ParseIni.h"
- 
 
 CParseIniFile::CParseIniFile()
 {
 }
- 
+
 CParseIniFile::~CParseIniFile()
 {
  
 }
- 
+
 bool CParseIniFile::ReadConfig(const string& filename, map<string, string>& mContent, const char* section)
 {
 	mContent.clear();
@@ -79,7 +78,7 @@ bool CParseIniFile::AnalyseLine(const string & line, string & key, string & val)
  
 	if ((pos = new_line.find('=')) == -1)
 	{
-		return false;  // 没有=号
+		return false;
 	}
  
 	key = new_line.substr(0, pos);
@@ -93,7 +92,7 @@ bool CParseIniFile::AnalyseLine(const string & line, string & key, string & val)
 	Trim(val);
 	return true;
 }
- 
+
 void CParseIniFile::Trim(string & str)
 {
 	if (str.empty())
@@ -127,7 +126,7 @@ void CParseIniFile::Trim(string & str)
  
 	str = str.substr(start_pos, end_pos - start_pos + 1);
 }
- 
+
 bool CParseIniFile::IsSpace(char c)
 {
 	if (' ' == c || '\t' == c)
@@ -136,7 +135,7 @@ bool CParseIniFile::IsSpace(char c)
 	}
 	return false;
 }
- 
+
 bool CParseIniFile::IsCommentChar(char c)
 {
 	switch(c) 
@@ -147,11 +146,10 @@ bool CParseIniFile::IsCommentChar(char c)
 		return false;
 	}
 }
- 
+
 void CParseIniFile::PrintConfig(const map<string, string> & mContent)
 {
-	map<string, string>::const_iterator mite = mContent.begin();
-	for (; mite != mContent.end(); ++mite) 
+	for (map<string, string>::const_iterator mite = mContent.begin(); mite != mContent.end(); ++mite)
 	{
 		cout << mite->first << "=" << mite->second << endl;
 	}

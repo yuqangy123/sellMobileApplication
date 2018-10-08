@@ -57,6 +57,7 @@ public:
 	CStatic m_payFeeCtrl;
 	CStatic m_payingCtrl;
 	CButton m_btn;
+	CRect m_gifrt;
 
 protected:
 	CStringA  m_strAOrderNoCode;

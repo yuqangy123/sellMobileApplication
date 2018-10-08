@@ -63,8 +63,16 @@ BOOL CDownloadOrderResultDialog::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	startDownloader();
 	
+	
+
 	gif_loadGif(L"res//loading.gif", 100);
 	gif_show(true);
+
+	
+	m_picutreCtrl.GetWindowRect(&m_gifrt); //获得window区域
+	ScreenToClient(&m_gifrt); //转到client
+	m_gifrt.bottom -= 15.f;
+	m_gifrt.right -= 15.f;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -195,7 +203,9 @@ void CDownloadOrderResultDialog::OnTimer(UINT_PTR nIDEvent)
 		}break;
 	}
 
-	gif_draw_timer(190, 66)
+	
+
+	gif_draw_timer(m_gifrt.right, m_gifrt.bottom);
 	CDialogEx::OnTimer(nIDEvent);
 }
 

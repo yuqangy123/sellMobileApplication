@@ -1,12 +1,53 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "DataManager.h"
 #include "ParseIni.h"
 #include "md5.h"
+//#include "afxwin.h"
+#include "FileUnit.h"
+
+static _RecordsetPtr m_pRecordset;
+static _ConnectionPtr m_pConnection;
+
+/*
+#include "afxdb.h"
+BOOL ODBCConnect(CString strDBFile)
+{
+	CString strConnect;
+	strConnect.Format(_T("ODBC;DRIVER={MICROSOFT ACCESS DRIVER (*.mdb)};UID=sa;PWD=www.bizcent.com;DBQ=%s"), strDBFile);
+	CDatabase db;
+	if (db.Open(NULL, FALSE, FALSE, strConnect))
+	{
+		//连接数据库成功
+		CRecordset rs(&db);
+		CString strSql;
+		strSql = L"select * from tbSaleBillDetail";
+		//SQL语句
+		rs.Open(AFX_DB_USE_DEFAULT_TYPE, strSql);
+		//执行Sql语句（可添加　删除　查询等）
+		if (rs.IsOpen())
+		{
+			CDBVariant variant;
+			rs.MoveFirst();
+			while (!rs.IsEOF())
+			{
+				//读取记录
+				rs.GetFieldValue(_T("姓名"), variant);
+				rs.MoveNext();
+			}
+		}
+		db.Close();
+		return TRUE;
+	}
+	return FALSE;
+}
+*/
+
+
 
 DECLARE_SINGLETON_MEMBER(CDataManager);
 CDataManager::CDataManager()
 {
-	ErpSysId = "020098";
+	
 	OrderStaticEnd = "000001";
 
 	CParseIniFile iniParse;
@@ -20,6 +61,9 @@ CDataManager::CDataManager()
 	MchId = valueMap["mch_id"];
 	MchKey = valueMap["mch_key"];
 	Domain = valueMap["domain"];
+	ErpCode = valueMap["ErpCode"];
+	
+	
 
 	char strModule[MAX_PATH * 2] = { 0 };
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
@@ -29,11 +73,37 @@ CDataManager::CDataManager()
 
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
 	::PathRemoveFileSpecA(strModule);
+
+	if (valueMap.find("paySystemPath") == valueMap.end())
+		PaySystemPath.assign(strModule);
+	else
+	{
+		PaySystemPath = valueMap["paySystemPath"];
+		if (!FileUnitInstance->DirectoryExists(PaySystemPath.c_str()))
+			PaySystemPath.assign(strModule);
+	}
+
+	//ODBCConnect(CString(strModule) + L"\\SaleBill_20180905.0012");//test code
 	wsprintfA(strModule + strlen(strModule), "\\sellMobileLog");
 	LogFilePath.assign(strModule);
 	CreateDirectoryA(strModule, NULL);
-}
 
+
+	::CoInitialize(NULL);
+	if (m_pConnection.CreateInstance(__uuidof(Connection)) != S_OK)
+	{
+		AfxMessageBox(L"_ConnectionPtr init fail");
+	}
+	if (m_pRecordset.CreateInstance(_uuidof(Recordset)) != S_OK)
+	{
+		AfxMessageBox(L"_RecordsetPtr init fail");
+	}
+	//::CoUninitialize();
+
+
+	AfxOleInit();
+
+}
 
 CDataManager::~CDataManager()
 {
@@ -44,7 +114,7 @@ void CDataManager::getGoodsInfoOrder(std::string& ret)
 	char tmpbuff[MAX_PATH] = { 0 };
 	SYSTEMTIME systm;
 	GetLocalTime(&systm);
-	sprintf_s(tmpbuff, "log/GoodsInfo%04d%02d%02d.Log", systm.wYear, systm.wMonth, systm.wDay);
+	sprintf_s(tmpbuff, "log/GoodsInfoS%04d%02d%02d.Log", systm.wYear, systm.wMonth, systm.wDay);
 	ifstream infile(tmpbuff);
 	if (!infile)
 	{
@@ -71,7 +141,7 @@ void CDataManager::getGoodsInfoOrder(std::string& ret)
 
 	string systemOrder = lastline.substr(spaceIndex + 1, dIndex - spaceIndex - 1);
 	
-	sprintf_s(tmpbuff, "%s%s%s%s", ErpSysId.c_str(), NodeCode.c_str(), systemOrder.c_str(), OrderStaticEnd.c_str());
+	sprintf_s(tmpbuff, "%s%s%s%s", ErpCode.c_str(), NodeCode.c_str(), systemOrder.c_str(), OrderStaticEnd.c_str());
 	ret.assign(tmpbuff);
 }
 
@@ -109,4 +179,63 @@ void CDataManager::writeLog(const char* ret)
 
 	fflush(pf);
 	fclose(pf);
+}
+
+BOOL CDataManager::getGoodsInfoTotalFee(CString& totalFee)
+{
+	
+	try{
+		char ql[512];
+		CStringA strDBFileA;
+		SYSTEMTIME systm;
+		GetLocalTime(&systm);
+
+		strDBFileA.Format("%s\SaleBill_%04d%02d%02d.%s", PaySystemPath.c_str(), systm.wYear, systm.wMonth, systm.wDay, NodeCode.c_str());
+		sprintf_s(ql, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password='www.bizcent.com'", strDBFileA.GetString());
+		m_pConnection->Open(ql, "", "", adModeUnknown);
+		m_pRecordset->Open("select * from tbSaleBillDetail", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+		m_pRecordset->MoveLast();
+		_variant_t va, vaIndex;
+		va = m_pRecordset->GetCollect("BillNumber");
+		CString BillNumber;
+		double totalFee = 0;
+		if (va.vt != VT_NULL)
+			BillNumber = (LPCSTR)_bstr_t(va);
+
+		if (!BillNumber.IsEmpty())
+		{
+			sprintf_s(ql, "select * from tbSaleBillDetail where BillNumber = '%s'", CStringA(BillNumber).GetString());
+			m_pRecordset->Close();
+			m_pRecordset->Open(ql, m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+			if (!m_pRecordset->BOF)
+				m_pRecordset->MoveFirst();
+			else
+			{
+				AfxMessageBox(L"no data in the table");
+				return false;
+			}
+
+			while (!m_pRecordset->adoEOF)
+			{
+				va = m_pRecordset->GetCollect("SaleEarning");
+
+				CStringA SaleEarning;
+				if (va.vt != VT_NULL)
+				{
+					SaleEarning = (LPCSTR)_bstr_t(va);
+					totalFee += atof(SaleEarning.GetString());
+				}
+				m_pRecordset->MoveNext();
+			}
+		}
+	}
+	catch (_com_error * e)
+	{
+		AfxMessageBox(e->ErrorMessage());
+		return false;
+	}
+
+	return true;
 }

@@ -47,6 +47,7 @@ protected:
 	CStringA m_refundNo;
 	CStringA m_totalfee;
 	CStringA m_fee;
+	CRect m_gifrt;
 
 	gif_declare_member()
 public:

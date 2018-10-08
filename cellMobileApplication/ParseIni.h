@@ -19,6 +19,4 @@ public:
 	bool IsSpace(char c);
 	bool IsCommentChar(char c);
 	void PrintConfig(const map<string, string> & mContent);
-private:
 };
-
