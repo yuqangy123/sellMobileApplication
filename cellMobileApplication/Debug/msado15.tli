@@ -1,9 +1,9 @@
-﻿// Created by Microsoft (R) C/C++ Compiler Version 12.00.21005.1 (66eca30a).
+﻿// Created by Microsoft (R) C/C++ Compiler Version 14.00.24215.1 (56e64c61).
 //
-// f:\work\yuqiang\sellmobileapplication\cellmobileapplication\debug\msado15.tli
+// e:\yiyou\work\sellmobileapplication\cellmobileapplication\debug\msado15.tli
 //
 // Wrapper implementations for type library C:\Program Files\Common Files\System\ado\msado15.dll
-// compiler-generated file created 10/08/18 at 20:17:02 - DO NOT EDIT!
+// compiler-generated file created 10/10/18 at 22:10:21 - DO NOT EDIT!
 
 #pragma once
 

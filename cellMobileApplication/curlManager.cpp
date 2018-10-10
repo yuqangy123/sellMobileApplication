@@ -366,6 +366,8 @@ curlManager::curlManager()
 {
 	/* Must initialize libcurl before any threads are started */
 	curl_global_init(CURL_GLOBAL_ALL);
+	m_curl_args = nullptr;
+	m_running = false;
 }
 
 curlManager::~curlManager()

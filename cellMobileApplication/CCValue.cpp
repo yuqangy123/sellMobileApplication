@@ -410,12 +410,12 @@ bool Value::operator== (const Value& v) const
         }
         case Type::MAP:
         {
-            const auto &map1 = *(this->_field.mapVal);
-            const auto &map2 = *(v._field.mapVal);
-            for (const auto &kvp : map1)
+            auto &map1 = *(this->_field.mapVal);
+            auto &map2 = *(v._field.mapVal);
+            for (auto kvp = map1.begin(); kvp != map1.end();  ++kvp)
             {
-                auto it = map2.find(kvp.first);
-                if (it == map2.end() || it->second != kvp.second)
+                auto it = map2.find(kvp->first);
+                if (it == map2.end() || it->second != kvp->second)
                 {
                     return false;
                 }
@@ -424,12 +424,14 @@ bool Value::operator== (const Value& v) const
         }
         case Type::INT_KEY_MAP:
         {
-            const auto &map1 = *(this->_field.intKeyMapVal);
-            const auto &map2 = *(v._field.intKeyMapVal);
-            for (const auto &kvp : map1)
+            auto &map1 = *(this->_field.intKeyMapVal);
+            auto &map2 = *(v._field.intKeyMapVal);
+
+
+            for (auto kvp = map1.begin(); kvp != map1.end(); ++kvp)
             {
-                auto it = map2.find(kvp.first);
-                if (it == map2.end() || it->second != kvp.second)
+                auto it = map2.find(kvp->first);
+                if (it == map2.end() || it->second != kvp->second)
                 {
                     return false;
                 }
@@ -792,9 +794,9 @@ static std::string visitVector(const ValueVector& v, int depth)
     ret << getTabs(depth) << "[\n";
 
     int i = 0;
-    for (const auto& child : v)
+    for (auto child = v.begin(); child != v.end(); ++child)
     {
-        ret << getTabs(depth+1) << i << ": " << visit(child, depth + 1);
+        ret << getTabs(depth+1) << i << ": " << visit(*child, depth + 1);
         ++i;
     }
 

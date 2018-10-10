@@ -96,11 +96,16 @@ BOOL CMenuRefundOrderDialog::OnInitDialog()
 	long rd = getRandom(99999999);
 	sprintf_s(randChar, "121775250120070233368%d", rd);
 	std::string strOrder;
-	DataMgrInstanceEx.getGoodsInfoOrder(strOrder);
+	std::string systemOrder;
+	DataMgrInstanceEx.getGoodsInfoOrder(strOrder, systemOrder);
 	m_orderNoCtrl.SetWindowText(CString(strOrder.c_str()));
 	m_totalFeeCtrl.SetWindowText(CString("0.01"));
 	m_feeCtrl.SetWindowText(CString("0.01"));
 #endif
 
+	CString csTotalFee;
+	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
+	m_totalFeeCtrl.SetWindowText(csTotalFee);
+	m_feeCtrl.SetWindowText(csTotalFee);
 	return true;
 }

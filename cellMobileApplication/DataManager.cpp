@@ -109,12 +109,12 @@ CDataManager::~CDataManager()
 {
 }
 
-void CDataManager::getGoodsInfoOrder(std::string& ret)
+void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
 {
 	char tmpbuff[MAX_PATH] = { 0 };
 	SYSTEMTIME systm;
 	GetLocalTime(&systm);
-	sprintf_s(tmpbuff, "log/GoodsInfoS%04d%02d%02d.Log", systm.wYear, systm.wMonth, systm.wDay);
+	sprintf_s(tmpbuff, "%s\\log\\GoodsInfoS%04d%02d%02d.Log", PaySystemPath.c_str(), systm.wYear, systm.wMonth, systm.wDay);
 	ifstream infile(tmpbuff);
 	if (!infile)
 	{
@@ -139,7 +139,7 @@ void CDataManager::getGoodsInfoOrder(std::string& ret)
 		return ;
 	}
 
-	string systemOrder = lastline.substr(spaceIndex + 1, dIndex - spaceIndex - 1);
+	systemOrder = lastline.substr(spaceIndex + 1, dIndex - spaceIndex - 1);
 	
 	sprintf_s(tmpbuff, "%s%s%s%s", ErpCode.c_str(), NodeCode.c_str(), systemOrder.c_str(), OrderStaticEnd.c_str());
 	ret.assign(tmpbuff);
@@ -181,61 +181,62 @@ void CDataManager::writeLog(const char* ret)
 	fclose(pf);
 }
 
-BOOL CDataManager::getGoodsInfoTotalFee(CString& totalFee)
+BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee)
 {
-	
-	try{
-		char ql[512];
-		CStringA strDBFileA;
-		SYSTEMTIME systm;
-		GetLocalTime(&systm);
-
-		strDBFileA.Format("%s\SaleBill_%04d%02d%02d.%s", PaySystemPath.c_str(), systm.wYear, systm.wMonth, systm.wDay, NodeCode.c_str());
-		sprintf_s(ql, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password='www.bizcent.com'", strDBFileA.GetString());
-		m_pConnection->Open(ql, "", "", adModeUnknown);
-		m_pRecordset->Open("select * from tbSaleBillDetail", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-
-		m_pRecordset->MoveLast();
-		_variant_t va, vaIndex;
-		va = m_pRecordset->GetCollect("BillNumber");
-		CString BillNumber;
+	do {
 		double totalFee = 0;
-		if (va.vt != VT_NULL)
-			BillNumber = (LPCSTR)_bstr_t(va);
+		try {
+			char ql[512];
+			CStringA strDBFileA;
+			SYSTEMTIME systm;
+			GetLocalTime(&systm);
 
-		if (!BillNumber.IsEmpty())
-		{
-			sprintf_s(ql, "select * from tbSaleBillDetail where BillNumber = '%s'", CStringA(BillNumber).GetString());
-			m_pRecordset->Close();
-			m_pRecordset->Open(ql, m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-
-			if (!m_pRecordset->BOF)
-				m_pRecordset->MoveFirst();
-			else
+			strDBFileA.Format("%s\\SaleBill_%04d%02d%02d.%s", PaySystemPath.c_str(), systm.wYear, systm.wMonth, systm.wDay, NodeCode.c_str());
+			if (!FileUnitInstance->FileExists(strDBFileA.GetString()))
 			{
-				AfxMessageBox(L"no data in the table");
-				return false;
+				break;
 			}
+			sprintf_s(ql, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password='www.bizcent.com'", strDBFileA.GetString());
+			m_pConnection->Open(ql, "", "", adModeUnknown);
 
-			while (!m_pRecordset->adoEOF)
+			if (!BillNumber.IsEmpty())
 			{
-				va = m_pRecordset->GetCollect("SaleEarning");
+				sprintf_s(ql, "select * from tbSaleBillDetail where BillNumber = '%s'", CStringA(BillNumber).GetString());
+				//m_pRecordset->Close();
+				m_pRecordset->Open(ql, m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
 
-				CStringA SaleEarning;
-				if (va.vt != VT_NULL)
+				if (!m_pRecordset->BOF)
+					m_pRecordset->MoveFirst();
+				else
 				{
-					SaleEarning = (LPCSTR)_bstr_t(va);
-					totalFee += atof(SaleEarning.GetString());
+					AfxMessageBox(L"no data in the table");
+					break;
 				}
-				m_pRecordset->MoveNext();
+				_variant_t va, vaIndex;
+				while (!m_pRecordset->adoEOF)
+				{
+					va = m_pRecordset->GetCollect("SaleEarning");
+
+					CStringA SaleEarning;
+					if (va.vt != VT_NULL)
+					{
+						SaleEarning = (LPCSTR)_bstr_t(va);
+						totalFee += atof(SaleEarning.GetString());
+					}
+					m_pRecordset->MoveNext();
+				}
 			}
 		}
-	}
-	catch (_com_error * e)
-	{
-		AfxMessageBox(e->ErrorMessage());
-		return false;
-	}
+		catch (_com_error * e)
+		{
+			AfxMessageBox(e->ErrorMessage());
+			break;
+		}
 
+		csTotalFee.Format(L"%.2f", totalFee);
+	} while (false);
+	m_pConnection->Close();
+
+	
 	return true;
 }

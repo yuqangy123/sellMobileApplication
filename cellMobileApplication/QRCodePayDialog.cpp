@@ -47,8 +47,8 @@ BOOL CQRCodePayDialog::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 #ifdef DEBUG_MODE
-	std::string order;
-	DataMgrInstanceEx.getGoodsInfoOrder(order);
+	std::string order, systemOrder;
+	DataMgrInstanceEx.getGoodsInfoOrder(order, systemOrder);
 	
 	char randChar[32] = { 0 };
 	long rd = getRandom(99999999);
@@ -59,6 +59,11 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	m_willPayFeeCtrl.SetWindowText(CString("0.01"));
 	m_payFeeCtrl.SetWindowText(CString("0.01"));
 #endif
+
+	CString csTotalFee;
+	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
+	m_willPayFeeCtrl.SetWindowText(csTotalFee);
+	m_payFeeCtrl.SetWindowText(csTotalFee);
 
 	m_authCodeCtrl.SetFocus();
 

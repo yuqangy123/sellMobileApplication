@@ -256,7 +256,6 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 
 LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 {
-	
 	CQRCodePayDialog dlgtest;
 	dlgtest.DoModal();
 	return 0;

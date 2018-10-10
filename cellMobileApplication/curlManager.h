@@ -66,8 +66,8 @@ protected:
 	void stackHttpCallback(std::string& msg);
 
 protected:
-	curl_http_args_st*		m_curl_args = nullptr;
-	bool					m_running = false;
+	curl_http_args_st*		m_curl_args;
+	bool					m_running;
 	
 };
 

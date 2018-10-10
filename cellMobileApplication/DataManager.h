@@ -12,9 +12,9 @@ public:
 	~CDataManager();
 
 	//获取订单号
-	void getGoodsInfoOrder(std::string& ret);
+	void getGoodsInfoOrder(std::string& ret, std::string& systemOrder);
 	//获取订单总金额
-	BOOL getGoodsInfoTotalFee(CString& totalFee);
+	BOOL getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee);
 
 	void guidToString(std::string& ret);
 

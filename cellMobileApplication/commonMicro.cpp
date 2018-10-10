@@ -43,7 +43,7 @@ bool stringIsNumber(const char* c)
 		bool rt = true;
 		do
 		{
-			if (!((*pc >= '0' && *pc <= '9') || '.' == *pc))
+			if (!((*pc >= '0' && *pc <= '9') || '.' == *pc || '-' == *pc))
 			{
 				rt = false;
 				break;
@@ -62,7 +62,7 @@ bool stringIsNumber(const wchar_t* c)
 		bool rt = true;
 		do
 		{
-			if (!((*pc >= L'0' && *pc <= L'9') || L'.' == *pc))
+			if (!((*pc >= L'0' && *pc <= L'9') || L'.' == *pc || L'-' == *pc))
 			{
 				rt = false;
 				break;

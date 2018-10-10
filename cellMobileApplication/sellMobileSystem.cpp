@@ -381,6 +381,7 @@ bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate,
 					sftppath.insert(0, DataMgrInstanceEx.DownloadOrderFilePath.c_str());
 					function<void(const std::string& data)>* doloadCallback = new function<void(const std::string& data)>();
 					*doloadCallback = [this](const std::string& data)
+					//*doloadCallback = [](const std::string& data)//test code
 					{
 						DataMgrInstanceEx.writeLog(data.c_str());
 						setState(sellState::none);

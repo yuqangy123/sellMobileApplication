@@ -52,6 +52,14 @@ bool CFileUnit::DirectoryExists(const char *ApFileName)
 	return ((-1 != code) && (FILE_ATTRIBUTE_DIRECTORY & code));
 }
 
+bool CFileUnit::FileExists(const char *ApFileName)
+{
+	if (!ApFileName)
+		return false;
+	DWORD code = GetFileAttributesA(ApFileName);
+	return (-1 != code);
+}
+
 std::string CFileUnit::ExtractFilePath(const std::string &AFileName)
 {
 	std::string str_a = Getwstring(AFileName, ("\\"), true);
@@ -64,10 +72,22 @@ std::string CFileUnit::ExtractFilePath(const std::string &AFileName)
 std::string CFileUnit::ExtractFileName(const std::string &AFileName)
 {
 	std::string str_a = Getwstring(AFileName, ("\\"), false);
-	std::string str_b = Getwstring(AFileName, ("/"), false);
-	if (str_a.empty())
+	std::string str_b = Getwstring(AFileName, ("//"), false);
+	std::string str_c = Getwstring(AFileName, ("/"), false);
+
+	int stra_len = str_a.length();
+	int strb_len = str_b.length();
+	int strc_len = str_c.length();
+
+	if(stra_len > strb_len && stra_len > strc_len)
+		return str_a;
+
+	if(strb_len > stra_len && strb_len > strc_len)
 		return str_b;
-	return str_a;
+
+	if(strc_len > stra_len && strc_len > strb_len)
+		return str_c;
+	return AFileName;
 }
 
 std::string CFileUnit::Getwstring(const std::string &s, const std::string &Sing, bool Forwar /*= true*/)
