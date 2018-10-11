@@ -36,8 +36,8 @@
 #define DEBUG_MODE
 
 
-
-#import "C:\Program Files\Common Files\System\ado\msado15.dll" no_namespace rename("EOF","adoEOF")
+//C:\Program Files\Common Files\System\ado\msado15.dll
+#import "msado15.dll" no_namespace rename("EOF","adoEOF")
 
 
 

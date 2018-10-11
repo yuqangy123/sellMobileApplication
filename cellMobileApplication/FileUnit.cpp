@@ -63,10 +63,22 @@ bool CFileUnit::FileExists(const char *ApFileName)
 std::string CFileUnit::ExtractFilePath(const std::string &AFileName)
 {
 	std::string str_a = Getwstring(AFileName, ("\\"), true);
-	std::string str_b = Getwstring(AFileName, ("/"), true);
-	if (str_a.empty())
+	std::string str_b = Getwstring(AFileName, ("//"), true);
+	std::string str_c = Getwstring(AFileName, ("/"), true);
+
+	int stra_len = str_a.length();
+	int strb_len = str_b.length();
+	int strc_len = str_c.length();
+
+	if (stra_len > strb_len && stra_len > strc_len)
+		return str_a;
+
+	if (strb_len > stra_len && strb_len > strc_len)
 		return str_b;
-	return str_a;
+
+	if (strc_len > stra_len && strc_len > strb_len)
+		return str_c;
+	return AFileName;
 }
 
 std::string CFileUnit::ExtractFileName(const std::string &AFileName)

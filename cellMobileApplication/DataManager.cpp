@@ -88,20 +88,27 @@ CDataManager::CDataManager()
 	LogFilePath.assign(strModule);
 	CreateDirectoryA(strModule, NULL);
 
-
+	AfxOleInit();
 	::CoInitialize(NULL);
+
 	if (m_pConnection.CreateInstance(__uuidof(Connection)) != S_OK)
 	{
-		AfxMessageBox(L"_ConnectionPtr init fail");
+		DWORD err = GetLastError();
+		CString errStr;
+		errStr.Format(L"_ConnectionPtr init fail(%d)", err);
+		AfxMessageBox(errStr);
 	}
 	if (m_pRecordset.CreateInstance(_uuidof(Recordset)) != S_OK)
 	{
-		AfxMessageBox(L"_RecordsetPtr init fail");
+		DWORD err = GetLastError();
+		CString errStr;
+		errStr.Format(L"_RecordsetPtr init fail(%d)", err);
+		AfxMessageBox(errStr);
 	}
 	//::CoUninitialize();
 
 
-	AfxOleInit();
+	
 
 }
 

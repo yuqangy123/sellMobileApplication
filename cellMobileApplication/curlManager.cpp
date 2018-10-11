@@ -304,6 +304,20 @@ int curlManager::curl_http_download_file()
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args->post_data);		// POST 的数据内容
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(args->post_data));	// POST的数据长度, 可以不要此选项
 		*/
+
+		if (strncmp(args->url, "https://", 8) == 0)
+		{
+#if 1	
+			// 方法1, 设定为不验证证书和HOST
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+#else
+			// 方法2, 设定一个SSL判别证书
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+			curl_easy_setopt(curl, CURLOPT_CAINFO, "ca-cert.pem"); 	// TODO: 设置一个证书文件
+#endif 
+		}
+
 		curl_easy_setopt(curl, CURLOPT_HEADER, 0);	//设置httpheader 解析, 不需要将HTTP头写传入回调函数
 
 		curl_easy_setopt(curl, CURLOPT_URL, args->url);	//设置远端地址 
