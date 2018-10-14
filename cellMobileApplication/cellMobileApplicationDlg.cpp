@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)
 	ON_MESSAGE(UM_HOOK_KEYBOARD_SHOW_HIDE, &CcellMobileApplicationDlg::OnHookKeboardShowHide)
 	ON_MESSAGE(UM_SHOWQRCODE_PAY_NOTIFY, &CcellMobileApplicationDlg::OnShowQRCodeDlg)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_MENU, &CcellMobileApplicationDlg::OnTcnSelchangeTabMenu)
+	ON_MESSAGE(UM_ESC_KEYBOARD_NOTIFY, &CcellMobileApplicationDlg::OnEscKeyboardNotify)
 END_MESSAGE_MAP()
 
 BOOL CcellMobileApplicationDlg::OnInitDialog()
@@ -60,9 +61,9 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	curlManagerInstance;
 
 
-	m_tabMenu.InsertItem(0, L"订单");
-	m_tabMenu.InsertItem(1, L"退款");
-	m_tabMenu.InsertItem(2, L"设置");
+	m_tabMenu.InsertItem(0, L"订单(按键1)");
+	m_tabMenu.InsertItem(1, L"退款(按键2)");
+	m_tabMenu.InsertItem(2, L"设置(按键3)");
 
 	m_CurSelTab = 0;
 
@@ -183,13 +184,35 @@ void CcellMobileApplicationDlg::OnTcnSelchangeTabMenu(NMHDR *pNMHDR, LRESULT *pR
 	*pResult = 0;
 }
 
+void CcellMobileApplicationDlg::selectShowTabMenu(int index)
+{
+	m_CurSelTab = index;
+	if (m_CurSelTab >= 3 || m_CurSelTab < -1)
+		m_CurSelTab = 0;
+
+	m_tabMenu.SetCurSel(m_CurSelTab);
+	m_menuDownloadOrderDlg.ShowWindow(m_CurSelTab == 0 ? SW_SHOW : SW_HIDE);
+	m_menuRefundOrderDlg.ShowWindow(m_CurSelTab == 1 ? SW_SHOW : SW_HIDE);
+	m_menuSettingDlg.ShowWindow(m_CurSelTab == 2 ? SW_SHOW : SW_HIDE);
+
+	SetFocus();
+}
 
 BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
 	if (pMsg->message == WM_KEYDOWN)
 	{
-		if ((pMsg->wParam == VK_RETURN || pMsg->wParam == VK_DOWN || pMsg->wParam == VK_SPACE) && pMsg->wParam)
+		if (pMsg->wParam == VK_ESCAPE)
+		{
+			UINT nRet = MessageBox(L"是否需要退出程序？", L"提示", MB_OKCANCEL);
+			if (IDOK == nRet)
+			{
+				PostQuitMessage(0);
+			}
+			return TRUE;
+		}
+		else if ((pMsg->wParam == VK_RETURN || pMsg->wParam == VK_DOWN || pMsg->wParam == VK_SPACE) && pMsg->wParam)
 		{
 			if (m_CurSelTab == 0)
 			{
@@ -203,13 +226,7 @@ BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 		}
 		else if (pMsg->wParam == VK_TAB && pMsg->wParam)
 		{
-			m_CurSelTab = m_CurSelTab + 1;
-			if (m_CurSelTab == 3)
-				m_CurSelTab = 0;
-			m_tabMenu.SetCurSel(m_CurSelTab);
-			m_menuDownloadOrderDlg.ShowWindow(m_CurSelTab == 0 ? SW_SHOW : SW_HIDE);
-			m_menuRefundOrderDlg.ShowWindow(m_CurSelTab == 1 ? SW_SHOW : SW_HIDE);
-			m_menuSettingDlg.ShowWindow(m_CurSelTab == 2 ? SW_SHOW : SW_HIDE);
+			selectShowTabMenu(m_CurSelTab + 1);
 		}
 	}
 		
@@ -239,11 +256,7 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	}break;
 	case 114: {
 		ShowWindow(SW_SHOW);
-		m_CurSelTab = 1;
-		m_tabMenu.SetCurSel(m_CurSelTab);
-		m_menuDownloadOrderDlg.ShowWindow(m_CurSelTab == 0 ? SW_SHOW : SW_HIDE);
-		m_menuRefundOrderDlg.ShowWindow(m_CurSelTab == 1 ? SW_SHOW : SW_HIDE);
-		m_menuSettingDlg.ShowWindow(m_CurSelTab == 2 ? SW_SHOW : SW_HIDE);
+		selectShowTabMenu(1);
 	}break;
 	case 115: {
 		b_show = !b_show;
@@ -258,5 +271,19 @@ LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 {
 	CQRCodePayDialog dlgtest;
 	dlgtest.DoModal();
+	return 0;
+}
+
+LRESULT CcellMobileApplicationDlg::OnEscKeyboardNotify(WPARAM wParam, LPARAM lParam)
+{
+	if (0 == wParam)
+	{
+		selectShowTabMenu(0);
+	}
+	else if (1 == wParam)
+	{
+		selectShowTabMenu(1);
+	}
+
 	return 0;
 }

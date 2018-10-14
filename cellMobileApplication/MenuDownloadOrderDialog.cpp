@@ -6,6 +6,7 @@
 #include "afxdialogex.h"
 #include "DownloadOrderResultDialog.h"
 #include "DownloadOrderResultDialog.h"
+#include "commonMicro.h"
 
 // CMenuDownloadOrderDialog 对话框
 
@@ -53,7 +54,7 @@ BOOL CMenuDownloadOrderDialog::PreTranslateMessage(MSG* pMsg)
 	//屏蔽ESC关闭窗体/
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
 	{
-		::SendMessage(::GetActiveWindow(), WM_CLOSE, 0, 0);
+		::PostMessage(GetActiveWindow()->m_hWnd, UM_ESC_KEYBOARD_NOTIFY, 0, 0);
 		return TRUE;
 	}
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
@@ -104,6 +105,4 @@ void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 	CDownloadOrderResultDialog dlg;
 	dlg.requestDownloader(startDate, endDate, payType);
 	dlg.DoModal();
-
-	
 }

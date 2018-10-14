@@ -43,7 +43,7 @@ void writeRequestParamsLog(const char* apiName, const map<string, string>& param
 	char onePar[128] = { 0 };
 	for (auto itr = params.begin(); itr != params.end(); ++itr)
 	{
-		sprintf_s(onePar, "%s:%s", itr->first.c_str(), itr->second.c_str());
+		sprintf_s(onePar, "%s:%s\n", itr->first.c_str(), itr->second.c_str());
 		len = strlen(onePar);
 		memcpy_s(buf + dx, bufsize - dx, onePar, len);
 		if (dx+len >= bufsize)break;
@@ -103,6 +103,7 @@ bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 	params["mch_id"] = m_mch_id;
 	params["out_trade_no"] = m_order_no;
 	params["nonce_str"] = m_nonce_str;
+	params["trade_type"] = getTradeTypeWithOrderNo(m_order_no.c_str());
 	params["sign"] = makeSign(params);
 
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
@@ -163,7 +164,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
-	params["trade_type"] = "WXPAY.MICROPAY";
+	params["trade_type"] = getTradeTypeWithOrderNo(m_order_no.c_str());
 	params["out_trade_no"] = m_order_no;
 	params["total_fee"] = atoFee(fee);
 	params["auth_code"] = auth_code;
@@ -176,7 +177,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>(); 
 	*responseCallback = [this](const std::string& data)
 	{
-		printf("%d,%s", data.length(), data.c_str());
+		DataMgrInstanceEx.writeLog(data.c_str());
 		tinyxml2::XMLDocument *pDoc = new tinyxml2::XMLDocument();
 		tinyxml2::XMLError errorId = pDoc->Parse(data.c_str(), data.length());
 		if (errorId != 0) {
@@ -211,6 +212,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 		}
 	};
 	curlManager::instance()->request(m_api["micropay"].c_str(), mapToXml(params).c_str(), CURL_METHOD_POST, responseCallback);
+	writeRequestParamsLog("orderquery", params);
 	setState(sellState::paying);
 	return true;
 }
@@ -500,4 +502,20 @@ void sellMobileSystem::sendTipsMessage(const char* msg, unsigned int len)
 	char * tmpBuf = new char[len + 1];
 	sprintf_s(tmpBuf, len + 1, "%s", msg);
 	::PostMessage(m_mainHwnd, UM_TIPS_MESSAGE, (UINT_PTR)tmpBuf, 0);
+}
+
+const char* sellMobileSystem::getTradeTypeWithOrderNo(const char* orderNo)
+{
+	if (nullptr == orderNo)
+		return "";
+
+	size_t orderLen = strlen(orderNo);
+	if (18 == orderLen)
+	{
+		if ('1' == orderNo[0] && '0' <= orderNo[1] && '5' >= orderNo[1])
+		{
+			return "WXPAY.MICROPAY";
+		}
+	}
+	return "ALIPAY.MICROPAY";
 }

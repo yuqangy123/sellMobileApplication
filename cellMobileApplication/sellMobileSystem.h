@@ -38,6 +38,7 @@ protected:
 	std::string mapToXml(const std::map<std::string, std::string>& paramsMap);
 	std::string getXmlNode(tinyxml2::XMLDocument *pDoc, const char* nodename);
 	void sendTipsMessage(const char* msg, unsigned int len);
+	const char* getTradeTypeWithOrderNo(const char* orderNo);
 
 protected:
 	std::string m_mch_id;

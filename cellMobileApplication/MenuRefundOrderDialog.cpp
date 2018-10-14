@@ -44,6 +44,11 @@ BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 	//ÆÁ±ÎESC¹Ø±Õ´°Ìå/
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
 	{
+		::PostMessage(GetActiveWindow()->m_hWnd, UM_ESC_KEYBOARD_NOTIFY, 1, 0);
+		return TRUE;
+	}
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
 		::SendMessage(::GetActiveWindow(), WM_CLOSE, 0, 0);
 		return TRUE;
 	}
@@ -91,6 +96,9 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 BOOL CMenuRefundOrderDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	/*/
+	
 #ifdef DEBUG_MODE	
 	char randChar[32] = { 0 };
 	long rd = getRandom(99999999);
@@ -107,5 +115,6 @@ BOOL CMenuRefundOrderDialog::OnInitDialog()
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
 	m_totalFeeCtrl.SetWindowText(csTotalFee);
 	m_feeCtrl.SetWindowText(csTotalFee);
+	*/
 	return true;
 }

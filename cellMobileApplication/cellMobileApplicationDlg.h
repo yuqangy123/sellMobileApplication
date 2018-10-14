@@ -57,6 +57,8 @@ public:
 	CMenuSettingDialog m_menuSettingDlg;
 
 	afx_msg void OnTcnSelchangeTabMenu(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnEscKeyboardNotify(WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	void selectShowTabMenu(int index);
 };

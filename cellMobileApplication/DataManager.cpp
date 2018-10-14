@@ -97,6 +97,7 @@ CDataManager::CDataManager()
 		CString errStr;
 		errStr.Format(L"_ConnectionPtr init fail(%d)", err);
 		AfxMessageBox(errStr);
+		PostQuitMessage(0);
 	}
 	if (m_pRecordset.CreateInstance(_uuidof(Recordset)) != S_OK)
 	{
@@ -104,11 +105,9 @@ CDataManager::CDataManager()
 		CString errStr;
 		errStr.Format(L"_RecordsetPtr init fail(%d)", err);
 		AfxMessageBox(errStr);
+		PostQuitMessage(0);
 	}
 	//::CoUninitialize();
-
-
-	
 
 }
 
@@ -190,6 +189,7 @@ void CDataManager::writeLog(const char* ret)
 
 BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee)
 {
+	HRESULT openState = S_OK+1;
 	do {
 		double totalFee = 0;
 		try {
@@ -204,7 +204,7 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 				break;
 			}
 			sprintf_s(ql, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password='www.bizcent.com'", strDBFileA.GetString());
-			m_pConnection->Open(ql, "", "", adModeUnknown);
+			openState = m_pConnection->Open(ql, "", "", adModeUnknown);
 
 			if (!BillNumber.IsEmpty())
 			{
@@ -242,7 +242,8 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 
 		csTotalFee.Format(L"%.2f", totalFee);
 	} while (false);
-	m_pConnection->Close();
+	if(openState == S_OK)
+		m_pConnection->Close();
 
 	
 	return true;

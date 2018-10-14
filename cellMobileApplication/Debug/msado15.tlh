@@ -1,9 +1,9 @@
-﻿// Created by Microsoft (R) C/C++ Compiler Version 14.00.24215.1 (56e64c61).
+﻿// Created by Microsoft (R) C/C++ Compiler Version 14.00.24215.1 (b9bd2cc2).
 //
 // e:\yiyou\work\sellmobileapplication\cellmobileapplication\debug\msado15.tlh
 //
-// C++ source equivalent of type library C:\Program Files\Common Files\System\ado\msado15.dll
-// compiler-generated file created 10/10/18 at 22:10:21 - DO NOT EDIT!
+// C++ source equivalent of Win32 type library msado15.dll
+// compiler-generated file created 10/13/18 at 22:05:31 - DO NOT EDIT!
 
 #pragma once
 #pragma pack(push, 8)
@@ -146,10 +146,6 @@ struct __declspec(uuid("00000283-0000-0010-8000-00aa006d2ea4"))
 struct __declspec(uuid("00001505-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Field15;
 struct /* coclass */ Parameter;
-struct __declspec(uuid("00000402-0000-0010-8000-00aa006d2ea4"))
-/* interface */ ConnectionEventsVt_Deprecated;
-struct __declspec(uuid("00000550-0000-0010-8000-00aa006d2ea4"))
-/* dual interface */ _Connection_Deprecated;
 struct __declspec(uuid("00000515-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Connection15_Deprecated;
 struct __declspec(uuid("00000556-0000-0010-8000-00aa006d2ea4"))
@@ -170,31 +166,35 @@ struct __declspec(uuid("00000569-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Field_Deprecated;
 struct __declspec(uuid("0000054c-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Field20_Deprecated;
-struct __declspec(uuid("b08400bd-f9d1-4d02-b856-71d5dba123e9"))
-/* dual interface */ _Command_Deprecated;
-struct __declspec(uuid("0000054e-0000-0010-8000-00aa006d2ea4"))
-/* dual interface */ Command25_Deprecated;
-struct __declspec(uuid("00000508-0000-0010-8000-00aa006d2ea4"))
-/* dual interface */ Command15_Deprecated;
-struct __declspec(uuid("0000050c-0000-0010-8000-00aa006d2ea4"))
-/* dual interface */ _Parameter_Deprecated;
-struct __declspec(uuid("0000050d-0000-0010-8000-00aa006d2ea4"))
-/* dual interface */ Parameters_Deprecated;
-struct __declspec(uuid("00000403-0000-0010-8000-00aa006d2ea4"))
-/* interface */ RecordsetEventsVt_Deprecated;
-struct __declspec(uuid("00000400-0000-0010-8000-00aa006d2ea4"))
-/* dispinterface */ ConnectionEvents_Deprecated;
-struct __declspec(uuid("00000266-0000-0010-8000-00aa006d2ea4"))
-/* dispinterface */ RecordsetEvents_Deprecated;
+struct __declspec(uuid("00000550-0000-0010-8000-00aa006d2ea4"))
+/* dual interface */ _Connection_Deprecated;
 struct __declspec(uuid("00000562-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ _Record_Deprecated;
 struct __declspec(uuid("00000565-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ _Stream_Deprecated;
 struct __declspec(uuid("00000505-0000-0010-8000-00aa006d2ea4"))
 /* dual interface */ Field15_Deprecated;
-typedef __int64 PositionEnum_Param;
+struct __declspec(uuid("0000050c-0000-0010-8000-00aa006d2ea4"))
+/* dual interface */ _Parameter_Deprecated;
+struct __declspec(uuid("0000050d-0000-0010-8000-00aa006d2ea4"))
+/* dual interface */ Parameters_Deprecated;
+struct __declspec(uuid("00000508-0000-0010-8000-00aa006d2ea4"))
+/* dual interface */ Command15_Deprecated;
+struct __declspec(uuid("0000054e-0000-0010-8000-00aa006d2ea4"))
+/* dual interface */ Command25_Deprecated;
+struct __declspec(uuid("b08400bd-f9d1-4d02-b856-71d5dba123e9"))
+/* dual interface */ _Command_Deprecated;
+struct __declspec(uuid("00000402-0000-0010-8000-00aa006d2ea4"))
+/* interface */ ConnectionEventsVt_Deprecated;
+struct __declspec(uuid("00000403-0000-0010-8000-00aa006d2ea4"))
+/* interface */ RecordsetEventsVt_Deprecated;
+struct __declspec(uuid("00000400-0000-0010-8000-00aa006d2ea4"))
+/* dispinterface */ ConnectionEvents_Deprecated;
+struct __declspec(uuid("00000266-0000-0010-8000-00aa006d2ea4"))
+/* dispinterface */ RecordsetEvents_Deprecated;
+typedef enum PositionEnum PositionEnum_Param;
 typedef enum SearchDirectionEnum SearchDirection;
-typedef __int64 ADO_LONGPTR;
+typedef long ADO_LONGPTR;
 
 //
 // Smart pointer typedef declarations
@@ -229,12 +229,12 @@ _COM_SMARTPTR_TYPEDEF(Field_Deprecated, __uuidof(Field_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Fields15_Deprecated, __uuidof(Fields15_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Fields20_Deprecated, __uuidof(Fields20_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Fields_Deprecated, __uuidof(Fields_Deprecated));
+_COM_SMARTPTR_TYPEDEF(_Stream_Deprecated, __uuidof(_Stream_Deprecated));
+_COM_SMARTPTR_TYPEDEF(Field15_Deprecated, __uuidof(Field15_Deprecated));
 _COM_SMARTPTR_TYPEDEF(_Parameter_Deprecated, __uuidof(_Parameter_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Parameters_Deprecated, __uuidof(Parameters_Deprecated));
 _COM_SMARTPTR_TYPEDEF(ConnectionEvents_Deprecated, __uuidof(ConnectionEvents_Deprecated));
 _COM_SMARTPTR_TYPEDEF(RecordsetEvents_Deprecated, __uuidof(RecordsetEvents_Deprecated));
-_COM_SMARTPTR_TYPEDEF(_Stream_Deprecated, __uuidof(_Stream_Deprecated));
-_COM_SMARTPTR_TYPEDEF(Field15_Deprecated, __uuidof(Field15_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Command15, __uuidof(Command15));
 _COM_SMARTPTR_TYPEDEF(Command25, __uuidof(Command25));
 _COM_SMARTPTR_TYPEDEF(_Command, __uuidof(_Command));
@@ -247,18 +247,18 @@ _COM_SMARTPTR_TYPEDEF(_Recordset, __uuidof(_Recordset));
 _COM_SMARTPTR_TYPEDEF(ConnectionEventsVt, __uuidof(ConnectionEventsVt));
 _COM_SMARTPTR_TYPEDEF(RecordsetEventsVt, __uuidof(RecordsetEventsVt));
 _COM_SMARTPTR_TYPEDEF(_Record, __uuidof(_Record));
-_COM_SMARTPTR_TYPEDEF(ConnectionEventsVt_Deprecated, __uuidof(ConnectionEventsVt_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Connection15_Deprecated, __uuidof(Connection15_Deprecated));
 _COM_SMARTPTR_TYPEDEF(_Connection_Deprecated, __uuidof(_Connection_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Recordset15_Deprecated, __uuidof(Recordset15_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Recordset20_Deprecated, __uuidof(Recordset20_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Recordset21_Deprecated, __uuidof(Recordset21_Deprecated));
 _COM_SMARTPTR_TYPEDEF(_Recordset_Deprecated, __uuidof(_Recordset_Deprecated));
+_COM_SMARTPTR_TYPEDEF(_Record_Deprecated, __uuidof(_Record_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Command15_Deprecated, __uuidof(Command15_Deprecated));
 _COM_SMARTPTR_TYPEDEF(Command25_Deprecated, __uuidof(Command25_Deprecated));
 _COM_SMARTPTR_TYPEDEF(_Command_Deprecated, __uuidof(_Command_Deprecated));
+_COM_SMARTPTR_TYPEDEF(ConnectionEventsVt_Deprecated, __uuidof(ConnectionEventsVt_Deprecated));
 _COM_SMARTPTR_TYPEDEF(RecordsetEventsVt_Deprecated, __uuidof(RecordsetEventsVt_Deprecated));
-_COM_SMARTPTR_TYPEDEF(_Record_Deprecated, __uuidof(_Record_Deprecated));
 
 //
 // Type library items
@@ -2280,6 +2280,225 @@ Fields_Deprecated : Fields20_Deprecated
       virtual HRESULT __stdcall raw_CancelUpdate ( ) = 0;
 };
 
+struct __declspec(uuid("00000565-0000-0010-8000-00aa006d2ea4"))
+_Stream_Deprecated : IDispatch
+{
+    //
+    // Property data
+    //
+
+    __declspec(property(get=GetSize))
+    ADO_LONGPTR Size;
+    __declspec(property(get=GetEOS))
+    VARIANT_BOOL EOS;
+    __declspec(property(get=GetPosition,put=PutPosition))
+    ADO_LONGPTR Position;
+    __declspec(property(get=GetType,put=PutType))
+    enum StreamTypeEnum Type;
+    __declspec(property(get=GetLineSeparator,put=PutLineSeparator))
+    enum LineSeparatorEnum LineSeparator;
+    __declspec(property(get=GetState))
+    enum ObjectStateEnum State;
+    __declspec(property(get=GetMode,put=PutMode))
+    enum ConnectModeEnum Mode;
+    __declspec(property(get=GetCharset,put=PutCharset))
+    _bstr_t Charset;
+
+    //
+    // Wrapper methods for error-handling
+    //
+
+    ADO_LONGPTR GetSize ( );
+    VARIANT_BOOL GetEOS ( );
+    ADO_LONGPTR GetPosition ( );
+    void PutPosition (
+        ADO_LONGPTR pPos );
+    enum StreamTypeEnum GetType ( );
+    void PutType (
+        enum StreamTypeEnum ptype );
+    enum LineSeparatorEnum GetLineSeparator ( );
+    void PutLineSeparator (
+        enum LineSeparatorEnum pLS );
+    enum ObjectStateEnum GetState ( );
+    enum ConnectModeEnum GetMode ( );
+    void PutMode (
+        enum ConnectModeEnum pMode );
+    _bstr_t GetCharset ( );
+    void PutCharset (
+        _bstr_t pbstrCharset );
+    _variant_t Read (
+        long NumBytes );
+    HRESULT Open (
+        const _variant_t & Source,
+        enum ConnectModeEnum Mode,
+        enum StreamOpenOptionsEnum Options,
+        _bstr_t UserName,
+        _bstr_t Password );
+    HRESULT Close ( );
+    HRESULT SkipLine ( );
+    HRESULT Write (
+        const _variant_t & Buffer );
+    HRESULT SetEOS ( );
+    HRESULT CopyTo (
+        struct _Stream_Deprecated * DestStream,
+        ADO_LONGPTR CharNumber );
+    HRESULT Flush ( );
+    HRESULT SaveToFile (
+        _bstr_t FileName,
+        enum SaveOptionsEnum Options );
+    HRESULT LoadFromFile (
+        _bstr_t FileName );
+    _bstr_t ReadText (
+        long NumChars );
+    HRESULT WriteText (
+        _bstr_t Data,
+        enum StreamWriteEnum Options );
+    HRESULT Cancel ( );
+
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_Size (
+        /*[out,retval]*/ ADO_LONGPTR * pSize ) = 0;
+      virtual HRESULT __stdcall get_EOS (
+        /*[out,retval]*/ VARIANT_BOOL * pEOS ) = 0;
+      virtual HRESULT __stdcall get_Position (
+        /*[out,retval]*/ ADO_LONGPTR * pPos ) = 0;
+      virtual HRESULT __stdcall put_Position (
+        /*[in]*/ ADO_LONGPTR pPos ) = 0;
+      virtual HRESULT __stdcall get_Type (
+        /*[out,retval]*/ enum StreamTypeEnum * ptype ) = 0;
+      virtual HRESULT __stdcall put_Type (
+        /*[in]*/ enum StreamTypeEnum ptype ) = 0;
+      virtual HRESULT __stdcall get_LineSeparator (
+        /*[out,retval]*/ enum LineSeparatorEnum * pLS ) = 0;
+      virtual HRESULT __stdcall put_LineSeparator (
+        /*[in]*/ enum LineSeparatorEnum pLS ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum ObjectStateEnum * pState ) = 0;
+      virtual HRESULT __stdcall get_Mode (
+        /*[out,retval]*/ enum ConnectModeEnum * pMode ) = 0;
+      virtual HRESULT __stdcall put_Mode (
+        /*[in]*/ enum ConnectModeEnum pMode ) = 0;
+      virtual HRESULT __stdcall get_Charset (
+        /*[out,retval]*/ BSTR * pbstrCharset ) = 0;
+      virtual HRESULT __stdcall put_Charset (
+        /*[in]*/ BSTR pbstrCharset ) = 0;
+      virtual HRESULT __stdcall raw_Read (
+        /*[in]*/ long NumBytes,
+        /*[out,retval]*/ VARIANT * pval ) = 0;
+      virtual HRESULT __stdcall raw_Open (
+        /*[in]*/ VARIANT Source,
+        /*[in]*/ enum ConnectModeEnum Mode,
+        /*[in]*/ enum StreamOpenOptionsEnum Options,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR Password ) = 0;
+      virtual HRESULT __stdcall raw_Close ( ) = 0;
+      virtual HRESULT __stdcall raw_SkipLine ( ) = 0;
+      virtual HRESULT __stdcall raw_Write (
+        /*[in]*/ VARIANT Buffer ) = 0;
+      virtual HRESULT __stdcall raw_SetEOS ( ) = 0;
+      virtual HRESULT __stdcall raw_CopyTo (
+        /*[in]*/ struct _Stream_Deprecated * DestStream,
+        /*[in]*/ ADO_LONGPTR CharNumber ) = 0;
+      virtual HRESULT __stdcall raw_Flush ( ) = 0;
+      virtual HRESULT __stdcall raw_SaveToFile (
+        /*[in]*/ BSTR FileName,
+        /*[in]*/ enum SaveOptionsEnum Options ) = 0;
+      virtual HRESULT __stdcall raw_LoadFromFile (
+        /*[in]*/ BSTR FileName ) = 0;
+      virtual HRESULT __stdcall raw_ReadText (
+        /*[in]*/ long NumChars,
+        /*[out,retval]*/ BSTR * pbstr ) = 0;
+      virtual HRESULT __stdcall raw_WriteText (
+        /*[in]*/ BSTR Data,
+        /*[in]*/ enum StreamWriteEnum Options ) = 0;
+      virtual HRESULT __stdcall raw_Cancel ( ) = 0;
+};
+
+struct __declspec(uuid("00000505-0000-0010-8000-00aa006d2ea4"))
+Field15_Deprecated : _ADO
+{
+    //
+    // Property data
+    //
+
+    __declspec(property(get=GetValue,put=PutValue))
+    _variant_t Value;
+    __declspec(property(get=GetName))
+    _bstr_t Name;
+    __declspec(property(get=GetType))
+    enum DataTypeEnum Type;
+    __declspec(property(get=GetDefinedSize))
+    ADO_LONGPTR DefinedSize;
+    __declspec(property(get=GetOriginalValue))
+    _variant_t OriginalValue;
+    __declspec(property(get=GetUnderlyingValue))
+    _variant_t UnderlyingValue;
+    __declspec(property(get=GetActualSize))
+    ADO_LONGPTR ActualSize;
+    __declspec(property(get=GetPrecision))
+    unsigned char Precision;
+    __declspec(property(get=GetNumericScale))
+    unsigned char NumericScale;
+    __declspec(property(get=GetAttributes))
+    long Attributes;
+
+    //
+    // Wrapper methods for error-handling
+    //
+
+    ADO_LONGPTR GetActualSize ( );
+    long GetAttributes ( );
+    ADO_LONGPTR GetDefinedSize ( );
+    _bstr_t GetName ( );
+    enum DataTypeEnum GetType ( );
+    _variant_t GetValue ( );
+    void PutValue (
+        const _variant_t & pvar );
+    unsigned char GetPrecision ( );
+    unsigned char GetNumericScale ( );
+    HRESULT AppendChunk (
+        const _variant_t & Data );
+    _variant_t GetChunk (
+        long Length );
+    _variant_t GetOriginalValue ( );
+    _variant_t GetUnderlyingValue ( );
+
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_ActualSize (
+        /*[out,retval]*/ ADO_LONGPTR * pl ) = 0;
+      virtual HRESULT __stdcall get_Attributes (
+        /*[out,retval]*/ long * pl ) = 0;
+      virtual HRESULT __stdcall get_DefinedSize (
+        /*[out,retval]*/ ADO_LONGPTR * pl ) = 0;
+      virtual HRESULT __stdcall get_Name (
+        /*[out,retval]*/ BSTR * pbstr ) = 0;
+      virtual HRESULT __stdcall get_Type (
+        /*[out,retval]*/ enum DataTypeEnum * pDataType ) = 0;
+      virtual HRESULT __stdcall get_Value (
+        /*[out,retval]*/ VARIANT * pvar ) = 0;
+      virtual HRESULT __stdcall put_Value (
+        /*[in]*/ VARIANT pvar ) = 0;
+      virtual HRESULT __stdcall get_Precision (
+        /*[out,retval]*/ unsigned char * pbPrecision ) = 0;
+      virtual HRESULT __stdcall get_NumericScale (
+        /*[out,retval]*/ unsigned char * pbNumericScale ) = 0;
+      virtual HRESULT __stdcall raw_AppendChunk (
+        /*[in]*/ VARIANT Data ) = 0;
+      virtual HRESULT __stdcall raw_GetChunk (
+        /*[in]*/ long Length,
+        /*[out,retval]*/ VARIANT * pvar ) = 0;
+      virtual HRESULT __stdcall get_OriginalValue (
+        /*[out,retval]*/ VARIANT * pvar ) = 0;
+      virtual HRESULT __stdcall get_UnderlyingValue (
+        /*[out,retval]*/ VARIANT * pvar ) = 0;
+};
+
 struct __declspec(uuid("0000050c-0000-0010-8000-00aa006d2ea4"))
 _Parameter_Deprecated : _ADO
 {
@@ -2519,225 +2738,6 @@ RecordsetEvents_Deprecated : IDispatch
         struct Error * pError,
         enum EventStatusEnum * adStatus,
         struct _Recordset_Deprecated * pRecordset );
-};
-
-struct __declspec(uuid("00000565-0000-0010-8000-00aa006d2ea4"))
-_Stream_Deprecated : IDispatch
-{
-    //
-    // Property data
-    //
-
-    __declspec(property(get=GetSize))
-    ADO_LONGPTR Size;
-    __declspec(property(get=GetEOS))
-    VARIANT_BOOL EOS;
-    __declspec(property(get=GetPosition,put=PutPosition))
-    ADO_LONGPTR Position;
-    __declspec(property(get=GetType,put=PutType))
-    enum StreamTypeEnum Type;
-    __declspec(property(get=GetLineSeparator,put=PutLineSeparator))
-    enum LineSeparatorEnum LineSeparator;
-    __declspec(property(get=GetState))
-    enum ObjectStateEnum State;
-    __declspec(property(get=GetMode,put=PutMode))
-    enum ConnectModeEnum Mode;
-    __declspec(property(get=GetCharset,put=PutCharset))
-    _bstr_t Charset;
-
-    //
-    // Wrapper methods for error-handling
-    //
-
-    ADO_LONGPTR GetSize ( );
-    VARIANT_BOOL GetEOS ( );
-    ADO_LONGPTR GetPosition ( );
-    void PutPosition (
-        ADO_LONGPTR pPos );
-    enum StreamTypeEnum GetType ( );
-    void PutType (
-        enum StreamTypeEnum ptype );
-    enum LineSeparatorEnum GetLineSeparator ( );
-    void PutLineSeparator (
-        enum LineSeparatorEnum pLS );
-    enum ObjectStateEnum GetState ( );
-    enum ConnectModeEnum GetMode ( );
-    void PutMode (
-        enum ConnectModeEnum pMode );
-    _bstr_t GetCharset ( );
-    void PutCharset (
-        _bstr_t pbstrCharset );
-    _variant_t Read (
-        long NumBytes );
-    HRESULT Open (
-        const _variant_t & Source,
-        enum ConnectModeEnum Mode,
-        enum StreamOpenOptionsEnum Options,
-        _bstr_t UserName,
-        _bstr_t Password );
-    HRESULT Close ( );
-    HRESULT SkipLine ( );
-    HRESULT Write (
-        const _variant_t & Buffer );
-    HRESULT SetEOS ( );
-    HRESULT CopyTo (
-        struct _Stream_Deprecated * DestStream,
-        ADO_LONGPTR CharNumber );
-    HRESULT Flush ( );
-    HRESULT SaveToFile (
-        _bstr_t FileName,
-        enum SaveOptionsEnum Options );
-    HRESULT LoadFromFile (
-        _bstr_t FileName );
-    _bstr_t ReadText (
-        long NumChars );
-    HRESULT WriteText (
-        _bstr_t Data,
-        enum StreamWriteEnum Options );
-    HRESULT Cancel ( );
-
-    //
-    // Raw methods provided by interface
-    //
-
-      virtual HRESULT __stdcall get_Size (
-        /*[out,retval]*/ ADO_LONGPTR * pSize ) = 0;
-      virtual HRESULT __stdcall get_EOS (
-        /*[out,retval]*/ VARIANT_BOOL * pEOS ) = 0;
-      virtual HRESULT __stdcall get_Position (
-        /*[out,retval]*/ ADO_LONGPTR * pPos ) = 0;
-      virtual HRESULT __stdcall put_Position (
-        /*[in]*/ ADO_LONGPTR pPos ) = 0;
-      virtual HRESULT __stdcall get_Type (
-        /*[out,retval]*/ enum StreamTypeEnum * ptype ) = 0;
-      virtual HRESULT __stdcall put_Type (
-        /*[in]*/ enum StreamTypeEnum ptype ) = 0;
-      virtual HRESULT __stdcall get_LineSeparator (
-        /*[out,retval]*/ enum LineSeparatorEnum * pLS ) = 0;
-      virtual HRESULT __stdcall put_LineSeparator (
-        /*[in]*/ enum LineSeparatorEnum pLS ) = 0;
-      virtual HRESULT __stdcall get_State (
-        /*[out,retval]*/ enum ObjectStateEnum * pState ) = 0;
-      virtual HRESULT __stdcall get_Mode (
-        /*[out,retval]*/ enum ConnectModeEnum * pMode ) = 0;
-      virtual HRESULT __stdcall put_Mode (
-        /*[in]*/ enum ConnectModeEnum pMode ) = 0;
-      virtual HRESULT __stdcall get_Charset (
-        /*[out,retval]*/ BSTR * pbstrCharset ) = 0;
-      virtual HRESULT __stdcall put_Charset (
-        /*[in]*/ BSTR pbstrCharset ) = 0;
-      virtual HRESULT __stdcall raw_Read (
-        /*[in]*/ long NumBytes,
-        /*[out,retval]*/ VARIANT * pval ) = 0;
-      virtual HRESULT __stdcall raw_Open (
-        /*[in]*/ VARIANT Source,
-        /*[in]*/ enum ConnectModeEnum Mode,
-        /*[in]*/ enum StreamOpenOptionsEnum Options,
-        /*[in]*/ BSTR UserName,
-        /*[in]*/ BSTR Password ) = 0;
-      virtual HRESULT __stdcall raw_Close ( ) = 0;
-      virtual HRESULT __stdcall raw_SkipLine ( ) = 0;
-      virtual HRESULT __stdcall raw_Write (
-        /*[in]*/ VARIANT Buffer ) = 0;
-      virtual HRESULT __stdcall raw_SetEOS ( ) = 0;
-      virtual HRESULT __stdcall raw_CopyTo (
-        /*[in]*/ struct _Stream_Deprecated * DestStream,
-        /*[in]*/ ADO_LONGPTR CharNumber ) = 0;
-      virtual HRESULT __stdcall raw_Flush ( ) = 0;
-      virtual HRESULT __stdcall raw_SaveToFile (
-        /*[in]*/ BSTR FileName,
-        /*[in]*/ enum SaveOptionsEnum Options ) = 0;
-      virtual HRESULT __stdcall raw_LoadFromFile (
-        /*[in]*/ BSTR FileName ) = 0;
-      virtual HRESULT __stdcall raw_ReadText (
-        /*[in]*/ long NumChars,
-        /*[out,retval]*/ BSTR * pbstr ) = 0;
-      virtual HRESULT __stdcall raw_WriteText (
-        /*[in]*/ BSTR Data,
-        /*[in]*/ enum StreamWriteEnum Options ) = 0;
-      virtual HRESULT __stdcall raw_Cancel ( ) = 0;
-};
-
-struct __declspec(uuid("00000505-0000-0010-8000-00aa006d2ea4"))
-Field15_Deprecated : _ADO
-{
-    //
-    // Property data
-    //
-
-    __declspec(property(get=GetValue,put=PutValue))
-    _variant_t Value;
-    __declspec(property(get=GetName))
-    _bstr_t Name;
-    __declspec(property(get=GetType))
-    enum DataTypeEnum Type;
-    __declspec(property(get=GetDefinedSize))
-    ADO_LONGPTR DefinedSize;
-    __declspec(property(get=GetOriginalValue))
-    _variant_t OriginalValue;
-    __declspec(property(get=GetUnderlyingValue))
-    _variant_t UnderlyingValue;
-    __declspec(property(get=GetActualSize))
-    ADO_LONGPTR ActualSize;
-    __declspec(property(get=GetPrecision))
-    unsigned char Precision;
-    __declspec(property(get=GetNumericScale))
-    unsigned char NumericScale;
-    __declspec(property(get=GetAttributes))
-    long Attributes;
-
-    //
-    // Wrapper methods for error-handling
-    //
-
-    ADO_LONGPTR GetActualSize ( );
-    long GetAttributes ( );
-    ADO_LONGPTR GetDefinedSize ( );
-    _bstr_t GetName ( );
-    enum DataTypeEnum GetType ( );
-    _variant_t GetValue ( );
-    void PutValue (
-        const _variant_t & pvar );
-    unsigned char GetPrecision ( );
-    unsigned char GetNumericScale ( );
-    HRESULT AppendChunk (
-        const _variant_t & Data );
-    _variant_t GetChunk (
-        long Length );
-    _variant_t GetOriginalValue ( );
-    _variant_t GetUnderlyingValue ( );
-
-    //
-    // Raw methods provided by interface
-    //
-
-      virtual HRESULT __stdcall get_ActualSize (
-        /*[out,retval]*/ ADO_LONGPTR * pl ) = 0;
-      virtual HRESULT __stdcall get_Attributes (
-        /*[out,retval]*/ long * pl ) = 0;
-      virtual HRESULT __stdcall get_DefinedSize (
-        /*[out,retval]*/ ADO_LONGPTR * pl ) = 0;
-      virtual HRESULT __stdcall get_Name (
-        /*[out,retval]*/ BSTR * pbstr ) = 0;
-      virtual HRESULT __stdcall get_Type (
-        /*[out,retval]*/ enum DataTypeEnum * pDataType ) = 0;
-      virtual HRESULT __stdcall get_Value (
-        /*[out,retval]*/ VARIANT * pvar ) = 0;
-      virtual HRESULT __stdcall put_Value (
-        /*[in]*/ VARIANT pvar ) = 0;
-      virtual HRESULT __stdcall get_Precision (
-        /*[out,retval]*/ unsigned char * pbPrecision ) = 0;
-      virtual HRESULT __stdcall get_NumericScale (
-        /*[out,retval]*/ unsigned char * pbNumericScale ) = 0;
-      virtual HRESULT __stdcall raw_AppendChunk (
-        /*[in]*/ VARIANT Data ) = 0;
-      virtual HRESULT __stdcall raw_GetChunk (
-        /*[in]*/ long Length,
-        /*[out,retval]*/ VARIANT * pvar ) = 0;
-      virtual HRESULT __stdcall get_OriginalValue (
-        /*[out,retval]*/ VARIANT * pvar ) = 0;
-      virtual HRESULT __stdcall get_UnderlyingValue (
-        /*[out,retval]*/ VARIANT * pvar ) = 0;
 };
 
 struct __declspec(uuid("00001508-0000-0010-8000-00aa006d2ea4"))
@@ -3879,114 +3879,6 @@ _Record : _ADO
       virtual HRESULT __stdcall raw_Cancel ( ) = 0;
 };
 
-struct __declspec(uuid("00000402-0000-0010-8000-00aa006d2ea4"))
-ConnectionEventsVt_Deprecated : IUnknown
-{
-    //
-    // Wrapper methods for error-handling
-    //
-
-    HRESULT InfoMessage (
-        struct Error * pError,
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT BeginTransComplete (
-        long TransactionLevel,
-        struct Error * pError,
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT CommitTransComplete (
-        struct Error * pError,
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT RollbackTransComplete (
-        struct Error * pError,
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT WillExecute (
-        BSTR * Source,
-        enum CursorTypeEnum * CursorType,
-        enum LockTypeEnum * LockType,
-        long * Options,
-        enum EventStatusEnum * adStatus,
-        struct _Command_Deprecated * pCommand,
-        struct _Recordset_Deprecated * pRecordset,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT ExecuteComplete (
-        long RecordsAffected,
-        struct Error * pError,
-        enum EventStatusEnum * adStatus,
-        struct _Command_Deprecated * pCommand,
-        struct _Recordset_Deprecated * pRecordset,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT WillConnect (
-        BSTR * ConnectionString,
-        BSTR * UserID,
-        BSTR * Password,
-        long * Options,
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT ConnectComplete (
-        struct Error * pError,
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-    HRESULT Disconnect (
-        enum EventStatusEnum * adStatus,
-        struct _Connection_Deprecated * pConnection );
-
-    //
-    // Raw methods provided by interface
-    //
-
-      virtual HRESULT __stdcall raw_InfoMessage (
-        /*[in]*/ struct Error * pError,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_BeginTransComplete (
-        /*[in]*/ long TransactionLevel,
-        /*[in]*/ struct Error * pError,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_CommitTransComplete (
-        /*[in]*/ struct Error * pError,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_RollbackTransComplete (
-        /*[in]*/ struct Error * pError,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_WillExecute (
-        /*[in,out]*/ BSTR * Source,
-        /*[in,out]*/ enum CursorTypeEnum * CursorType,
-        /*[in,out]*/ enum LockTypeEnum * LockType,
-        /*[in,out]*/ long * Options,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Command_Deprecated * pCommand,
-        /*[in]*/ struct _Recordset_Deprecated * pRecordset,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_ExecuteComplete (
-        /*[in]*/ long RecordsAffected,
-        /*[in]*/ struct Error * pError,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Command_Deprecated * pCommand,
-        /*[in]*/ struct _Recordset_Deprecated * pRecordset,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_WillConnect (
-        /*[in,out]*/ BSTR * ConnectionString,
-        /*[in,out]*/ BSTR * UserID,
-        /*[in,out]*/ BSTR * Password,
-        /*[in,out]*/ long * Options,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_ConnectComplete (
-        /*[in]*/ struct Error * pError,
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-      virtual HRESULT __stdcall raw_Disconnect (
-        /*[in,out]*/ enum EventStatusEnum * adStatus,
-        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
-};
-
 struct __declspec(uuid("00000515-0000-0010-8000-00aa006d2ea4"))
 Connection15_Deprecated : _ADO
 {
@@ -4595,6 +4487,135 @@ _Recordset_Deprecated : Recordset21_Deprecated
         /*[in]*/ enum PersistFormatEnum PersistFormat ) = 0;
 };
 
+struct __declspec(uuid("00000562-0000-0010-8000-00aa006d2ea4"))
+_Record_Deprecated : _ADO
+{
+    //
+    // Property data
+    //
+
+    __declspec(property(get=GetFields))
+    Fields_DeprecatedPtr Fields;
+    __declspec(property(get=GetState))
+    enum ObjectStateEnum State;
+    __declspec(property(get=GetMode,put=PutMode))
+    enum ConnectModeEnum Mode;
+    __declspec(property(get=GetParentURL))
+    _bstr_t ParentURL;
+    __declspec(property(get=GetRecordType))
+    enum RecordTypeEnum RecordType;
+
+    //
+    // Wrapper methods for error-handling
+    //
+
+    _variant_t GetActiveConnection ( );
+    void PutActiveConnection (
+        _bstr_t pvar );
+    void PutRefActiveConnection (
+        struct _Connection_Deprecated * pvar );
+    enum ObjectStateEnum GetState ( );
+    _variant_t GetSource ( );
+    void PutSource (
+        _bstr_t pvar );
+    void PutRefSource (
+        IDispatch * pvar );
+    enum ConnectModeEnum GetMode ( );
+    void PutMode (
+        enum ConnectModeEnum pMode );
+    _bstr_t GetParentURL ( );
+    _bstr_t MoveRecord (
+        _bstr_t Source,
+        _bstr_t Destination,
+        _bstr_t UserName,
+        _bstr_t Password,
+        enum MoveRecordOptionsEnum Options,
+        VARIANT_BOOL Async );
+    _bstr_t CopyRecord (
+        _bstr_t Source,
+        _bstr_t Destination,
+        _bstr_t UserName,
+        _bstr_t Password,
+        enum CopyRecordOptionsEnum Options,
+        VARIANT_BOOL Async );
+    HRESULT DeleteRecord (
+        _bstr_t Source,
+        VARIANT_BOOL Async );
+    HRESULT Open (
+        const _variant_t & Source,
+        const _variant_t & ActiveConnection,
+        enum ConnectModeEnum Mode,
+        enum RecordCreateOptionsEnum CreateOptions,
+        enum RecordOpenOptionsEnum Options,
+        _bstr_t UserName,
+        _bstr_t Password );
+    HRESULT Close ( );
+    Fields_DeprecatedPtr GetFields ( );
+    enum RecordTypeEnum GetRecordType ( );
+    _Recordset_DeprecatedPtr GetChildren ( );
+    HRESULT Cancel ( );
+
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_ActiveConnection (
+        /*[out,retval]*/ VARIANT * pvar ) = 0;
+      virtual HRESULT __stdcall put_ActiveConnection (
+        /*[in]*/ BSTR pvar ) = 0;
+      virtual HRESULT __stdcall putref_ActiveConnection (
+        /*[in]*/ struct _Connection_Deprecated * pvar ) = 0;
+      virtual HRESULT __stdcall get_State (
+        /*[out,retval]*/ enum ObjectStateEnum * pState ) = 0;
+      virtual HRESULT __stdcall get_Source (
+        /*[out,retval]*/ VARIANT * pvar ) = 0;
+      virtual HRESULT __stdcall put_Source (
+        /*[in]*/ BSTR pvar ) = 0;
+      virtual HRESULT __stdcall putref_Source (
+        /*[in]*/ IDispatch * pvar ) = 0;
+      virtual HRESULT __stdcall get_Mode (
+        /*[out,retval]*/ enum ConnectModeEnum * pMode ) = 0;
+      virtual HRESULT __stdcall put_Mode (
+        /*[in]*/ enum ConnectModeEnum pMode ) = 0;
+      virtual HRESULT __stdcall get_ParentURL (
+        /*[out,retval]*/ BSTR * pbstrParentURL ) = 0;
+      virtual HRESULT __stdcall raw_MoveRecord (
+        /*[in]*/ BSTR Source,
+        /*[in]*/ BSTR Destination,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR Password,
+        /*[in]*/ enum MoveRecordOptionsEnum Options,
+        /*[in]*/ VARIANT_BOOL Async,
+        /*[out,retval]*/ BSTR * pbstrNewURL ) = 0;
+      virtual HRESULT __stdcall raw_CopyRecord (
+        /*[in]*/ BSTR Source,
+        /*[in]*/ BSTR Destination,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR Password,
+        /*[in]*/ enum CopyRecordOptionsEnum Options,
+        /*[in]*/ VARIANT_BOOL Async,
+        /*[out,retval]*/ BSTR * pbstrNewURL ) = 0;
+      virtual HRESULT __stdcall raw_DeleteRecord (
+        /*[in]*/ BSTR Source,
+        /*[in]*/ VARIANT_BOOL Async ) = 0;
+      virtual HRESULT __stdcall raw_Open (
+        /*[in]*/ VARIANT Source,
+        /*[in]*/ VARIANT ActiveConnection,
+        /*[in]*/ enum ConnectModeEnum Mode,
+        /*[in]*/ enum RecordCreateOptionsEnum CreateOptions,
+        /*[in]*/ enum RecordOpenOptionsEnum Options,
+        /*[in]*/ BSTR UserName,
+        /*[in]*/ BSTR Password ) = 0;
+      virtual HRESULT __stdcall raw_Close ( ) = 0;
+      virtual HRESULT __stdcall get_Fields (
+        /*[out,retval]*/ struct Fields_Deprecated * * ppFlds ) = 0;
+      virtual HRESULT __stdcall get_RecordType (
+        /*[out,retval]*/ enum RecordTypeEnum * ptype ) = 0;
+      virtual HRESULT __stdcall raw_GetChildren (
+        /*[out,retval]*/ struct _Recordset_Deprecated * * pprset ) = 0;
+      virtual HRESULT __stdcall raw_Cancel ( ) = 0;
+};
+
 struct __declspec(uuid("00000508-0000-0010-8000-00aa006d2ea4"))
 Command15_Deprecated : _ADO
 {
@@ -4769,6 +4790,114 @@ _Command_Deprecated : Command25_Deprecated
         /*[out,retval]*/ VARIANT_BOOL * pfNamedParameters ) = 0;
 };
 
+struct __declspec(uuid("00000402-0000-0010-8000-00aa006d2ea4"))
+ConnectionEventsVt_Deprecated : IUnknown
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    HRESULT InfoMessage (
+        struct Error * pError,
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT BeginTransComplete (
+        long TransactionLevel,
+        struct Error * pError,
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT CommitTransComplete (
+        struct Error * pError,
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT RollbackTransComplete (
+        struct Error * pError,
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT WillExecute (
+        BSTR * Source,
+        enum CursorTypeEnum * CursorType,
+        enum LockTypeEnum * LockType,
+        long * Options,
+        enum EventStatusEnum * adStatus,
+        struct _Command_Deprecated * pCommand,
+        struct _Recordset_Deprecated * pRecordset,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT ExecuteComplete (
+        long RecordsAffected,
+        struct Error * pError,
+        enum EventStatusEnum * adStatus,
+        struct _Command_Deprecated * pCommand,
+        struct _Recordset_Deprecated * pRecordset,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT WillConnect (
+        BSTR * ConnectionString,
+        BSTR * UserID,
+        BSTR * Password,
+        long * Options,
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT ConnectComplete (
+        struct Error * pError,
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+    HRESULT Disconnect (
+        enum EventStatusEnum * adStatus,
+        struct _Connection_Deprecated * pConnection );
+
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall raw_InfoMessage (
+        /*[in]*/ struct Error * pError,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_BeginTransComplete (
+        /*[in]*/ long TransactionLevel,
+        /*[in]*/ struct Error * pError,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_CommitTransComplete (
+        /*[in]*/ struct Error * pError,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_RollbackTransComplete (
+        /*[in]*/ struct Error * pError,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_WillExecute (
+        /*[in,out]*/ BSTR * Source,
+        /*[in,out]*/ enum CursorTypeEnum * CursorType,
+        /*[in,out]*/ enum LockTypeEnum * LockType,
+        /*[in,out]*/ long * Options,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Command_Deprecated * pCommand,
+        /*[in]*/ struct _Recordset_Deprecated * pRecordset,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_ExecuteComplete (
+        /*[in]*/ long RecordsAffected,
+        /*[in]*/ struct Error * pError,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Command_Deprecated * pCommand,
+        /*[in]*/ struct _Recordset_Deprecated * pRecordset,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_WillConnect (
+        /*[in,out]*/ BSTR * ConnectionString,
+        /*[in,out]*/ BSTR * UserID,
+        /*[in,out]*/ BSTR * Password,
+        /*[in,out]*/ long * Options,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_ConnectComplete (
+        /*[in]*/ struct Error * pError,
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+      virtual HRESULT __stdcall raw_Disconnect (
+        /*[in,out]*/ enum EventStatusEnum * adStatus,
+        /*[in]*/ struct _Connection_Deprecated * pConnection ) = 0;
+};
+
 struct __declspec(uuid("00000403-0000-0010-8000-00aa006d2ea4"))
 RecordsetEventsVt_Deprecated : IUnknown
 {
@@ -4887,135 +5016,6 @@ RecordsetEventsVt_Deprecated : IUnknown
         /*[in]*/ struct Error * pError,
         /*[in,out]*/ enum EventStatusEnum * adStatus,
         /*[in]*/ struct _Recordset_Deprecated * pRecordset ) = 0;
-};
-
-struct __declspec(uuid("00000562-0000-0010-8000-00aa006d2ea4"))
-_Record_Deprecated : _ADO
-{
-    //
-    // Property data
-    //
-
-    __declspec(property(get=GetFields))
-    Fields_DeprecatedPtr Fields;
-    __declspec(property(get=GetState))
-    enum ObjectStateEnum State;
-    __declspec(property(get=GetMode,put=PutMode))
-    enum ConnectModeEnum Mode;
-    __declspec(property(get=GetParentURL))
-    _bstr_t ParentURL;
-    __declspec(property(get=GetRecordType))
-    enum RecordTypeEnum RecordType;
-
-    //
-    // Wrapper methods for error-handling
-    //
-
-    _variant_t GetActiveConnection ( );
-    void PutActiveConnection (
-        _bstr_t pvar );
-    void PutRefActiveConnection (
-        struct _Connection_Deprecated * pvar );
-    enum ObjectStateEnum GetState ( );
-    _variant_t GetSource ( );
-    void PutSource (
-        _bstr_t pvar );
-    void PutRefSource (
-        IDispatch * pvar );
-    enum ConnectModeEnum GetMode ( );
-    void PutMode (
-        enum ConnectModeEnum pMode );
-    _bstr_t GetParentURL ( );
-    _bstr_t MoveRecord (
-        _bstr_t Source,
-        _bstr_t Destination,
-        _bstr_t UserName,
-        _bstr_t Password,
-        enum MoveRecordOptionsEnum Options,
-        VARIANT_BOOL Async );
-    _bstr_t CopyRecord (
-        _bstr_t Source,
-        _bstr_t Destination,
-        _bstr_t UserName,
-        _bstr_t Password,
-        enum CopyRecordOptionsEnum Options,
-        VARIANT_BOOL Async );
-    HRESULT DeleteRecord (
-        _bstr_t Source,
-        VARIANT_BOOL Async );
-    HRESULT Open (
-        const _variant_t & Source,
-        const _variant_t & ActiveConnection,
-        enum ConnectModeEnum Mode,
-        enum RecordCreateOptionsEnum CreateOptions,
-        enum RecordOpenOptionsEnum Options,
-        _bstr_t UserName,
-        _bstr_t Password );
-    HRESULT Close ( );
-    Fields_DeprecatedPtr GetFields ( );
-    enum RecordTypeEnum GetRecordType ( );
-    _Recordset_DeprecatedPtr GetChildren ( );
-    HRESULT Cancel ( );
-
-    //
-    // Raw methods provided by interface
-    //
-
-      virtual HRESULT __stdcall get_ActiveConnection (
-        /*[out,retval]*/ VARIANT * pvar ) = 0;
-      virtual HRESULT __stdcall put_ActiveConnection (
-        /*[in]*/ BSTR pvar ) = 0;
-      virtual HRESULT __stdcall putref_ActiveConnection (
-        /*[in]*/ struct _Connection_Deprecated * pvar ) = 0;
-      virtual HRESULT __stdcall get_State (
-        /*[out,retval]*/ enum ObjectStateEnum * pState ) = 0;
-      virtual HRESULT __stdcall get_Source (
-        /*[out,retval]*/ VARIANT * pvar ) = 0;
-      virtual HRESULT __stdcall put_Source (
-        /*[in]*/ BSTR pvar ) = 0;
-      virtual HRESULT __stdcall putref_Source (
-        /*[in]*/ IDispatch * pvar ) = 0;
-      virtual HRESULT __stdcall get_Mode (
-        /*[out,retval]*/ enum ConnectModeEnum * pMode ) = 0;
-      virtual HRESULT __stdcall put_Mode (
-        /*[in]*/ enum ConnectModeEnum pMode ) = 0;
-      virtual HRESULT __stdcall get_ParentURL (
-        /*[out,retval]*/ BSTR * pbstrParentURL ) = 0;
-      virtual HRESULT __stdcall raw_MoveRecord (
-        /*[in]*/ BSTR Source,
-        /*[in]*/ BSTR Destination,
-        /*[in]*/ BSTR UserName,
-        /*[in]*/ BSTR Password,
-        /*[in]*/ enum MoveRecordOptionsEnum Options,
-        /*[in]*/ VARIANT_BOOL Async,
-        /*[out,retval]*/ BSTR * pbstrNewURL ) = 0;
-      virtual HRESULT __stdcall raw_CopyRecord (
-        /*[in]*/ BSTR Source,
-        /*[in]*/ BSTR Destination,
-        /*[in]*/ BSTR UserName,
-        /*[in]*/ BSTR Password,
-        /*[in]*/ enum CopyRecordOptionsEnum Options,
-        /*[in]*/ VARIANT_BOOL Async,
-        /*[out,retval]*/ BSTR * pbstrNewURL ) = 0;
-      virtual HRESULT __stdcall raw_DeleteRecord (
-        /*[in]*/ BSTR Source,
-        /*[in]*/ VARIANT_BOOL Async ) = 0;
-      virtual HRESULT __stdcall raw_Open (
-        /*[in]*/ VARIANT Source,
-        /*[in]*/ VARIANT ActiveConnection,
-        /*[in]*/ enum ConnectModeEnum Mode,
-        /*[in]*/ enum RecordCreateOptionsEnum CreateOptions,
-        /*[in]*/ enum RecordOpenOptionsEnum Options,
-        /*[in]*/ BSTR UserName,
-        /*[in]*/ BSTR Password ) = 0;
-      virtual HRESULT __stdcall raw_Close ( ) = 0;
-      virtual HRESULT __stdcall get_Fields (
-        /*[out,retval]*/ struct Fields_Deprecated * * ppFlds ) = 0;
-      virtual HRESULT __stdcall get_RecordType (
-        /*[out,retval]*/ enum RecordTypeEnum * ptype ) = 0;
-      virtual HRESULT __stdcall raw_GetChildren (
-        /*[out,retval]*/ struct _Recordset_Deprecated * * pprset ) = 0;
-      virtual HRESULT __stdcall raw_Cancel ( ) = 0;
 };
 
 //
