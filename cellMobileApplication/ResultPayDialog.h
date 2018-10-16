@@ -33,7 +33,8 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 	DECLARE_MESSAGE_MAP()
 public:
-	virtual BOOL OnInitDialog();	
+	virtual BOOL OnInitDialog();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnBnClickedButtonClose();
 	afx_msg LRESULT OnOrderRequestOk(WPARAM wParam, LPARAM lParam);

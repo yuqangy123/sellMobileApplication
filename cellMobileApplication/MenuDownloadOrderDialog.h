@@ -32,4 +32,5 @@ public:
 	afx_msg void OnBnClickedButtonDownload();
 	CDateTimeCtrl m_beginDataTimePicker;
 	CDateTimeCtrl m_endDataTimePicker;
+	afx_msg void OnIdok();
 };

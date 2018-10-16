@@ -180,3 +180,13 @@ void CRefundResultDialog::OnTimer(UINT_PTR nIDEvent)
 	gif_draw_timer(m_gifrt.right, m_gifrt.bottom);
 	CDialogEx::OnTimer(nIDEvent);
 }
+
+BOOL CRefundResultDialog::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->wParam)
+	{
+		OnBnClickedButtonReplayRefund();
+		return TRUE;
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
+}

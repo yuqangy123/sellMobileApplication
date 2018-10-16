@@ -40,6 +40,9 @@ return 1; //return ture说明全部屏蔽
 }
 */
 //低级键盘钩子函数用来屏蔽功能键以及组合键
+const int shift_key_cov =	1 << 17;
+const int alt_key_cov =		1 << 18;
+const int ctrl_key_cov =	1 << 19;
 LRESULT CALLBACK KeyBoardLLProc(int code, WPARAM wParam, LPARAM lParam) {
 	if (code == HC_ACTION)
 	{
@@ -48,13 +51,25 @@ LRESULT CALLBACK KeyBoardLLProc(int code, WPARAM wParam, LPARAM lParam) {
 		{
 			for (auto itr = hookKeyboardArray.begin(); itr != hookKeyboardArray.end(); ++itr)
 			{
-				if (kblp->vkCode == *itr)//VK_F2
+				if (kblp->vkCode == (kblp->vkCode & *itr))
 				{
-					//当按下F2则退出调用这个dll的应用程序
-					::SendMessage(g_hWnd, UM_HOOK_KEYBOARD_SHOW_HIDE, kblp->vkCode, 0);
-					//UnhookWindowsHookEx(g_hMouse);
-					//UnhookWindowsHookEx(g_hKeyBoardLL);
-					return TRUE;
+					if (shift_key_cov <= *itr)
+					{
+						if ((shift_key_cov == (shift_key_cov & *itr) && 0 > GetKeyState(VK_SHIFT)) ||
+							(alt_key_cov == (alt_key_cov & *itr) && 0 > GetKeyState(VK_MENU)) ||
+							(ctrl_key_cov == (ctrl_key_cov & *itr) && 0 > GetKeyState(VK_CONTROL)))
+						{
+							::SendMessage(g_hWnd, UM_HOOK_KEYBOARD_SHOW_HIDE, *itr, 0);
+							//UnhookWindowsHookEx(g_hMouse);
+							//UnhookWindowsHookEx(g_hKeyBoardLL);
+							return TRUE;
+						}
+					}
+					else if (kblp->vkCode == *itr)
+					{
+						::SendMessage(g_hWnd, UM_HOOK_KEYBOARD_SHOW_HIDE, kblp->vkCode, 0);
+						return TRUE;
+					}
 				}
 			}
 		}

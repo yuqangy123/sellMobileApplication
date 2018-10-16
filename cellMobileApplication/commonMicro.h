@@ -4,7 +4,7 @@
 
 
 //msg define
-#define UM_HOOK_KEYBOARD_SHOW_HIDE		(WM_USER + 100)
+#define UM_HOOK_KEYBOARD_SHOW_HIDE		(WM_USER + 100)//隐藏显示主界面
 #define UM_TIPS_MESSAGE					(WM_USER + 101)
 #define UM_ORDER_REQUEST_OK_NOTIFY		(WM_USER + 102)//订单提交完成
 #define UM_PAY_SUCCESS_NOTIFY			(WM_USER + 103)//支付成功
@@ -13,6 +13,10 @@
 #define UM_NETWORK_STATE_NOTIFY			(WM_USER + 106)//网络变化
 #define UM_SHOWQRCODE_PAY_NOTIFY		(WM_USER + 107)//显示支付界面
 #define UM_ESC_KEYBOARD_NOTIFY			(WM_USER + 108)//Esc键通知
+
+const int shift_key_cov = 1 << 17;
+const int alt_key_cov = 1 << 18;
+const int ctrl_key_cov = 1 << 19;
 
 #define safe_delete(p)		{if(p != nullptr){delete p; p = nullptr;};}
 #define false_break(obj)	{if(!(obj)) break;}

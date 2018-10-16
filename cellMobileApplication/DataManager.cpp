@@ -52,10 +52,10 @@ CDataManager::CDataManager()
 
 	CParseIniFile iniParse;
 	map<string, string> valueMap;
-	iniParse.ReadConfig("SellSystem.ini", valueMap, "SYSTEM");
-	NodeCode = valueMap["NodeCode"];
-	PosFontEndIP = valueMap["PosFontEndIP"];
 
+	
+
+	
 	valueMap.clear();
 	iniParse.ReadConfig("sellMobileAppConfig.ini", valueMap, "SYSTEM");
 	MchId = valueMap["mch_id"];
@@ -74,14 +74,21 @@ CDataManager::CDataManager()
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
 	::PathRemoveFileSpecA(strModule);
 
-	if (valueMap.find("paySystemPath") == valueMap.end())
+	if (valueMap.find("sellSystemPath") == valueMap.end())
 		PaySystemPath.assign(strModule);
 	else
 	{
-		PaySystemPath = valueMap["paySystemPath"];
+		PaySystemPath = valueMap["sellSystemPath"];
 		if (!FileUnitInstance->DirectoryExists(PaySystemPath.c_str()))
 			PaySystemPath.assign(strModule);
 	}
+
+	valueMap.clear();
+	char sellSystemPath[MAX_PATH] = { 0 };
+	sprintf_s(sellSystemPath, "%s//SellSystem.ini", PaySystemPath.c_str());
+	iniParse.ReadConfig(sellSystemPath, valueMap, "SYSTEM");
+	NodeCode = valueMap["NodeCode"];
+	PosFontEndIP = valueMap["PosFontEndIP"];
 
 	//ODBCConnect(CString(strModule) + L"\\SaleBill_20180905.0012");//test code
 	wsprintfA(strModule + strlen(strModule), "\\sellMobileLog");

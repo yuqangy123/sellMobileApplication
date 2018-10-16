@@ -34,6 +34,7 @@ void CMenuDownloadOrderDialog::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMenuDownloadOrderDialog, CDialogEx)
 	ON_WM_CHAR()
 	ON_BN_CLICKED(IDC_BUTTON_DOWNLOAD, &CMenuDownloadOrderDialog::OnBnClickedButtonDownload)
+	ON_COMMAND(IDOK, &CMenuDownloadOrderDialog::OnIdok)
 END_MESSAGE_MAP()
 
 
@@ -60,6 +61,7 @@ BOOL CMenuDownloadOrderDialog::PreTranslateMessage(MSG* pMsg)
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->wParam)
 	{
+		OnBnClickedButtonDownload();
 		return TRUE;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
@@ -105,4 +107,10 @@ void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 	CDownloadOrderResultDialog dlg;
 	dlg.requestDownloader(startDate, endDate, payType);
 	dlg.DoModal();
+}
+
+
+void CMenuDownloadOrderDialog::OnIdok()
+{
+
 }

@@ -193,11 +193,12 @@ void CResultPayDialog::OnBnClickedButtonClose()
 	{
 	case PAY_OK: {
 		::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
+		::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, 115, 11);
 	}break;
 	case PAY_FAIL: {
 		m_payResult = PAY_PAYING;
 		updateUI_InitDialog();
-		sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), m_payTotalFee.GetString(), m_strAOrderNoCode.GetString(), m_strAAuthCode.GetString());
+		sellMobileSystemInstance->requestMicropay(GetSafeHwnd(), m_payTotalFee.GetString(), m_strAOrderNoCode.GetString(), m_strAAuthCode.GetString());		
 	}break;
 	default:
 		break;
@@ -222,6 +223,7 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 		{
 			KillTimer(m_close_timer_ID);
 			::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
+			::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, 115, 11);
 		}
 			
 	}break;
@@ -273,7 +275,6 @@ LRESULT CResultPayDialog::OnPaySuccess(WPARAM wParam, LPARAM lParam)
 			KillTimer(m_timer_orderQuery);
 			updateUI_DoDataExchange();
 			updateUI_InitDialog();
-
 		}
 	}
 	else if(-1 == wParam)
@@ -307,4 +308,16 @@ void CResultPayDialog::OnDestroy()
 	::PostMessage(parent->GetSafeHwnd(), WM_CLOSE, 0, 0);
 
 	// TODO: 在此处添加消息处理程序代码
+}
+
+
+BOOL CResultPayDialog::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->wParam)
+	{
+		OnBnClickedButtonClose();
+		return TRUE;
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

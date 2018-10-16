@@ -55,6 +55,7 @@ BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->wParam)
 	{
+		OnBnClickedButtonSure();
 		return TRUE;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
@@ -73,6 +74,7 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 
 	CString totalfee;
 	m_totalFeeCtrl.GetWindowText(totalfee);
+	totalfee = L"1.0";
 	if (!stringIsNumber(totalfee.GetString()))
 	{
 		MessageBox(L"原交易金额输入有误，请重新输入", L"提示");

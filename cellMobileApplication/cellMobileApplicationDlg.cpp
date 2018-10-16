@@ -61,9 +61,9 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	curlManagerInstance;
 
 
-	m_tabMenu.InsertItem(0, L"订单(按键1)");
-	m_tabMenu.InsertItem(1, L"退款(按键2)");
-	m_tabMenu.InsertItem(2, L"设置(按键3)");
+	m_tabMenu.InsertItem(0, L"订单(ctrl+F1)");
+	m_tabMenu.InsertItem(1, L"退款(ctrl+F2)");
+	m_tabMenu.InsertItem(2, L"设置(ctrl+F3)");
 
 	m_CurSelTab = 0;
 
@@ -95,7 +95,9 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	if (hDLL != NULL) {
 		lpfnDllFuncHook = (HOOKPROC)GetProcAddress(hDLL, "SetHook");
 		if (lpfnDllFuncHook != NULL) {			// call the function
-			const char* hookKeyboardList = "113,114,115";
+			char hookKeyboardList[256] = { 0 };
+			sprintf_s(hookKeyboardList, "%d,%d,%d,%d", VK_F11, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3);
+
 			lpfnDllFuncHook(m_hWnd, hookKeyboardList, strlen(hookKeyboardList));
 		}
 	}
@@ -250,16 +252,29 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 {
 	switch (wParam)
 	{
-	case 113: {
-		PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);
-
+	case ctrl_key_cov | VK_F3: {
+		ShowWindow(SW_SHOW);
+		selectShowTabMenu(2);
 	}break;
-	case 114: {
+
+	case ctrl_key_cov | VK_F2: {
 		ShowWindow(SW_SHOW);
 		selectShowTabMenu(1);
 	}break;
-	case 115: {
+
+	case ctrl_key_cov | VK_F1: {
+		ShowWindow(SW_SHOW);
+		selectShowTabMenu(0);
+	}break;
+
+	case VK_F11:{
+		PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);
+	}break;
+
+	case 115:{
 		b_show = !b_show;
+		if (11 == lParam)
+			b_show = false;
 		this->ShowWindow(b_show ? SW_NORMAL : SW_MINIMIZE);
 	}break;
 	}
@@ -269,8 +284,15 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 
 LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 {
-	CQRCodePayDialog dlgtest;
-	dlgtest.DoModal();
+	static bool bshowPayView = false;
+	if (!bshowPayView)
+	{
+		bshowPayView = true;
+		CQRCodePayDialog dlgtest;
+		dlgtest.DoModal();
+		bshowPayView = false;
+	}
+	
 	return 0;
 }
 

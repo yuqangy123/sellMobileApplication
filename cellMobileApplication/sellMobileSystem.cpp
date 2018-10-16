@@ -103,7 +103,6 @@ bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 	params["mch_id"] = m_mch_id;
 	params["out_trade_no"] = m_order_no;
 	params["nonce_str"] = m_nonce_str;
-	params["trade_type"] = getTradeTypeWithOrderNo(m_order_no.c_str());
 	params["sign"] = makeSign(params);
 
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();
@@ -162,13 +161,14 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 	m_nonce_str = "5K8264ILTKCH16CQ";
 	m_microPayHwnd = objHwnd;
 
+
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
-	params["trade_type"] = getTradeTypeWithOrderNo(m_order_no.c_str());
+	params["trade_type"] = getTradeTypeWithOrderNo(auth_code);
 	params["out_trade_no"] = m_order_no;
 	params["total_fee"] = atoFee(fee);
 	params["auth_code"] = auth_code;
-	params["body"] = "chunjifuzhuang";
+	params["body"] = KS_ANSI_to_UTF8("移动支付");
 	params["spbill_create_ip"] = DataMgrInstanceEx.PosFontEndIP;
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
@@ -194,7 +194,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 		if (!retcode.empty())
 		{
 			int nret = atoi(retcode.c_str());
-			if (0 <= nret || -2010 == nret)
+			if (0 == nret || -2010 == nret)
 			{
 				::PostMessage(m_microPayHwnd, UM_ORDER_REQUEST_OK_NOTIFY, 0, 0);
 			}
