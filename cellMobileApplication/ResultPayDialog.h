@@ -44,6 +44,7 @@ public:
 protected:
 	void updateUI_DoDataExchange();
 	void updateUI_InitDialog();
+	void paySuccessAndClose();
 
 protected:
 	UINT_PTR m_close_timer_ID;

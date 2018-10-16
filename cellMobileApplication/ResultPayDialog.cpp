@@ -193,8 +193,9 @@ void CResultPayDialog::OnBnClickedButtonClose()
 	{
 	case PAY_OK: {
 		::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
-		::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, 115, 11);
+		paySuccessAndClose();
 	}break;
+
 	case PAY_FAIL: {
 		m_payResult = PAY_PAYING;
 		updateUI_InitDialog();
@@ -214,6 +215,7 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 	case TIMER_ID_ORDER_QUERY: {
 		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd());
 	}break;
+
 	case TIMER_ID_BUTTON_COUNTDOWN: {
 		m_countdownTime = m_countdownTime - 1;
 		CString str;
@@ -222,10 +224,8 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 		if (m_countdownTime < 0)
 		{
 			KillTimer(m_close_timer_ID);
-			::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
-			::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, 115, 11);
+			paySuccessAndClose();
 		}
-			
 	}break;
 	}
 
@@ -304,12 +304,19 @@ void CResultPayDialog::OnClose()
 void CResultPayDialog::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	CWnd* parent = GetParent();
-	::PostMessage(parent->GetSafeHwnd(), WM_CLOSE, 0, 0);
-
+	
 	// TODO: 在此处添加消息处理程序代码
 }
 
+void CResultPayDialog::paySuccessAndClose()
+{
+	::SendMessage(GetSafeHwnd(), WM_CLOSE, 0, 0);
+	
+	CWnd* parent = GetParent();
+	::PostMessage(parent->GetSafeHwnd(), WM_CLOSE, 0, 0);
+	
+	::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+}
 
 BOOL CResultPayDialog::PreTranslateMessage(MSG* pMsg)
 {
