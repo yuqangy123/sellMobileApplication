@@ -13,6 +13,7 @@
 #include "TopDialog.h"
 #include "QRCodePayDialog.h"
 #include "DataManager.h"
+#include "PrinterDevice.h"
 
 #include "HookDll\HookDll.h"
 
@@ -102,6 +103,9 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 		}
 	}
 	
+	//test code
+	printerDeviceInstanceEx;
+
 	return TRUE;
 }
 

@@ -5,3 +5,6 @@ https://blog.csdn.net/rankun1/article/details/53932571
 
 
 <xml>    <filename>1000000013_20180926_20180926_all_065759C28DB4406B1EC27BF032BBF4B8_all.zip</filename>    <httppath>http://betafiles1.speedpos.snsshop.net:81/1/1000000013/20181001/1000000013_20180926_20180926_all_065759C28DB4406B1EC27BF032BBF4B8_all.zip</httppath>    <modify_time>1538399371</modify_time>    <retcode>10002</retcode>    <retmsg>File is exist and force_gen is 0.</retmsg>    <sftppath>/webbill/1000000013_20180926_20180926_all_065759C28DB4406B1EC27BF032BBF4B8_all.zip</sftppath>    <status>1</status>    <sign>5D5123F88254A41D9AB8CFD63B8FDA69</sign></xml>
+
+
+https://blog.csdn.net/changyourmind/article/details/52161096

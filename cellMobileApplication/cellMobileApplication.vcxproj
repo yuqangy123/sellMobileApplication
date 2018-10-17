@@ -209,6 +209,7 @@
     <ClInclude Include="openssl\include\win32\openssl\__DECC_INCLUDE_EPILOGUE.H" />
     <ClInclude Include="openssl\include\win32\openssl\__DECC_INCLUDE_PROLOGUE.H" />
     <ClInclude Include="ParseIni.h" />
+    <ClInclude Include="PrinterDevice.h" />
     <ClInclude Include="pthread\include\win32\pthread.h" />
     <ClInclude Include="pthread\include\win32\sched.h" />
     <ClInclude Include="pthread\include\win32\semaphore.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="MessageQueue.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="ParseIni.cpp" />
+    <ClCompile Include="PrinterDevice.cpp" />
     <ClCompile Include="QRCodePayDialog.cpp" />
     <ClCompile Include="MenuRefundOrderDialog.cpp" />
     <ClCompile Include="RefundResultDialog.cpp" />
