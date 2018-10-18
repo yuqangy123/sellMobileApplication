@@ -1,13 +1,56 @@
 #include "stdafx.h"
 #include "PrinterDevice.h"
+static HANDLE hPort = INVALID_HANDLE_VALUE;
+OVERLAPPED m_OverlappedRead;
+OVERLAPPED m_OverlappedWrite;
 
 DECLARE_SINGLETON_MEMBER(CPrinterDevice);
+
+BOOL WriteCommByte(const char* ucByte, size_t len)
+{
+	BOOL bWriteStat;
+	DWORD dwBytesWritten;
+
+	bWriteStat = WriteFile(hPort, (LPSTR)ucByte, len, &dwBytesWritten, &m_OverlappedWrite);
+	DWORD nError = GetLastError();
+	
+	if (!bWriteStat && (nError == ERROR_IO_PENDING)) {
+		if (WaitForSingleObject(m_OverlappedWrite.hEvent, 1000)) { dwBytesWritten = 0; AfxMessageBox(L"WaitForSingleObject"); }
+		else {
+			GetOverlappedResult(hPort, &m_OverlappedWrite, &dwBytesWritten, FALSE);
+			m_OverlappedWrite.Offset += dwBytesWritten;
+		}
+	}
+	else
+	{
+		CString str; 
+		str.Format(L"WriteFilefail(%d)", nError);
+		AfxMessageBox(str);
+	}
+
+	return(TRUE);
+
+}
+
+int AsynSendData(const char *buffer, int size)
+{
+	DWORD dwBytesWritten = 0;
+	int i;
+	for (i = 0; i<size; i++) {
+		//WriteCommByte(buffer[i]);
+		dwBytesWritten++;
+	}
+	WriteCommByte(buffer, size);
+	return((int)dwBytesWritten);
+
+}
+
 CPrinterDevice::CPrinterDevice()
 {
 	do
 	{
 		CString portName = L"COM1";
-		HANDLE hPort = CreateFile(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		hPort = CreateFile(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
 		if (INVALID_HANDLE_VALUE == hPort)
 		{
 			int nError = GetLastError();
@@ -29,24 +72,30 @@ CPrinterDevice::CPrinterDevice()
 		tmouts.WriteTotalTimeoutMultiplier = 100;
 		SetCommTimeouts(hPort, &tmouts);
 
+		COMMTIMEOUTS CommTimeOuts;
+		CommTimeOuts.ReadIntervalTimeout = MAXDWORD;
+		CommTimeOuts.ReadTotalTimeoutMultiplier = 0;
+		CommTimeOuts.ReadTotalTimeoutConstant = 0;
+		CommTimeOuts.WriteTotalTimeoutMultiplier = 0;
+		CommTimeOuts.WriteTotalTimeoutConstant = 5000;
+		SetCommTimeouts(hPort, &CommTimeOuts);
+
 		//设定通讯端口通讯参数
 		DCB dcb;
 		BOOL bol = TRUE;
-		/*
+		
 		//dcb.DCBlength = sizeof(dcb);
 		bol = GetCommState(hPort, &dcb);
-		dcb.BaudRate = device.BawdRate;
-		dcb.ByteSize = device.DataBits;
-		dcb.StopBits = device.StopBits;
-		dcb.Parity = device.Parity;
-		*/
+		dcb.BaudRate = 9600;
+		dcb.ByteSize = 8;
+		dcb.StopBits = ONESTOPBIT;
+		dcb.Parity = NOPARITY;
+		
 		bol = SetCommState(hPort, &dcb); //配置串口
 		// 清除通讯端口缓存
 		PurgeComm(hPort, PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_RXABORT);
 
-		// 初始化重叠IO对象
-		OVERLAPPED m_OverlappedRead;
-		OVERLAPPED m_OverlappedWrite;
+		// 初始化重叠IO对象		
 		HANDLE m_hStopCommEvent;
 		HANDLE m_hDataReady;
 		memset(&m_OverlappedRead, 0, sizeof(OVERLAPPED));
@@ -58,23 +107,17 @@ CPrinterDevice::CPrinterDevice()
 		m_hStopCommEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 		m_hDataReady = CreateEvent(NULL, FALSE, FALSE, NULL);
 
+		char chSend[20];
+
 		//初始化打印ESC @
-		DWORD iBytesLength;
-		char chInitCode[] = "\\x0D\\x1B\\x40";
-		BOOL wRet = WriteFile(hPort, chInitCode, (DWORD)3L, &iBytesLength, NULL);
-		if (!wRet)
-		{
-			CloseHandle(hPort);
-			AfxMessageBox(L"writeFile失败");
-			break;
-		}
+		sprintf_s(chSend, "%c%c", 0x1B, 0x40);
+		AsynSendData(chSend, 2);
 
-
-
-		CloseHandle(hPort);
-		CString closeTips;
-		closeTips.Format(L"关闭%s端口", portName);
-		AfxMessageBox(closeTips);
+		
+		sprintf_s(chSend, "%c", 0x0A);
+		AsynSendData(chSend, 1);
+		AsynSendData(chSend, 1);
+		AsynSendData(chSend, 1);
 	} while (false);
 	
 }
@@ -82,4 +125,7 @@ CPrinterDevice::CPrinterDevice()
 
 CPrinterDevice::~CPrinterDevice()
 {
+
+	if (INVALID_HANDLE_VALUE != hPort)
+		CloseHandle(hPort);
 }
