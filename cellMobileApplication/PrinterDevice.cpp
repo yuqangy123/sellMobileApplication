@@ -6,12 +6,13 @@ CPrinterDevice::CPrinterDevice()
 {
 	do
 	{
-		HANDLE hPort = CreateFile(L"COM1", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		CString portName = L"COM1";
+		HANDLE hPort = CreateFile(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (INVALID_HANDLE_VALUE == hPort)
 		{
 			int nError = GetLastError();
 			CString err;
-			err.Format(L"COM1端口打开失败（%d）", nError);
+			err.Format(L"%s端口打开失败（%d）", portName.GetString(), nError);
 			AfxMessageBox(err);
 			break;
 		}
@@ -60,10 +61,20 @@ CPrinterDevice::CPrinterDevice()
 		//初始化打印ESC @
 		DWORD iBytesLength;
 		char chInitCode[] = "\\x0D\\x1B\\x40";
-		WriteFile(hPort, chInitCode, (DWORD)3L, &iBytesLength, NULL);
+		BOOL wRet = WriteFile(hPort, chInitCode, (DWORD)3L, &iBytesLength, NULL);
+		if (!wRet)
+		{
+			CloseHandle(hPort);
+			AfxMessageBox(L"writeFile失败");
+			break;
+		}
+
+
 
 		CloseHandle(hPort);
-		AfxMessageBox(L"关闭LPT1端口");
+		CString closeTips;
+		closeTips.Format(L"关闭%s端口", portName);
+		AfxMessageBox(closeTips);
 	} while (false);
 	
 }
