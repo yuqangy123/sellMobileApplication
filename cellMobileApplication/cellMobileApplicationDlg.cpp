@@ -55,7 +55,9 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
 
-	
+	DataMgrInstanceEx;
+	printerDeviceInstanceEx;
+
 	sellMobileSystemInstance->init(DataMgrInstanceEx.Domain.c_str());
 	sellMobileSystemInstance->setMchInfo(DataMgrInstanceEx.MchId.c_str(), DataMgrInstanceEx.MchKey.c_str());
 	sellMobileSystemInstance->setMainDialogHwnd(GetSafeHwnd());
@@ -103,8 +105,6 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 		}
 	}
 	
-	//test code
-	printerDeviceInstanceEx;
 
 	return TRUE;
 }

@@ -62,7 +62,7 @@ CDataManager::CDataManager()
 	MchKey = valueMap["mch_key"];
 	Domain = valueMap["domain"];
 	ErpCode = valueMap["ErpCode"];
-	
+	PrintPortName = valueMap["PrintPortName"];
 	
 
 	char strModule[MAX_PATH * 2] = { 0 };

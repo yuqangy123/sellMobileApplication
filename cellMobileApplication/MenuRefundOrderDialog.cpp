@@ -7,6 +7,11 @@
 #include "RefundResultDialog.h"
 #include "commonMicro.h"
 #include "DataManager.h"
+#include "PrinterDevice.h"
+#include <fstream>
+#include <iostream>
+
+using namespace std;
 
 // CMenuRefundOrderDialog 对话框
 
@@ -63,6 +68,7 @@ BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 
 void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 {
+	/*
 	// TODO: 在此添加控件通知处理程序代码
 	CRefundResultDialog dlg;
 	CString orderNo;
@@ -92,15 +98,92 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	}
 	dlg.requestRefundOrder(orderNo, refundNo, totalfee, fee);
 	dlg.DoModal();
+	*/
 
+	//执行指令
+	CString editStr;
+	m_orderNoCtrl.GetWindowText(editStr);
+	CStringA editStrA(editStr);
+
+	int hookKeyboardLen = editStrA.GetLength();
+	const char* hookKeyboard = editStrA.GetString();
+
+	int numList[128];
+	int numCnt = 0;
+	char num[32] = { 0 };
+
+	for (int n = 0; n<128; ++n){ numList[n] = 0; }
+
+	if (nullptr != hookKeyboard)
+	{
+		int begin = 0, end = 0;
+		while (hookKeyboardLen > end)
+		{
+			if (*(hookKeyboard + end) == ' ' && begin < end)
+			{
+				memcpy_s(num, 32, hookKeyboard + begin, end - begin);
+				numList[numCnt++] = atoi(num);
+				begin = end + 1;
+				end = begin;
+			}
+			else
+			{
+				++end;
+			}
+		}
+		memcpy_s(num, 32, hookKeyboard + begin, end - begin);
+		numList[numCnt++] = atoi(num);
+	}
+
+	char printBuff[256] = {};
+
+	for (int n = 0; n < numCnt; ++n)
+	{
+		wsprintfA(printBuff + strlen(printBuff), "%c", numList[n]);
+	}
+
+	int prinLen = strlen(printBuff);
+	printerDeviceInstanceEx.printData(printBuff, prinLen);
+
+
+	//打印数据
+	m_totalFeeCtrl.GetWindowText(editStr);
+	editStrA = editStr;
+	sprintf_s(printBuff, "%s%c", editStrA.GetString(), 0x0A);
+	
+	prinLen = strlen(printBuff);
+	printerDeviceInstanceEx.printData(printBuff, prinLen);
+	
+
+	//读取打印文本
+	char filename[MAX_PATH * 2] = { 0 };
+	GetModuleFileNameA(NULL, filename, MAX_PATH * 2);
+	::PathRemoveFileSpecA(filename);
+	wsprintfA(filename + strlen(filename), "\\testPrint.txt");
+
+	ifstream infile(filename);
+	if (!infile)
+	{
+		AfxMessageBox(L"file open error!");
+		return ;
+	}
+	string line, key, value;
+	int pos = 0;
+	
+	bool flag = false;
+	while (getline(infile, line))
+	{
+		prinLen = line.length();
+		const char* ch = line.c_str();
+		printerDeviceInstanceEx.printData(ch, prinLen);
+	}
+	infile.close();
 }
 
 BOOL CMenuRefundOrderDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	/*/
-	
 #ifdef DEBUG_MODE	
 	char randChar[32] = { 0 };
 	long rd = getRandom(99999999);
@@ -117,6 +200,6 @@ BOOL CMenuRefundOrderDialog::OnInitDialog()
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
 	m_totalFeeCtrl.SetWindowText(csTotalFee);
 	m_feeCtrl.SetWindowText(csTotalFee);
-	*/
+	
 	return true;
 }

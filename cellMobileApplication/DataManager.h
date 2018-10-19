@@ -38,5 +38,6 @@ public:
 	std::string LogFilePath;//交易信息日志
 	std::string ErpCode;//erp系统商编码
 	std::string PaySystemPath;//支付系统路径
+	std::string PrintPortName;//串口名
 };
 
