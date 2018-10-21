@@ -13,6 +13,7 @@
 #define UM_NETWORK_STATE_NOTIFY			(WM_USER + 106)//网络变化
 #define UM_SHOWQRCODE_PAY_NOTIFY		(WM_USER + 107)//显示支付界面
 #define UM_ESC_KEYBOARD_NOTIFY			(WM_USER + 108)//Esc键通知
+#define UM_REFUND_QUERY_ORDER_TIME_NOTIFY			(WM_USER + 103)//退款查询原支付时间
 
 const int shift_key_cov = 1 << 17;
 const int alt_key_cov = 1 << 18;

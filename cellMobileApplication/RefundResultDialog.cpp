@@ -6,6 +6,7 @@
 #include "afxdialogex.h"
 #include "commonMicro.h"
 #include "sellMobileSystem.h"
+#include "PrinterDevice.h"
 
 // CRefundResultDialog 对话框
 
@@ -14,6 +15,7 @@ IMPLEMENT_DYNAMIC(CRefundResultDialog, CDialogEx)
 CRefundResultDialog::CRefundResultDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_RESULT_REFUND, pParent)
 {
+	m_info = nullptr;
 	m_refundState = REFUND_REFUNDING;
 	gif_init_member()
 }
@@ -39,6 +41,9 @@ BEGIN_MESSAGE_MAP(CRefundResultDialog, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BUTTON_REPLAY_REFUND, &CRefundResultDialog::OnBnClickedButtonReplayRefund)
 	ON_MESSAGE(UM_REFUND_ORDER_NOTIFY, &CRefundResultDialog::OnRefundOrderNotify)
+	ON_MESSAGE(UM_PAY_SUCCESS_NOTIFY, &CRefundResultDialog::OnOrderQuery)
+	ON_MESSAGE(UM_REFUND_QUERY_ORDER_TIME_NOTIFY, &CRefundResultDialog::OnOrderQuery)
+	
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -142,6 +147,7 @@ void CRefundResultDialog::OnBnClickedButtonReplayRefund()
 	sellMobileSystemInstance->requestRefundOrder(GetSafeHwnd(), m_orderNo.GetString(), m_refundNo.GetString(), m_totalfee.GetString(), m_fee.GetString());
 	// TODO: 在此添加控件通知处理程序代码
 }
+
 LRESULT CRefundResultDialog::OnRefundOrderNotify(WPARAM wParam, LPARAM lParam)
 {
 	switch (wParam)
@@ -153,13 +159,15 @@ LRESULT CRefundResultDialog::OnRefundOrderNotify(WPARAM wParam, LPARAM lParam)
 	case -1: {
 		char* retmsg = (char*)lParam;
 		m_desc = retmsg;
-		safe_delete(retmsg);
 		m_refundState = REFUND_FAIL;
 		updateUI_OnInitDialog();
+		safe_delete(retmsg);
 	}break;
 	case 1: {
-		m_refundState = REFUND_OK;
-		updateUI_OnInitDialog();
+		m_info = (refundOrderInfo*)lParam;
+		
+		m_timer_orderQuery = SetTimer(TIMER_ID_ORDER_QUERY, 1000 * 3, NULL);
+		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_orderNo.GetString());
 	}break;
 	}
 
@@ -178,6 +186,14 @@ void CRefundResultDialog::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	gif_draw_timer(m_gifrt.right, m_gifrt.bottom);
+	switch (nIDEvent)
+	{
+	case TIMER_ID_ORDER_QUERY: {
+		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_orderNo.GetString());
+	}break;
+	}
+	
+
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -189,4 +205,37 @@ BOOL CRefundResultDialog::PreTranslateMessage(MSG* pMsg)
 		return TRUE;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+LRESULT CRefundResultDialog::OnOrderQuery(WPARAM wParam, LPARAM lParam)
+{
+	KillTimer(m_timer_orderQuery);
+	if (0 == wParam)
+	{
+		payOrderInfo* info = (payOrderInfo*)lParam;
+		
+		m_refundState = REFUND_OK;
+		updateUI_OnInitDialog();
+
+		if (m_info)
+		{
+			m_info->tradeType = info->tradeType;
+			m_info->payDate = info->date;
+		}
+
+		printerDeviceInstanceEx.printRefundOrder(m_info);
+
+		safe_delete(m_info);
+		safe_delete(info);
+	}
+	else if (-1 == wParam)
+	{
+		OnRefundOrderNotify(-1, lParam);
+
+		safe_delete(m_info);
+	}
+
+
+	return 0;
 }

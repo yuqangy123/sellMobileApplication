@@ -22,7 +22,7 @@ public:
 	~sellMobileSystem();
 	static sellMobileSystem* instance();
 	bool requestMicropay(HWND objHwnd, const char* fee, const char* order_no, const char* auth_code);
-	bool requestOrderQuery(HWND objHwnd);
+	bool requestOrderQuery(HWND objHwnd, const char* order = nullptr);
 	bool requestRefundOrder(HWND objHwnd, const char* order_no, const char* refund_no, const char* ctotalfee, const char* cfee);
 	bool requestRefundQuery(HWND objHwnd, const char* order_no, const char* refund_no);
 	bool requestDownloadOrder(HWND objHwnd, const char* startDate, const char* endDate, const char* type);

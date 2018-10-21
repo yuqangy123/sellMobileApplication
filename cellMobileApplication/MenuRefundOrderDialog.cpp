@@ -68,7 +68,7 @@ BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 
 void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 {
-	/*
+	
 	// TODO: 在此添加控件通知处理程序代码
 	CRefundResultDialog dlg;
 	CString orderNo;
@@ -96,10 +96,11 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 		m_feeCtrl.SetFocus();
 		return;
 	}
-	dlg.requestRefundOrder(orderNo, refundNo, totalfee, fee);
+	dlg.requestRefundOrder(orderNo, refundNo, fee, fee);
 	dlg.DoModal();
-	*/
+	
 
+	/*
 	//执行指令
 	CString editStr;
 	m_orderNoCtrl.GetWindowText(editStr);
@@ -108,6 +109,7 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	int hookKeyboardLen = editStrA.GetLength();
 	const char* hookKeyboard = editStrA.GetString();
 
+	bool bPrintTestFile = true;
 	int numList[128];
 	int numCnt = 0;
 	char num[32] = { 0 };
@@ -144,7 +146,7 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 
 	int prinLen = strlen(printBuff);
 	printerDeviceInstanceEx.printData(printBuff, prinLen);
-
+	if (prinLen>0)bPrintTestFile = false;
 
 	//打印数据
 	m_totalFeeCtrl.GetWindowText(editStr);
@@ -153,31 +155,38 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	
 	prinLen = strlen(printBuff);
 	printerDeviceInstanceEx.printData(printBuff, prinLen);
-	
+	if (prinLen>1)bPrintTestFile = false;
 
-	//读取打印文本
-	char filename[MAX_PATH * 2] = { 0 };
-	GetModuleFileNameA(NULL, filename, MAX_PATH * 2);
-	::PathRemoveFileSpecA(filename);
-	wsprintfA(filename + strlen(filename), "\\testPrint.txt");
+	if (bPrintTestFile)
+	{
+		//读取打印文本
+		char filename[MAX_PATH * 2] = { 0 };
+		GetModuleFileNameA(NULL, filename, MAX_PATH * 2);
+		::PathRemoveFileSpecA(filename);
+		wsprintfA(filename + strlen(filename), "\\testPrint.txt");
 
-	ifstream infile(filename);
-	if (!infile)
-	{
-		AfxMessageBox(L"file open error!");
-		return ;
-	}
-	string line, key, value;
-	int pos = 0;
-	
-	bool flag = false;
-	while (getline(infile, line))
-	{
-		prinLen = line.length();
-		const char* ch = line.c_str();
-		printerDeviceInstanceEx.printData(ch, prinLen);
-	}
-	infile.close();
+		ifstream infile(filename);
+		if (!infile)
+		{
+			AfxMessageBox(L"file open error!");
+			return;
+		}
+		string line, key, value;
+		int pos = 0;
+
+		bool flag = false;
+		while (getline(infile, line))
+		{
+			//const char* ch_ansi = KS_ANSI_to_UTF8(ch);
+			sprintf_s(printBuff, "%s%c", line.c_str(), 0x0A);
+			prinLen = strlen(printBuff);
+			printerDeviceInstanceEx.printData(printBuff, prinLen);
+		}
+		for (int n = 0; n<3; ++n) printerDeviceInstanceEx.printData("\n", 1);
+
+		infile.close();
+	}	
+	*/
 }
 
 BOOL CMenuRefundOrderDialog::OnInitDialog()

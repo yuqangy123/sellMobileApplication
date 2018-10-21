@@ -7,6 +7,7 @@
 #include "resource.h"
 #include "sellMobileSystem.h"
 #include "commonMicro.h"
+#include "PrinterDevice.h"
 
 // CResultPayDialog ¶Ô»°¿ò
 
@@ -275,6 +276,11 @@ LRESULT CResultPayDialog::OnPaySuccess(WPARAM wParam, LPARAM lParam)
 			KillTimer(m_timer_orderQuery);
 			updateUI_DoDataExchange();
 			updateUI_InitDialog();
+
+			payOrderInfo* info = (payOrderInfo*)lParam;
+			printerDeviceInstanceEx.printPayOrder(info->tradeType.c_str(), info->orderNo.c_str(),
+				info->tradeNo.c_str(), info->fee.c_str(), info->date.c_str(), info->time.c_str());
+			safe_delete(info);
 		}
 	}
 	else if(-1 == wParam)

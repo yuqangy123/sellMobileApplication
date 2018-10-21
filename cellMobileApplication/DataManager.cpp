@@ -58,13 +58,14 @@ CDataManager::CDataManager()
 	
 	valueMap.clear();
 	iniParse.ReadConfig("sellMobileAppConfig.ini", valueMap, "SYSTEM");
+	if (0 == valueMap.size())AfxMessageBox(L"sellMobileAppConfig.ini为空");
+
 	MchId = valueMap["mch_id"];
 	MchKey = valueMap["mch_key"];
 	Domain = valueMap["domain"];
 	ErpCode = valueMap["ErpCode"];
 	PrintPortName = valueMap["PrintPortName"];
 	
-
 	char strModule[MAX_PATH * 2] = { 0 };
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
 	::PathRemoveFileSpecA(strModule);
@@ -74,6 +75,7 @@ CDataManager::CDataManager()
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
 	::PathRemoveFileSpecA(strModule);
 
+	
 	if (valueMap.find("sellSystemPath") == valueMap.end())
 		PaySystemPath.assign(strModule);
 	else
@@ -87,10 +89,28 @@ CDataManager::CDataManager()
 	char sellSystemPath[MAX_PATH] = { 0 };
 	sprintf_s(sellSystemPath, "%s//SellSystem.ini", PaySystemPath.c_str());
 	iniParse.ReadConfig(sellSystemPath, valueMap, "SYSTEM");
+	if (0 == valueMap.size()) AfxMessageBox(L"SellSystem.ini为空");
+
 	NodeCode = valueMap["NodeCode"];
 	PosFontEndIP = valueMap["PosFontEndIP"];
 
-	//ODBCConnect(CString(strModule) + L"\\SaleBill_20180905.0012");//test code
+	
+
+	valueMap.clear();
+	sellSystemPath[0] = { 0 };
+	sprintf_s(sellSystemPath, "%s\\SellSystemConfig.ini", PaySystemPath.c_str());
+	iniParse.ReadConfig(sellSystemPath, valueMap, "System");
+	if (0 == valueMap.size()) AfxMessageBox(L"SellSystemConfig.ini为空");
+
+	std::string terminal = valueMap["TerminalCode"];
+	size_t terItr = terminal.find(',');
+	if (terItr != std::string::npos)
+		TerminalCode = terminal.substr(terItr + 1);
+	else
+		TerminalCode = terminal;
+	
+
+	
 	wsprintfA(strModule + strlen(strModule), "\\sellMobileLog");
 	LogFilePath.assign(strModule);
 	CreateDirectoryA(strModule, NULL);
@@ -115,7 +135,7 @@ CDataManager::CDataManager()
 		PostQuitMessage(0);
 	}
 	//::CoUninitialize();
-
+	
 }
 
 CDataManager::~CDataManager()
@@ -196,6 +216,9 @@ void CDataManager::writeLog(const char* ret)
 
 BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee)
 {
+	//test code
+	//csTotalFee = "0.01";
+	//return true;
 	HRESULT openState = S_OK+1;
 	do {
 		double totalFee = 0;

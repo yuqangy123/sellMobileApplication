@@ -92,10 +92,7 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 		CResultPayDialog dlg;
-		//test code
-		//dlg.requestPay(strFee, strOrderNoCode, strAuthCode);
-		dlg.requestPay(L"0.01", L"0200990012009980000017000001", strAuthCode);
-		
+		dlg.requestPay(strFee, strOrderNoCode, strAuthCode);
 		dlg.DoModal();
 
 		//

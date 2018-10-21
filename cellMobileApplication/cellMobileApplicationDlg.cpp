@@ -99,7 +99,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 		lpfnDllFuncHook = (HOOKPROC)GetProcAddress(hDLL, "SetHook");
 		if (lpfnDllFuncHook != NULL) {			// call the function
 			char hookKeyboardList[256] = { 0 };
-			sprintf_s(hookKeyboardList, "%d,%d,%d,%d,%d", VK_F11, ctrl_key_cov | VK_F4, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3);
+			sprintf_s(hookKeyboardList, "%d,%d,%d,%d,%d", VK_F11, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3, ctrl_key_cov | VK_F4);
 
 			lpfnDllFuncHook(m_hWnd, hookKeyboardList, strlen(hookKeyboardList));
 		}

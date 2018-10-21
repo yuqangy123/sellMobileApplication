@@ -96,12 +96,13 @@ void sellMobileSystem::setMainDialogHwnd(HWND hnd)
 }
 
 //订单查询
-bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
+bool sellMobileSystem::requestOrderQuery(HWND objHwnd, const char* order)
 {
 	m_orderQueryHwnd = objHwnd;
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
-	params["out_trade_no"] = m_order_no;
+	if (nullptr != order)params["out_trade_no"] = order;
+	else params["out_trade_no"] = m_order_no;
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
 
@@ -131,7 +132,17 @@ bool sellMobileSystem::requestOrderQuery(HWND objHwnd)
 				//requestOrderQuery();
 				if (!trade_state.compare("SUCCESS"))
 				{
-					::PostMessage(m_orderQueryHwnd, UM_PAY_SUCCESS_NOTIFY, 0, 0);
+					payOrderInfo* info = payOrderInfo::create(getXmlNode(pDoc, "order_no").c_str(), 
+						getXmlNode(pDoc, "out_trade_no").c_str(), getXmlNode(pDoc, "total_fee").c_str(),
+						getXmlNode(pDoc, "time_end").c_str(), getXmlNode(pDoc, "trade_type").c_str());
+					::PostMessage(m_orderQueryHwnd, UM_PAY_SUCCESS_NOTIFY, 0, (LPARAM)info);
+				}
+				else if (!trade_state.compare("REFUND") || !trade_state.compare("REFUNDING"))
+				{
+					payOrderInfo* info = payOrderInfo::create(getXmlNode(pDoc, "order_no").c_str(),
+						getXmlNode(pDoc, "out_trade_no").c_str(), getXmlNode(pDoc, "total_fee").c_str(),
+						getXmlNode(pDoc, "time_end").c_str(), getXmlNode(pDoc, "trade_type").c_str());
+					::PostMessage(m_orderQueryHwnd, UM_REFUND_QUERY_ORDER_TIME_NOTIFY, 0, (LPARAM)info);
 				}
 			}
 			else
@@ -258,7 +269,17 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 			if (0 == nret)
 			{
 				bool refundSuccess = !retmsg.compare("SUCCESS");
-				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, refundSuccess ? 1 : 0, 0);
+				if (refundSuccess)
+				{
+					refundOrderInfo* info = refundOrderInfo::create(getXmlNode(pDoc, "refund_no").c_str(), 
+						getXmlNode(pDoc, "out_trade_no").c_str(), getXmlNode(pDoc, "order_no").c_str(),
+						getXmlNode(pDoc, "refund_fee").c_str());
+					::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 1, (LPARAM)info);
+				}
+				else
+				{
+					::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 0, 0);
+				}
 			}
 			else
 			{
@@ -315,7 +336,17 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 			{
 				setState(sellState::none);
 				bool refundSuccess = !refund_status.compare("SUCCESS");
-				::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, refundSuccess ? 1:-1, 0);
+				if (refundSuccess)
+				{
+					refundOrderInfo* info = refundOrderInfo::create(getXmlNode(pDoc, "refund_no").c_str(),
+						getXmlNode(pDoc, "out_trade_no").c_str(), getXmlNode(pDoc, "order_no").c_str(),
+						getXmlNode(pDoc, "refund_fee").c_str());
+					::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 1, (LPARAM)info);
+				}
+				else
+				{
+					::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 0, 0);
+				}
 			}
 			else
 			{
@@ -383,7 +414,6 @@ bool sellMobileSystem::requestDownloadOrder(HWND objHwnd, const char* startDate,
 					sftppath.insert(0, DataMgrInstanceEx.DownloadOrderFilePath.c_str());
 					function<void(const std::string& data)>* doloadCallback = new function<void(const std::string& data)>();
 					*doloadCallback = [this](const std::string& data)
-					//*doloadCallback = [](const std::string& data)//test code
 					{
 						DataMgrInstanceEx.writeLog(data.c_str());
 						setState(sellState::none);

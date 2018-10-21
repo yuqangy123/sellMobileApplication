@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "afxwin.h"
 #include "GifHelper.h"
+#include "DataManager.h"
 
 // CRefundResultDialog ¶Ô»°¿ò
 
@@ -11,6 +12,7 @@ enum {
 	REFUND_REFUNDING
 };
 
+#define TIMER_ID_ORDER_QUERY		101
 class CRefundResultDialog : public CDialogEx
 {
 	DECLARE_DYNAMIC(CRefundResultDialog)
@@ -38,6 +40,7 @@ public:
 	CButton m_replayRefundBtn;
 	afx_msg void OnBnClickedButtonReplayRefund();
 	afx_msg LRESULT OnRefundOrderNotify(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnOrderQuery(WPARAM wParam, LPARAM lParam);
 	void updateUI_OnInitDialog();
 	void requestRefundOrder(const CString& order_no, const CString& refund_no, const CString& totalfee, const CString& fee);
 
@@ -49,6 +52,8 @@ protected:
 	CStringA m_totalfee;
 	CStringA m_fee;
 	CRect m_gifrt;
+	refundOrderInfo* m_info;
+	UINT_PTR m_timer_orderQuery;
 
 	gif_declare_member()
 public:

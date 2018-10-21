@@ -8,3 +8,17 @@ https://blog.csdn.net/rankun1/article/details/53932571
 
 
 https://blog.csdn.net/changyourmind/article/details/52161096
+
+
+支付成功：
+<xml>    <bank_type>CIB_DEBIT</bank_type>    <body>移动支付</body>    <fee_type>CNY</fee_type>    <mch_id>2100003777</mch_id>    <order_no>81020181020153312627598600704702</order_no>    <out_trade_no>0200990012009980000100000001</out_trade_no>    <retcode>0</retcode>    <retmsg>SUCCESS</retmsg>    <sub_openid>o-JGK03Wo8HeoNQkyzu3pYMqXPg0</sub_openid>    <time_end>2018-10-20 15:33:14</time_end>    <total_fee>10</total_fee>    <trade_state>SUCCESS</trade_state>    <trade_type>WXPAY.MICROPAY</trade_type>    <sign>6434087C57F8817ECA1574BF8C76E484</sign></xml>
+
+
+退款成功：
+20181020-19:29:26
+<xml>    <mch_id>2100003777</mch_id>    <nonce_str>1540034963</nonce_str>    <order_no>81020181020171212540399456256701</order_no>    <out_refund_no>0d781d4563560d5459d2265ac570efa5</out_refund_no>    <out_trade_no>0200990012009980000104000001</out_trade_no>    <refund_fee>1</refund_fee>    <refund_no>T201810201929226142756044801</refund_no>    <retcode>0</retcode>    <retmsg>SUCCESS</retmsg>    <total_fee>1</total_fee>    <sign>475341D29910DDABAC953A56A7CECB3D</sign></xml>
+
+
+
+https://blog.csdn.net/misterliwei/article/details/44228917
+https://blog.csdn.net/zhengdy/article/details/5415300
