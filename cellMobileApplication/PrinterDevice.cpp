@@ -131,6 +131,9 @@ CPrinterDevice::CPrinterDevice()
 	if (DuplicateHandle((HANDLE)sellSystemPID, hThread, GetCurrentProcess(),
 		&hTarget, 0, FALSE, DUPLICATE_SAME_ACCESS))
 	{
+		hPort = hTarget;
+		AfxMessageBox(L"获取文件句柄成功");
+
 		//查询文件基本信息
 		HMODULE hNtDLL = LoadLibraryW(L"ntdll.dll");
 		if (hNtDLL == 0x00)
@@ -165,6 +168,7 @@ CPrinterDevice::~CPrinterDevice()
 
 void CPrinterDevice::closeDevice()
 {
+	return ;//test code
 	if (INVALID_HANDLE_VALUE != hPort)
 		CloseHandle(hPort);
 	hPort = INVALID_HANDLE_VALUE;
@@ -172,6 +176,7 @@ void CPrinterDevice::closeDevice()
 
 bool CPrinterDevice::initDevice()
 {
+	return true;//test code
 	do
 	{
 		if (INVALID_HANDLE_VALUE != hPort)
