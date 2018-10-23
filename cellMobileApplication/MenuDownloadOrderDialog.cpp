@@ -87,9 +87,13 @@ BOOL CMenuDownloadOrderDialog::OnInitDialog()
 				  // 异常: OCX 属性页应返回 FALSE
 }
 
-#include "QRCodePayDialog.h"
+#include "PrinterDevice.h"
 void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 {
+	//test code
+	printerDeviceInstanceEx.checkDevice();
+	return;
+
 	CTime timeBegin;
 	CString startDate;
 	m_beginDataTimePicker.GetTime(timeBegin);
