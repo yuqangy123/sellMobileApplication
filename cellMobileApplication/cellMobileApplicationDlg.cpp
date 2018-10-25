@@ -34,6 +34,7 @@ void CcellMobileApplicationDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TAB_MENU, m_tabMenu);
+	DDX_Control(pDX, IDC_CASHDRAWER1, m_cashDrawer);
 }
 
 BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)

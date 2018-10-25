@@ -40,7 +40,7 @@
 #import "msado15.dll" no_namespace rename("EOF","adoEOF")
 
 
-
+#include "winio.h"
 
 
 

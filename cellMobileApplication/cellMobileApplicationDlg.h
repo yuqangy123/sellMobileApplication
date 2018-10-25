@@ -10,6 +10,7 @@
 #include "MenuDownloadOrderDialog.h"
 #include "MenuRefundOrderDialog.h"
 #include "MenuSettingDialog.h"
+#include "cashdrawer1.h"
 
 
 
@@ -61,4 +62,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void selectShowTabMenu(int index);
+	CCashdrawer1 m_cashDrawer;
 };

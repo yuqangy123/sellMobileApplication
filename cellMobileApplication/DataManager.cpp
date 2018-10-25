@@ -115,7 +115,7 @@ CDataManager::CDataManager()
 	LogFilePath.assign(strModule);
 	CreateDirectoryA(strModule, NULL);
 
-	AfxOleInit();
+	//AfxOleInit();//test code
 	::CoInitialize(NULL);
 
 	if (m_pConnection.CreateInstance(__uuidof(Connection)) != S_OK)

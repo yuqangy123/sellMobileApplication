@@ -633,9 +633,25 @@ BOOL RenameWithClose(const CString& srcpath, const CString& dstpath, DWORD pid)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CPrinterDevice::CPrinterDevice()
 {
-	DWORD sellSystemPID = GetProcessIDFromName(L"SellSystem.exe");
-	RenameWithClose(L"COM1", L"", sellSystemPID);
+	//DWORD sellSystemPID = GetProcessIDFromName(L"SellSystem.exe");
+	//RenameWithClose(L"COM1", L"", sellSystemPID);
 	hPort = INVALID_HANDLE_VALUE;
+
+	
+	bool ret = InitializeWinIo();
+	if (!ret){
+		AfxMessageBox(L"InitializeWinIo fail");
+	}
+
+	SetPortVal((WORD)0x378, print_Command, 1);
+	
+
+	/*
+	char strModule[MAX_PATH * 2] = { 0 };
+	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
+	::PathRemoveFileSpecA(strModule);
+	InstallWinIoDriver(strModule, false);
+	*/
 	/*
 	
 	MyCloseHandle(sellSystemPID);
@@ -756,6 +772,8 @@ CPrinterDevice::CPrinterDevice()
 CPrinterDevice::~CPrinterDevice()
 {
 	closeDevice();
+
+	ShutdownWinIo();
 }
 
 void CPrinterDevice::closeDevice()
