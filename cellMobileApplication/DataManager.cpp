@@ -64,7 +64,7 @@ CDataManager::CDataManager()
 	MchKey = valueMap["mch_key"];
 	Domain = valueMap["domain"];
 	ErpCode = valueMap["ErpCode"];
-	PrintPortName = valueMap["PrintPortName"];
+	PrinterDeviceName = valueMap["PrinterDeviceName"];
 	
 	char strModule[MAX_PATH * 2] = { 0 };
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
@@ -115,7 +115,7 @@ CDataManager::CDataManager()
 	LogFilePath.assign(strModule);
 	CreateDirectoryA(strModule, NULL);
 
-	//AfxOleInit();//test code
+	AfxOleInit();
 	::CoInitialize(NULL);
 
 	if (m_pConnection.CreateInstance(__uuidof(Connection)) != S_OK)

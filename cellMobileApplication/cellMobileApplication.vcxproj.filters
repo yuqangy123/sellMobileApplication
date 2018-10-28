@@ -369,12 +369,6 @@
     <ClInclude Include="PrinterDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cashdrawer1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="winio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cellMobileApplication.cpp">
@@ -447,9 +441,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PrinterDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cashdrawer1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

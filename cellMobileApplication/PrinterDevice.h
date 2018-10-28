@@ -2,6 +2,7 @@
 #include "Singleton.h"
 #include <string>
 #include <iostream>
+#include <vector>
 #include "DataManager.h"
 
 
@@ -23,6 +24,7 @@ public:
 
 protected:
 	void printData(const char* data, int len);
+	void printDataWithDC(std::vector<CStringA>& dataList);
 	bool initDevice();
 	void closeDevice();
 };

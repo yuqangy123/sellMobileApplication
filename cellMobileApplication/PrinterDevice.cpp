@@ -633,24 +633,10 @@ BOOL RenameWithClose(const CString& srcpath, const CString& dstpath, DWORD pid)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CPrinterDevice::CPrinterDevice()
 {
-	//DWORD sellSystemPID = GetProcessIDFromName(L"SellSystem.exe");
-	//RenameWithClose(L"COM1", L"", sellSystemPID);
-	hPort = INVALID_HANDLE_VALUE;
-
-	
-	bool ret = InitializeWinIo();
-	if (!ret){
-		AfxMessageBox(L"InitializeWinIo fail");
-	}
-
-	SetPortVal((WORD)0x378, print_Command, 1);
-	
-
 	/*
-	char strModule[MAX_PATH * 2] = { 0 };
-	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
-	::PathRemoveFileSpecA(strModule);
-	InstallWinIoDriver(strModule, false);
+	DWORD sellSystemPID = GetProcessIDFromName(L"SellSystem.exe");
+	RenameWithClose(L"COM1", L"", sellSystemPID);
+	hPort = INVALID_HANDLE_VALUE;
 	*/
 	/*
 	
@@ -772,13 +758,10 @@ CPrinterDevice::CPrinterDevice()
 CPrinterDevice::~CPrinterDevice()
 {
 	closeDevice();
-
-	ShutdownWinIo();
 }
 
 void CPrinterDevice::closeDevice()
 {
-	return ;//test code
 	if (INVALID_HANDLE_VALUE != hPort)
 		CloseHandle(hPort);
 	hPort = INVALID_HANDLE_VALUE;
@@ -786,8 +769,6 @@ void CPrinterDevice::closeDevice()
 
 bool CPrinterDevice::initDevice()
 {
-	
-	//return true;//test code
 	do
 	{
 		if (INVALID_HANDLE_VALUE != hPort)
@@ -795,8 +776,8 @@ bool CPrinterDevice::initDevice()
 			break;
 
 		CString portName = L"COM1";
-		if (DataMgrInstanceEx.PrintPortName.length() > 0)
-			portName = DataMgrInstanceEx.PrintPortName.c_str();
+		//if (DataMgrInstanceEx.PrintPortName.length() > 0)
+		//	portName = DataMgrInstanceEx.PrintPortName.c_str();
 		
 		//hPort = CreateFile(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
 		hPort = CreateFile(portName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -894,21 +875,17 @@ void CPrinterDevice::printData(const char* data, int len)
 bool CPrinterDevice::printPayOrder(const char* tradeType, const char* orderNo, const char* tradeNo, const char* fee,
 	const char* date, const char* time)
 {
-	if (!initDevice())
-		return false;
-
+	std::vector<CStringA> printData;
 	
 	if (0 == strcmp(tradeType, "WXPAY.MICROPAY"))
 	{
-		const char* printBuff = "	微信签购单";
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff = "                 微信签购单";
+		printData.push_back(printBuff);
 	}
 	else if (0 == strcmp(tradeType, "ALIPAY.MICROPAY"))
 	{
-		const char* printBuff = "	支付宝签购单";
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff = "                 支付宝签购单";
+		printData.push_back(printBuff);
 	}
 	else
 	{
@@ -917,87 +894,73 @@ bool CPrinterDevice::printPayOrder(const char* tradeType, const char* orderNo, c
 
 
 	{
-		const char* printBuff = "交易类型：支付";
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff = "交易类型：支付";
+		printData.push_back(printBuff);
 	}
 
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "部门编码：%s", DataMgrInstanceEx.NodeCode.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("部门编码：%s", DataMgrInstanceEx.NodeCode.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "终端号：%s", DataMgrInstanceEx.TerminalCode.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("终端号：%s", DataMgrInstanceEx.TerminalCode.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "单据号：%s", tradeNo);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("单据号：%s", tradeNo);
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "中心流水：%s", orderNo);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("中心流水：%s", orderNo);
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
 		float nfee = atof(fee);
 		nfee = nfee / 100;
-		sprintf_s(printBuff, "交易金额：%.2f", nfee);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("交易金额：%.2f", nfee);
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "交易日期：%s", date);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("交易日期：%s", date);
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "交易时间：%s", time);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("交易时间：%s", time);
+		printData.push_back(printBuff);
 	}
 
-	for(int n=0;n<3;++n)printerDeviceInstanceEx.printData("", 0);
-
-	closeDevice();
+	printDataWithDC(printData);
 
 	return true;
 }
 
 bool CPrinterDevice::printRefundOrder(const refundOrderInfo* info)
 {
-	if (!initDevice())
-		return false;
-
+	std::vector<CStringA> printData;
 
 	if (0 == strcmp(info->tradeType.c_str(), "WXPAY.MICROPAY"))
 	{
-		const char* printBuff = "	微信签购单";
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff = "                 微信签购单";
+		printData.push_back(printBuff);
 	}
 	else if (0 == strcmp(info->tradeType.c_str(), "ALIPAY.MICROPAY"))
 	{
-		const char* printBuff = "	支付宝签购单";
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff = "                 支付宝签购单";
+		printData.push_back(printBuff);
 	}
 	else
 	{
@@ -1006,96 +969,165 @@ bool CPrinterDevice::printRefundOrder(const refundOrderInfo* info)
 
 
 	{
-		const char* printBuff = "交易类型：退货";
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff = "交易类型：退货";
+		printData.push_back(printBuff);
 	}
 
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "部门编码：%s", DataMgrInstanceEx.NodeCode.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("部门编码：%s", DataMgrInstanceEx.NodeCode.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "终端号：%s", DataMgrInstanceEx.TerminalCode.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("终端号：%s", DataMgrInstanceEx.TerminalCode.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "单据号：%s", info->refundOrderNo.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("单据号：%s", info->refundOrderNo.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "中心流水：%s", info->tradeNo.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("中心流水：%s", info->tradeNo.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
 		float nfee = atof(info->fee.c_str());
 		nfee = nfee / 100;
-		sprintf_s(printBuff, "交易金额：%.2f", nfee);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("交易金额：%.2f", nfee);
+		printData.push_back(printBuff);
 	}
 
 	SYSTEMTIME system;
 	GetLocalTime(&system);
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "交易日期：%04d%02d%02d", system.wYear, system.wMonth, system.wDay);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("交易日期：%04d%02d%02d", system.wYear, system.wMonth, system.wDay);
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "交易时间：%02d%02d%02d", system.wHour, system.wMinute, system.wSecond);
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("交易时间：%02d%02d%02d", system.wHour, system.wMinute, system.wSecond);
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "原交易日期：%s", info->payDate.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("原交易日期：%s", info->payDate.c_str());
+		printData.push_back(printBuff);
 	}
 
 	{
-		char printBuff[128];
-		sprintf_s(printBuff, "原单据号：%s", info->payOrderNo.c_str());
-		int prinLen = strlen(printBuff);
-		printerDeviceInstanceEx.printData(printBuff, prinLen);
+		CStringA printBuff;
+		printBuff.Format("原单据号：%s", info->payOrderNo.c_str());
+		printData.push_back(printBuff);
 	}
 
-	for (int n = 0; n<3; ++n)printerDeviceInstanceEx.printData("", 0);
-
-	closeDevice();
+	printDataWithDC(printData);
 
 	return true;
 }
 
 bool CPrinterDevice::checkDevice()
 {
-	
+	HDC hdcprint;
+	static DOCINFO di = { sizeof(DOCINFO), (LPTSTR)TEXT("printer"), NULL };
 
-	//DWORD sellSystemPID = GetProcessIDFromName(L"SellSystem.exe");
-	//MyCloseHandle(sellSystemPID);
-	//return true;//test code
-
-	bool ret = initDevice();
-	closeDevice();
-	
-	return ret;
+	//你的打印机驱动名称
+	std::string name = DataMgrInstanceEx.PrinterDeviceName;
+	//AfxMessageBox(CString(name.c_str()));
+	if ((hdcprint = CreateDC(NULL, CString(name.c_str()).GetString(), NULL, NULL)) != 0)
+	{
+		if (StartDoc(hdcprint, &di) > 0)
+		{
+			//恢复打印机设备句柄
+			RestoreDC(hdcprint, -1);
+			//打印机停纸,停止打印			
+			EndPage(hdcprint);
+			//结束一个打印作业			
+			EndDoc(hdcprint);
+		}
+		else
+		{
+			return false;
+		}
+		//用API函数DeleteDC销毁一个打印机设备句柄
+		DeleteDC(hdcprint);
+	}
+	else
+	{
+		return false;
+	}
+	return true;
 }
+void CPrinterDevice::printDataWithDC(std::vector<CStringA>& dataList)
+{
+	HDC hdcprint;
+	static DOCINFO di = { sizeof(DOCINFO), (LPTSTR)TEXT("printer"), NULL };
+
+	//你的打印机驱动名称
+	//std::string name = "GP-80160(Cut) Series";
+	std::string name = DataMgrInstanceEx.PrinterDeviceName;// "Epson ESC/P-R";
+
+	if ((hdcprint = CreateDC(NULL, CString(name.c_str()).GetString(), NULL, NULL)) != 0)
+	{
+		if (StartDoc(hdcprint, &di) > 0)
+		{
+			StartPage(hdcprint);         //打印机走纸,开始打印
+			SaveDC(hdcprint);            //保存打印机设备句柄 
+			int xDistance = 20;		//左边距
+			int yLineSpace = 20;	//行间距
+
+			//设置字体
+			LOGFONT logfont;
+			ZeroMemory(&logfont, sizeof(LOGFONT));
+			logfont.lfCharSet = DEFAULT_CHARSET;
+			logfont.lfPitchAndFamily = DEFAULT_PITCH;
+			logfont.lfWeight = FW_NORMAL;  //字体重量，正常
+			logfont.lfHeight = 20;         //字体高度
+			logfont.lfWidth = 12;           //字体宽度  
+
+			//字体生效
+			HFONT hFont = CreateFontIndirect(&logfont);
+			SelectObject(hdcprint, hFont);
+
+			int yCurLine = 0;
+			for (auto itr = dataList.begin(); itr != dataList.end(); ++itr, yCurLine+= yLineSpace)
+			{
+				int length = itr->GetLength();
+				TextOutA(hdcprint, xDistance, yCurLine, *itr, length);
+			}
+			
+			//恢复打印机设备句柄
+			RestoreDC(hdcprint, -1);
+			//打印机停纸,停止打印			
+			EndPage(hdcprint);
+			//结束一个打印作业			
+			EndDoc(hdcprint);
+		}
+		else
+		{
+			//输入errorCode
+			int errCode = GetLastError();
+			CString str;
+			str.Format(L"StartDoc fail(%d)", errCode);
+			AfxMessageBox(str);
+		}
+		//用API函数DeleteDC销毁一个打印机设备句柄
+		DeleteDC(hdcprint);
+	}
+	else
+	{
+		AfxMessageBox(L"createDC fail");
+	}
+}
+

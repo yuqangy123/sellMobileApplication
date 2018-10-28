@@ -21,14 +21,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -57,13 +57,12 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)curl\include\win32\;$(ProjectDir)pthread\include\win32\;$(ProjectDir)openssl\include\win32\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;$(ProjectDir)HookDll\;$(ProjectDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib;HookDll.lib;Psapi.lib;WinIo.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;$(ProjectDir)HookDll\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib;HookDll.lib;Psapi.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -93,8 +92,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;$(ProjectDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib;WinIo.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)curl\prebuilt\win32\;$(ProjectDir)pthread\prebuilt\win32\;$(ProjectDir)openssl\prebuilt\win32\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;pthreadVCE2.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -111,7 +110,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cashdrawer1.h" />
     <ClInclude Include="CCValue.h" />
     <ClInclude Include="cellMobileApplication.h" />
     <ClInclude Include="cellMobileApplicationDlg.h" />
@@ -226,10 +224,8 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="TopDialog.h" />
-    <ClInclude Include="winio.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cashdrawer1.cpp" />
     <ClCompile Include="CCValue.cpp" />
     <ClCompile Include="cellMobileApplication.cpp" />
     <ClCompile Include="cellMobileApplicationDlg.cpp" />
@@ -279,7 +275,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties _x007B_CCB90042-B81E-11D2-AB74-0040054C3719_x007D_="CCashdrawer1" RESOURCE_FILE="cellMobileApplication.rc" />
+      <UserProperties RESOURCE_FILE="cellMobileApplication.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

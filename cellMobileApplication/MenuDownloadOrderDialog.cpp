@@ -90,10 +90,6 @@ BOOL CMenuDownloadOrderDialog::OnInitDialog()
 #include "PrinterDevice.h"
 void CMenuDownloadOrderDialog::OnBnClickedButtonDownload()
 {
-	//test code
-	printerDeviceInstanceEx.checkDevice();
-	return;
-
 	CTime timeBegin;
 	CString startDate;
 	m_beginDataTimePicker.GetTime(timeBegin);

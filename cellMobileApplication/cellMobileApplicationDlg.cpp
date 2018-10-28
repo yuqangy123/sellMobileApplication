@@ -34,7 +34,6 @@ void CcellMobileApplicationDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TAB_MENU, m_tabMenu);
-	DDX_Control(pDX, IDC_CASHDRAWER1, m_cashDrawer);
 }
 
 BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)
@@ -186,7 +185,7 @@ void CcellMobileApplicationDlg::OnTcnSelchangeTabMenu(NMHDR *pNMHDR, LRESULT *pR
 	m_menuRefundOrderDlg.ShowWindow(m_CurSelTab == 1 ? SW_SHOW : SW_HIDE);
 	m_menuSettingDlg.ShowWindow(m_CurSelTab == 2 ? SW_SHOW : SW_HIDE);
 	
-
+	
 	// TODO: 在此添加控件通知处理程序代码
 	*pResult = 0;
 }
@@ -202,6 +201,12 @@ void CcellMobileApplicationDlg::selectShowTabMenu(int index)
 	m_menuRefundOrderDlg.ShowWindow(m_CurSelTab == 1 ? SW_SHOW : SW_HIDE);
 	m_menuSettingDlg.ShowWindow(m_CurSelTab == 2 ? SW_SHOW : SW_HIDE);
 
+	
+	if (1 == m_CurSelTab)
+	{
+		m_menuRefundOrderDlg.updateOrderAndFee();
+	}
+		
 	SetFocus();
 }
 
@@ -258,17 +263,17 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	switch (wParam)
 	{
 	case ctrl_key_cov | VK_F3: {
-		ShowWindow(SW_SHOW);
+		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(2);
 	}break;
 
 	case ctrl_key_cov | VK_F2: {
-		ShowWindow(SW_SHOW);
+		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(1);
 	}break;
 
 	case ctrl_key_cov | VK_F1: {
-		ShowWindow(SW_SHOW);
+		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(0);
 	}break;
 
@@ -280,6 +285,9 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 		b_show = !b_show;
 		if (11 == lParam)
 			b_show = false;
+		else if (12 == lParam)
+			b_show = true;
+
 		this->ShowWindow(b_show ? SW_NORMAL : SW_MINIMIZE);
 	}break;
 	}

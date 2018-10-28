@@ -24,7 +24,7 @@ CMenuSettingDialog::CMenuSettingDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_MENU_SETTING, pParent)
 {
 	m_bConnect = false;
-	//m_bPrinter = printerDeviceInstanceEx.checkDevice();
+	m_bPrinter = printerDeviceInstanceEx.checkDevice();
 	m_bScanner = false;
 }
 

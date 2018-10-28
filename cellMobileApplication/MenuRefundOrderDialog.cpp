@@ -38,6 +38,7 @@ void CMenuRefundOrderDialog::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CMenuRefundOrderDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SURE, &CMenuRefundOrderDialog::OnBnClickedButtonSure)
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -192,6 +193,19 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 BOOL CMenuRefundOrderDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	
+	return true;
+}
+
+void CMenuRefundOrderDialog::OnSetFocus(CWnd* pOldWnd)
+{
+	CDialogEx::OnSetFocus(pOldWnd);
+
+	// TODO: 在此处添加消息处理程序代码
+}
+
+void CMenuRefundOrderDialog::updateOrderAndFee()
+{
 
 #ifdef DEBUG_MODE	
 	char randChar[32] = { 0 };
@@ -205,10 +219,14 @@ BOOL CMenuRefundOrderDialog::OnInitDialog()
 	m_feeCtrl.SetWindowText(CString("0.01"));
 #endif
 
+	std::string order, systemOrder;
+	DataMgrInstanceEx.getGoodsInfoOrder(order, systemOrder);
+	m_orderNoCtrl.SetWindowText(CString(order.c_str()));
+
 	CString csTotalFee;
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
+	double dTotalFee = fabs( _wtof(csTotalFee.GetString()) );
+	csTotalFee.Format(L"%.2f", dTotalFee);
 	m_totalFeeCtrl.SetWindowText(csTotalFee);
 	m_feeCtrl.SetWindowText(csTotalFee);
-	
-	return true;
 }

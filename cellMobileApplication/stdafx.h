@@ -33,14 +33,14 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 
 //C:\Program Files\Common Files\System\ado\msado15.dll
 #import "msado15.dll" no_namespace rename("EOF","adoEOF")
 
 
-#include "winio.h"
+
 
 
 
