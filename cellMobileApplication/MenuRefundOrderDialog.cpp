@@ -75,9 +75,9 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	CString orderNo;
 	m_orderNoCtrl.GetWindowText(orderNo);
 
-	std::string strGuid;
+	/*std::string strGuid;
 	DataMgrInstanceEx.guidToString(strGuid);
-	CString refundNo(strGuid.c_str());
+	CString refundNo(strGuid.c_str());*/
 
 	CString totalfee;
 	m_totalFeeCtrl.GetWindowText(totalfee);
@@ -97,7 +97,7 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 		m_feeCtrl.SetFocus();
 		return;
 	}
-	dlg.requestRefundOrder(orderNo, refundNo, fee, fee);
+	dlg.requestRefundOrder(orderNo, m_outTradeNo, fee, fee);
 	dlg.DoModal();
 	
 
@@ -221,7 +221,8 @@ void CMenuRefundOrderDialog::updateOrderAndFee()
 
 	std::string order, systemOrder;
 	DataMgrInstanceEx.getGoodsInfoOrder(order, systemOrder);
-	m_orderNoCtrl.SetWindowText(CString(order.c_str()));
+	m_outTradeNo = order.c_str();
+	m_orderNoCtrl.SetWindowText(L"");
 
 	CString csTotalFee;
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);

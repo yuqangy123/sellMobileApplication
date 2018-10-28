@@ -27,6 +27,7 @@ public:
 	CEdit m_orderNoCtrl;
 	CEdit m_totalFeeCtrl;
 	CEdit m_feeCtrl;
+	CString m_outTradeNo;
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 
 	void updateOrderAndFee();

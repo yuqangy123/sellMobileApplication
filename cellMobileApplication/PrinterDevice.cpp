@@ -943,6 +943,14 @@ bool CPrinterDevice::printPayOrder(const char* tradeType, const char* orderNo, c
 		printData.push_back(printBuff);
 	}
 
+	//打印第二次
+	std::vector<CStringA> secPrintData(printData);
+
+	for (int n = 0; n<4; ++n) printData.push_back("");
+
+	for (auto itr = secPrintData.begin(); itr != secPrintData.end(); ++itr)
+		printData.push_back(*itr);
+
 	printDataWithDC(printData);
 
 	return true;
@@ -1031,6 +1039,14 @@ bool CPrinterDevice::printRefundOrder(const refundOrderInfo* info)
 		printBuff.Format("原单据号：%s", info->payOrderNo.c_str());
 		printData.push_back(printBuff);
 	}
+
+	//打印第二次
+	std::vector<CStringA> secPrintData(printData);
+
+	for(int n=0;n<4;++n) printData.push_back("");
+
+	for (auto itr = secPrintData.begin(); itr != secPrintData.end(); ++itr)
+		printData.push_back(*itr);
 
 	printDataWithDC(printData);
 
