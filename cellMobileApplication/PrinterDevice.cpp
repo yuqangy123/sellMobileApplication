@@ -6,6 +6,7 @@ static HANDLE hPort = INVALID_HANDLE_VALUE;
 OVERLAPPED m_OverlappedRead;
 OVERLAPPED m_OverlappedWrite;
 const char print_Command = 0x0A;
+const int printPageWidth = 31;
 
 DECLARE_SINGLETON_MEMBER(CPrinterDevice);
 
@@ -879,12 +880,12 @@ bool CPrinterDevice::printPayOrder(const char* tradeType, const char* orderNo, c
 	
 	if (0 == strcmp(tradeType, "WXPAY.MICROPAY"))
 	{
-		CStringA printBuff = "                 微信签购单";
+		CStringA printBuff = "         微信签购单";
 		printData.push_back(printBuff);
 	}
 	else if (0 == strcmp(tradeType, "ALIPAY.MICROPAY"))
 	{
-		CStringA printBuff = "                 支付宝签购单";
+		CStringA printBuff = "         支付宝签购单";
 		printData.push_back(printBuff);
 	}
 	else
@@ -946,10 +947,15 @@ bool CPrinterDevice::printPayOrder(const char* tradeType, const char* orderNo, c
 	//打印第二次
 	std::vector<CStringA> secPrintData(printData);
 
-	for (int n = 0; n<4; ++n) printData.push_back("");
+	for (int n = 0; n<6; ++n) printData.push_back("");
+	printData.push_back("-------------------------------");
+	for (int n = 0; n<6; ++n) printData.push_back("");
 
 	for (auto itr = secPrintData.begin(); itr != secPrintData.end(); ++itr)
 		printData.push_back(*itr);
+
+	for (int n = 0; n<5; ++n) printData.push_back("");
+	printData.push_back("-------------------------------");
 
 	printDataWithDC(printData);
 
@@ -962,12 +968,12 @@ bool CPrinterDevice::printRefundOrder(const refundOrderInfo* info)
 
 	if (0 == strcmp(info->tradeType.c_str(), "WXPAY.MICROPAY"))
 	{
-		CStringA printBuff = "                 微信签购单";
+		CStringA printBuff = "         微信签购单";
 		printData.push_back(printBuff);
 	}
 	else if (0 == strcmp(info->tradeType.c_str(), "ALIPAY.MICROPAY"))
 	{
-		CStringA printBuff = "                 支付宝签购单";
+		CStringA printBuff = "        支付宝签购单";
 		printData.push_back(printBuff);
 	}
 	else
@@ -1043,10 +1049,15 @@ bool CPrinterDevice::printRefundOrder(const refundOrderInfo* info)
 	//打印第二次
 	std::vector<CStringA> secPrintData(printData);
 
-	for(int n=0;n<4;++n) printData.push_back("");
+	for(int n=0;n<6;++n) printData.push_back("");
+	printData.push_back("-------------------------------");
+	for (int n = 0; n<6; ++n) printData.push_back("");
 
 	for (auto itr = secPrintData.begin(); itr != secPrintData.end(); ++itr)
 		printData.push_back(*itr);
+
+	for (int n = 0; n<5; ++n) printData.push_back("");
+	printData.push_back("-------------------------------");
 
 	printDataWithDC(printData);
 
@@ -1100,8 +1111,9 @@ void CPrinterDevice::printDataWithDC(std::vector<CStringA>& dataList)
 		{
 			StartPage(hdcprint);         //打印机走纸,开始打印
 			SaveDC(hdcprint);            //保存打印机设备句柄 
-			int xDistance = 20;		//左边距
-			int yLineSpace = 20;	//行间距
+			int xDistance = 8;		//左边距
+			int yLineSpace = 26;	//行间距
+			
 
 			//设置字体
 			LOGFONT logfont;
@@ -1109,7 +1121,7 @@ void CPrinterDevice::printDataWithDC(std::vector<CStringA>& dataList)
 			logfont.lfCharSet = DEFAULT_CHARSET;
 			logfont.lfPitchAndFamily = DEFAULT_PITCH;
 			logfont.lfWeight = FW_NORMAL;  //字体重量，正常
-			logfont.lfHeight = 20;         //字体高度
+			logfont.lfHeight = 22;         //字体高度
 			logfont.lfWidth = 12;           //字体宽度  
 
 			//字体生效
@@ -1117,10 +1129,23 @@ void CPrinterDevice::printDataWithDC(std::vector<CStringA>& dataList)
 			SelectObject(hdcprint, hFont);
 
 			int yCurLine = 0;
-			for (auto itr = dataList.begin(); itr != dataList.end(); ++itr, yCurLine+= yLineSpace)
+			for (auto itr = dataList.begin(); itr != dataList.end(); ++itr, yCurLine+=yLineSpace)
 			{
 				int length = itr->GetLength();
-				TextOutA(hdcprint, xDistance, yCurLine, *itr, length);
+				if (printPageWidth < length)
+				{
+					CStringA lefStr = itr->Left(printPageWidth);
+					CStringA rigStr = itr->Right(length - printPageWidth);
+					TextOutA(hdcprint, xDistance, yCurLine, lefStr, printPageWidth);
+					yCurLine += yLineSpace;
+					TextOutA(hdcprint, xDistance, yCurLine, rigStr, length - printPageWidth);
+				}
+				else
+				{
+					TextOutA(hdcprint, xDistance, yCurLine, *itr, length);
+				}
+				
+				
 			}
 			
 			//恢复打印机设备句柄

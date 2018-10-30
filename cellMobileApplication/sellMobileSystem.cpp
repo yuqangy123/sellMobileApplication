@@ -237,6 +237,8 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 	string strfee = atoFee(cfee);
 	string strtotalfee = atoFee(ctotalfee);
 
+	m_order_no = order_no;
+
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["nonce_str"] = m_nonce_str;
@@ -271,8 +273,8 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 				bool refundSuccess = !retmsg.compare("SUCCESS");
 				if (refundSuccess)
 				{
-					refundOrderInfo* info = refundOrderInfo::create(getXmlNode(pDoc, "refund_no").c_str(), 
-						getXmlNode(pDoc, "out_trade_no").c_str(), getXmlNode(pDoc, "order_no").c_str(),
+					refundOrderInfo* info = refundOrderInfo::create(getXmlNode(pDoc, "out_refund_no").c_str(), 
+						getXmlNode(pDoc, "refund_no").c_str(), getXmlNode(pDoc, "out_trade_no").c_str(),
 						getXmlNode(pDoc, "refund_fee").c_str());
 					::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 1, (LPARAM)info);
 				}
@@ -303,6 +305,8 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 	m_refundorderHwnd = objHwnd;
 
 	m_nonce_str = "5K8264ILTKCH16CQ";
+
+	m_order_no = order_no;
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
@@ -338,8 +342,8 @@ bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, co
 				bool refundSuccess = !refund_status.compare("SUCCESS");
 				if (refundSuccess)
 				{
-					refundOrderInfo* info = refundOrderInfo::create(getXmlNode(pDoc, "refund_no").c_str(),
-						getXmlNode(pDoc, "out_trade_no").c_str(), getXmlNode(pDoc, "order_no").c_str(),
+					refundOrderInfo* info = refundOrderInfo::create(getXmlNode(pDoc, "out_refund_no").c_str(),
+						getXmlNode(pDoc, "refund_no").c_str(), getXmlNode(pDoc, "out_trade_no").c_str(),
 						getXmlNode(pDoc, "refund_fee").c_str());
 					::PostMessage(m_refundorderHwnd, UM_REFUND_ORDER_NOTIFY, 1, (LPARAM)info);
 				}

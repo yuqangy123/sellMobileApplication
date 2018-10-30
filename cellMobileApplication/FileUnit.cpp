@@ -91,10 +91,10 @@ std::string CFileUnit::ExtractFileName(const std::string &AFileName)
 	int strb_len = str_b.length();
 	int strc_len = str_c.length();
 
-	if(stra_len > strb_len && stra_len > strc_len)
+	if(stra_len >= strb_len && stra_len >= strc_len)
 		return str_a;
 
-	if(strb_len > stra_len && strb_len > strc_len)
+	if(strb_len > stra_len && strb_len >= strc_len)
 		return str_b;
 
 	if(strc_len > stra_len && strc_len > strb_len)
@@ -111,9 +111,10 @@ std::string CFileUnit::Getwstring(const std::string &s, const std::string &Sing,
 	}
 	else
 	{
+		int singLen = Sing.length();
 		if (Forwar)
-			return s.substr(0, pos + 1);
+			return s.substr(0, pos + singLen);
 		else
-			return s.substr(pos + 1, s.length());
+			return s.substr(pos + singLen, s.length());
 	}
 }

@@ -47,16 +47,16 @@ struct payOrderInfo
 //退款数据
 typedef struct refundOrderInfo_
 {
-	std::string refundOrderNo;//退款单据号
+	std::string refundOrderNo;//单据号
 	std::string payOrderNo;//原单据号
-	std::string tradeNo;
+	std::string tradeNo;//中心流水
 	std::string fee;
 	std::string payDate;
 	std::string tradeType;
 
 
-	static refundOrderInfo_* create(const char* pRefundOrderNo, const char* pPayOrderNo, 
-		const char* pTradeNo, const char* pFee)
+	static refundOrderInfo_* create(const char* pRefundOrderNo, const char* pTradeNo,
+		const char* pPayOrderNo, const char* pFee)
 	{
 		refundOrderInfo_* info = new refundOrderInfo_;
 

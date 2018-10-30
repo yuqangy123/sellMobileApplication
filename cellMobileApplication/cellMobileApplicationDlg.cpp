@@ -50,6 +50,15 @@ END_MESSAGE_MAP()
 
 BOOL CcellMobileApplicationDlg::OnInitDialog()
 {
+	/*
+	CStringA testchar;
+	testchar = "中心流水：810201810291232381964";
+	
+	int len = testchar.GetLength();
+
+	CStringA lefStr = testchar.Left(30);
+	CStringA rigStr = testchar.Right(len-30);
+	*/
 	CDialogEx::OnInitDialog();
 
 	SetIcon(m_hIcon, TRUE);
