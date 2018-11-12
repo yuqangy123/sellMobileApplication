@@ -17,7 +17,7 @@ IMPLEMENT_DYNAMIC(CQRCodePayDialog, CDialogEx)
 CQRCodePayDialog::CQRCodePayDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_QRCODE_PAY, pParent)
 {
-
+	m_keyUpDownIndex = 1;
 }
 
 CQRCodePayDialog::~CQRCodePayDialog()
@@ -71,7 +71,9 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 	// TODO: 在此添加专用代码和/或调用基类
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
 	{
-		::SendMessage(::GetActiveWindow(), WM_CLOSE, 0, 0);
+		//::PostMessage(::GetActiveWindow(), WM_CLOSE, 0, 0);
+		//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+		//return true;
 		return CDialogEx::PreTranslateMessage(pMsg);
 	}
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
@@ -98,6 +100,15 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 		//
 		return TRUE;
 	}
+	//上下键盘
+	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_DOWN && pMsg->wParam)
+	{
+		updateEditFocus(1);
+	}
+	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_UP && pMsg->wParam)
+	{
+		updateEditFocus(-1);
+	}
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -113,4 +124,24 @@ void CQRCodePayDialog::SetActive(HWND hWnd)
 	::SetWindowPos(hWnd, HWND_NOTOPMOST, 0,0,0,0, SWP_NOSIZE|SWP_NOMOVE ); //还原Z-Order?
 	::SetForegroundWindow(hWnd);
 	::AttachThreadInput( dwCurID, dwForeID, FALSE); 
+}
+
+
+void CQRCodePayDialog::updateEditFocus(int n)
+{
+
+	m_keyUpDownIndex += n;
+
+	if (m_keyUpDownIndex < 1)m_keyUpDownIndex = 2;
+	if (m_keyUpDownIndex > 2)m_keyUpDownIndex = 1;
+
+	switch (m_keyUpDownIndex)
+	{
+	case 1:{
+			   m_authCodeCtrl.SetFocus();
+	}break;
+	case 2:{
+			   m_payFeeCtrl.SetFocus();
+	}break;
+	}
 }

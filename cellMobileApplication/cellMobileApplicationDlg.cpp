@@ -50,6 +50,9 @@ END_MESSAGE_MAP()
 
 BOOL CcellMobileApplicationDlg::OnInitDialog()
 {
+	CDialogEx::OnInitDialog();
+
+
 	/*
 	CStringA testchar;
 	testchar = "中心流水：810201810291232381964";
@@ -59,7 +62,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 	CStringA lefStr = testchar.Left(30);
 	CStringA rigStr = testchar.Right(len-30);
 	*/
-	CDialogEx::OnInitDialog();
+	
 
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
@@ -108,7 +111,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 		lpfnDllFuncHook = (HOOKPROC)GetProcAddress(hDLL, "SetHook");
 		if (lpfnDllFuncHook != NULL) {			// call the function
 			char hookKeyboardList[256] = { 0 };
-			sprintf_s(hookKeyboardList, "%d,%d,%d,%d,%d", VK_F11, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3, ctrl_key_cov | VK_F4);
+			sprintf_s(hookKeyboardList, "%d,%d,%d,%d", VK_F11, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3);
 
 			lpfnDllFuncHook(m_hWnd, hookKeyboardList, strlen(hookKeyboardList));
 		}
@@ -226,11 +229,13 @@ BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 	{
 		if (pMsg->wParam == VK_ESCAPE)
 		{
+			/*
 			UINT nRet = MessageBox(L"是否需要退出程序？", L"提示", MB_OKCANCEL);
 			if (IDOK == nRet)
 			{
 				PostQuitMessage(0);
-			}
+			}*/
+			::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
 			return TRUE;
 		}
 		else if ((pMsg->wParam == VK_RETURN || pMsg->wParam == VK_DOWN || pMsg->wParam == VK_SPACE) && pMsg->wParam)
@@ -312,6 +317,9 @@ LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 		bshowPayView = true;
 		CQRCodePayDialog dlgtest;
 		dlgtest.DoModal();
+		ShowWindow(SW_NORMAL);
+		::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+		//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_KILLFOCUS, 0, 0);
 		bshowPayView = false;
 	}
 	

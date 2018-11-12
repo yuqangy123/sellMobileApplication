@@ -21,14 +21,21 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	DECLARE_MESSAGE_MAP()
+
+	void updateEditFocus(int n);
+
 public:
 	afx_msg void OnBnClickedButtonSure();
 	virtual BOOL OnInitDialog();
 	CEdit m_orderNoCtrl;
 	CEdit m_totalFeeCtrl;
-	CEdit m_feeCtrl;
-	CString m_outTradeNo;
+	CEdit m_serialCtrl;
+	int m_keyUpDownIndex;
+	CString m_outRefundNo;
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 
 	void updateOrderAndFee();
+	afx_msg void OnSetfocusEditOrderId();
+	afx_msg void OnSetfocusEditRefundSerial1();
+	afx_msg void OnSetfocusEditPayFee1();
 };

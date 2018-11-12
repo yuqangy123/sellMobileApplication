@@ -20,7 +20,7 @@ IMPLEMENT_DYNAMIC(CMenuRefundOrderDialog, CDialogEx)
 CMenuRefundOrderDialog::CMenuRefundOrderDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DIALOG_MENU_REFUND_ORDER, pParent)
 {
-
+	m_keyUpDownIndex = 1;
 }
 
 CMenuRefundOrderDialog::~CMenuRefundOrderDialog()
@@ -31,21 +31,47 @@ void CMenuRefundOrderDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_ORDER_ID, m_orderNoCtrl);
-	DDX_Control(pDX, IDC_EDIT_PAY_FEE, m_totalFeeCtrl);
-	DDX_Control(pDX, IDC_EDIT_REFUND_FEE, m_feeCtrl);
+	DDX_Control(pDX, IDC_EDIT_PAY_FEE1, m_totalFeeCtrl);
+	DDX_Control(pDX, IDC_EDIT_REFUND_SERIAL1, m_serialCtrl);
 }
 
 
 BEGIN_MESSAGE_MAP(CMenuRefundOrderDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SURE, &CMenuRefundOrderDialog::OnBnClickedButtonSure)
 	ON_WM_SETFOCUS()
+	ON_EN_SETFOCUS(IDC_EDIT_ORDER_ID, &CMenuRefundOrderDialog::OnSetfocusEditOrderId)
+	ON_EN_SETFOCUS(IDC_EDIT_REFUND_SERIAL1, &CMenuRefundOrderDialog::OnSetfocusEditRefundSerial1)
+	ON_EN_SETFOCUS(IDC_EDIT_PAY_FEE1, &CMenuRefundOrderDialog::OnSetfocusEditPayFee1)
 END_MESSAGE_MAP()
 
 
-// CMenuRefundOrderDialog 消息处理程序
+void CMenuRefundOrderDialog::updateEditFocus(int n)
+{
+	
+	m_keyUpDownIndex += n;
 
+	if (m_keyUpDownIndex < 1)m_keyUpDownIndex = 3;
+	if (m_keyUpDownIndex > 3)m_keyUpDownIndex = 1;
+
+	switch (m_keyUpDownIndex)
+	{
+	case 1:{
+			   m_orderNoCtrl.SetFocus();
+	}break;
+	case 2:{
+			   m_serialCtrl.SetFocus();
+	}break;
+	case 3:{
+			   m_totalFeeCtrl.SetFocus();
+	}break;
+	}
+}
+
+// CMenuRefundOrderDialog 消息处理程序
 BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 {
+	
+
 	// TODO: 在此添加专用代码和/或调用基类
 	//屏蔽ESC关闭窗体/
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
@@ -64,6 +90,15 @@ BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 		OnBnClickedButtonSure();
 		return TRUE;
 	}
+	//上下键盘
+	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_DOWN && pMsg->wParam)
+	{
+		updateEditFocus(1);
+	}
+	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_UP && pMsg->wParam)
+	{
+		updateEditFocus(-1);
+	}
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -81,23 +116,18 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 
 	CString totalfee;
 	m_totalFeeCtrl.GetWindowText(totalfee);
-	totalfee = L"1.0";
 	if (!stringIsNumber(totalfee.GetString()))
 	{
-		MessageBox(L"原交易金额输入有误，请重新输入", L"提示");
+		MessageBox(L"退款金额输入有误，请重新输入", L"提示");
 		m_totalFeeCtrl.SetFocus();
 		return;
 	}
 
-	CString fee;
-	m_feeCtrl.GetWindowText(fee);
-	if (!stringIsNumber(fee.GetString()))
-	{
-		MessageBox(L"退款金额输入有误，请重新输入", L"提示");
-		m_feeCtrl.SetFocus();
-		return;
-	}
-	dlg.requestRefundOrder(orderNo, m_outTradeNo, fee, fee);
+	CString serialNo;
+	m_serialCtrl.GetWindowText(serialNo);
+	
+
+	dlg.requestRefundOrder(serialNo, orderNo, m_outRefundNo, totalfee, totalfee);
 	dlg.DoModal();
 	
 
@@ -218,16 +248,38 @@ void CMenuRefundOrderDialog::updateOrderAndFee()
 	m_totalFeeCtrl.SetWindowText(CString("0.01"));
 	m_feeCtrl.SetWindowText(CString("0.01"));
 #endif
+	m_keyUpDownIndex = 1;
 
 	std::string order, systemOrder;
 	DataMgrInstanceEx.getGoodsInfoOrder(order, systemOrder);
-	m_outTradeNo = order.c_str();
+	m_outRefundNo = order.c_str();
 	m_orderNoCtrl.SetWindowText(L"");
+	m_serialCtrl.SetWindowText(L"");
 
 	CString csTotalFee;
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
 	double dTotalFee = fabs( _wtof(csTotalFee.GetString()) );
 	csTotalFee.Format(L"%.2f", dTotalFee);
 	m_totalFeeCtrl.SetWindowText(csTotalFee);
-	m_feeCtrl.SetWindowText(csTotalFee);
+	
+}
+
+void CMenuRefundOrderDialog::OnSetfocusEditOrderId()
+{
+	// TODO: Add your control notification handler code here
+	m_orderNoCtrl.SetSel(0, -1);
+}
+
+
+void CMenuRefundOrderDialog::OnSetfocusEditRefundSerial1()
+{
+	// TODO: Add your control notification handler code here
+	m_serialCtrl.SetSel(0, -1);
+}
+
+
+void CMenuRefundOrderDialog::OnSetfocusEditPayFee1()
+{
+	// TODO: Add your control notification handler code here
+	m_totalFeeCtrl.SetSel(0, -1);
 }

@@ -22,6 +22,7 @@ protected:
 
 	//将窗口调用到最上层，然后获取鼠标焦点
 	void SetActive(HWND hWnd);
+	void updateEditFocus(int n);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -30,5 +31,6 @@ public:
 	CEdit m_willPayFeeCtrl;
 	CEdit m_authCodeCtrl;
 	CEdit m_payFeeCtrl;
+	int m_keyUpDownIndex;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

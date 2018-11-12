@@ -4,6 +4,7 @@
 #include "md5.h"
 //#include "afxwin.h"
 #include "FileUnit.h"
+#include "Math.h"
 
 static _RecordsetPtr m_pRecordset;
 static _ConnectionPtr m_pConnection;
@@ -66,6 +67,12 @@ CDataManager::CDataManager()
 	ErpCode = valueMap["ErpCode"];
 	PrinterDeviceName = valueMap["PrinterDeviceName"];
 	
+	store_id = valueMap["store_id"];
+	cashier_id = valueMap["cashier_id"];
+
+	if (!valueMap["printPageNum"].empty())
+		printPageNum = atoi( valueMap["printPageNum"].c_str() );
+
 	char strModule[MAX_PATH * 2] = { 0 };
 	GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
 	::PathRemoveFileSpecA(strModule);
@@ -91,7 +98,7 @@ CDataManager::CDataManager()
 	iniParse.ReadConfig(sellSystemPath, valueMap, "SYSTEM");
 	if (0 == valueMap.size()) AfxMessageBox(L"SellSystem.ini为空");
 
-	NodeCode = valueMap["NodeCode"];
+	//NodeCode = valueMap["NodeCode"];
 	PosFontEndIP = valueMap["PosFontEndIP"];
 
 	
@@ -99,17 +106,22 @@ CDataManager::CDataManager()
 	valueMap.clear();
 	sellSystemPath[0] = { 0 };
 	sprintf_s(sellSystemPath, "%s\\SellSystemConfig.ini", PaySystemPath.c_str());
-	iniParse.ReadConfig(sellSystemPath, valueMap, "System");
+	iniParse.ReadConfig(sellSystemPath, valueMap, "Terminal");
 	if (0 == valueMap.size()) AfxMessageBox(L"SellSystemConfig.ini为空");
 
-	std::string terminal = valueMap["TerminalCode"];
-	size_t terItr = terminal.find(',');
+	std::string strTerminal = valueMap["TerminalCode"];
+	size_t terItr = strTerminal.find(',');
 	if (terItr != std::string::npos)
-		TerminalCode = terminal.substr(terItr + 1);
+		TerminalCode = strTerminal.substr(terItr + 1);
 	else
-		TerminalCode = terminal;
+		TerminalCode = strTerminal;
 	
-
+	std::string strNodecode = valueMap["NodeCode"];
+	terItr = strNodecode.find(',');
+	if (terItr != std::string::npos)
+		NodeCode = strNodecode.substr(terItr + 1);
+	else
+		NodeCode = strNodecode;
 	
 	wsprintfA(strModule + strlen(strModule), "\\sellMobileLog");
 	LogFilePath.assign(strModule);
@@ -121,6 +133,15 @@ CDataManager::CDataManager()
 	if (m_pConnection.CreateInstance(__uuidof(Connection)) != S_OK)
 	{
 		DWORD err = GetLastError();
+
+		char strModule[MAX_PATH * 2] = { 0 };
+		GetModuleFileNameA(NULL, strModule, MAX_PATH * 2);
+		::PathRemoveFileSpecA(strModule);
+
+		char cmd[1024] = { 0 };
+		sprintf_s(cmd, "regsvr32 %s\\msado15.dll", strModule);
+		WinExec(cmd, SW_SHOW);
+
 		CString errStr;
 		errStr.Format(L"_ConnectionPtr init fail(%d)", err);
 		AfxMessageBox(errStr);
@@ -151,7 +172,9 @@ void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
 	ifstream infile(tmpbuff);
 	if (!infile)
 	{
-		printf("file open error! %s", tmpbuff);
+		char log[256];
+		sprintf_s(log, "file open error! %s", tmpbuff);
+		writeLog(log);
 		return;
 	}
 
@@ -163,12 +186,14 @@ void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
 	auto spaceIndex = lastline.find(" ");
 	if (-1 == spaceIndex)
 	{
+		writeLog("lastline.find  fail");
 		return;
 	}
 
 	auto dIndex = lastline.find(",");
 	if (-1 == dIndex)
 	{
+		writeLog("lastline.find , fail");
 		return ;
 	}
 
@@ -231,6 +256,8 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 			strDBFileA.Format("%s\\SaleBill_%04d%02d%02d.%s", PaySystemPath.c_str(), systm.wYear, systm.wMonth, systm.wDay, NodeCode.c_str());
 			if (!FileUnitInstance->FileExists(strDBFileA.GetString()))
 			{
+				strDBFileA = strDBFileA + "file can't find";
+				writeLog(strDBFileA.GetString());
 				break;
 			}
 			sprintf_s(ql, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password='www.bizcent.com'", strDBFileA.GetString());
@@ -263,6 +290,10 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 					m_pRecordset->MoveNext();
 				}
 			}
+			else
+			{
+				writeLog("BillNumber is empty");
+			}
 		}
 		catch (_com_error * e)
 		{
@@ -270,11 +301,77 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 			break;
 		}
 
+		totalFee *= 10;
+		double floor_t = floor(totalFee + 0.5);
+		totalFee = totalFee < floor_t ? floor_t/10 : ceil(totalFee)/10;
+
 		csTotalFee.Format(L"%.2f", totalFee);
 	} while (false);
 	if(openState == S_OK)
 		m_pConnection->Close();
 
 	
+	return true;
+}
+
+BOOL CDataManager::getlastBills(std::vector<CString>& billVtr, int wantNum)
+{
+	//test code
+	//csTotalFee = "0.01";
+	//return true;
+	HRESULT openState = S_OK + 1;
+	do {
+		double totalFee = 0;
+		try {
+			char ql[512];
+			CStringA strDBFileA;
+			SYSTEMTIME systm;
+			GetLocalTime(&systm);
+
+			strDBFileA.Format("%s\\SaleBill_%04d%02d%02d.%s", PaySystemPath.c_str(), systm.wYear, systm.wMonth, systm.wDay, NodeCode.c_str());
+			if (!FileUnitInstance->FileExists(strDBFileA.GetString()))
+			{
+				strDBFileA = strDBFileA + "file can't find";
+				writeLog(strDBFileA.GetString());
+				break;
+			}
+			sprintf_s(ql, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Jet OLEDB:Database Password='www.bizcent.com'", strDBFileA.GetString());
+			openState = m_pConnection->Open(ql, "", "", adModeUnknown);
+
+			
+			sprintf_s(ql, "select * from tbSaleBillDetail");
+			//m_pRecordset->Close();
+			m_pRecordset->Open(ql, m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+			if (!m_pRecordset->BOF)
+				m_pRecordset->MoveLast();
+			else
+			{
+				AfxMessageBox(L"no data in the table");
+				break;
+			}
+			_variant_t va, vaIndex;
+			while (!m_pRecordset->adoEOF && wantNum-->0)
+			{
+				va = m_pRecordset->GetCollect("BillNumber");
+
+				if (va.vt != VT_NULL)
+				{
+					CString valStr = _bstr_t(va);
+					billVtr.push_back(valStr);
+				}
+				m_pRecordset->MovePrevious();
+			}
+		}
+		catch (_com_error * e)
+		{
+			AfxMessageBox(e->ErrorMessage());
+			break;
+		}
+	} while (false);
+	if (openState == S_OK)
+		m_pConnection->Close();
+
+
 	return true;
 }

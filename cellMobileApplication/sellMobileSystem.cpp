@@ -181,6 +181,8 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 	params["auth_code"] = auth_code;
 	params["body"] = KS_ANSI_to_UTF8("移动支付");
 	params["spbill_create_ip"] = DataMgrInstanceEx.PosFontEndIP;
+	params["store_id"] = DataMgrInstanceEx.store_id;
+	params["cashier_id"] = DataMgrInstanceEx.cashier_id;
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
 	
@@ -229,7 +231,7 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 }
 
 //申请退款
-bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, const char* refund_no, const char* ctotalfee, const char* cfee)
+bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, const char* out_trade_no, const char* out_refund_no, const char* ctotalfee, const char* cfee)
 {
 	m_refundorderHwnd = objHwnd;
 
@@ -237,13 +239,13 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 	string strfee = atoFee(cfee);
 	string strtotalfee = atoFee(ctotalfee);
 
-	m_order_no = order_no;
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["nonce_str"] = m_nonce_str;
-	params["out_trade_no"] = order_no;
-	params["out_refund_no"] = refund_no;//由三部分组成
+	params["order_no"] = order_no;//中心流水
+	params["out_trade_no"] = out_trade_no;//原单据号
+	params["out_refund_no"] = out_refund_no;//由三部分组成
 	params["refund_fee"] = strfee;
 	params["total_fee"] = strtotalfee;
 	params["sign"] = makeSign(params);
@@ -300,19 +302,22 @@ bool sellMobileSystem::requestRefundOrder(HWND objHwnd, const char* order_no, co
 }
 
 //查询退款
-bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, const char* refund_no)
+bool sellMobileSystem::requestRefundQuery(HWND objHwnd, const char* order_no, const char* out_trade_no, const char* refund_no)
 {
 	m_refundorderHwnd = objHwnd;
 
 	m_nonce_str = "5K8264ILTKCH16CQ";
 
-	m_order_no = order_no;
+
 
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
 	params["nonce_str"] = m_nonce_str;
-	params["out_trade_no"] = order_no;
+	params["order_no"] = order_no;//中心流水
+	params["out_trade_no"] = out_trade_no;//原单据号
 	params["refund_no"] = refund_no;//由三部分组成
+
+
 	params["sign"] = makeSign(params);
 
 	function<void(const std::string& data)>* responseCallback = new function<void(const std::string& data)>();

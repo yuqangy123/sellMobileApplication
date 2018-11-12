@@ -48,7 +48,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>收银助手</TargetName>
+    <TargetName>收银助手V1.0</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -219,6 +219,7 @@
     <ClInclude Include="RefundResultDialog.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResultPayDialog.h" />
+    <ClInclude Include="SelectBillsDialog.h" />
     <ClInclude Include="sellMobileSystem.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
@@ -246,6 +247,7 @@
     <ClCompile Include="MenuRefundOrderDialog.cpp" />
     <ClCompile Include="RefundResultDialog.cpp" />
     <ClCompile Include="ResultPayDialog.cpp" />
+    <ClCompile Include="SelectBillsDialog.cpp" />
     <ClCompile Include="sellMobileSystem.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="stdafx.cpp">
