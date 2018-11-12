@@ -87,6 +87,7 @@ public:
 
 	void writeLog(const char* ret);
 
+	CStringA getOrderWithBill(CStringA bill);
 	
 
 protected:

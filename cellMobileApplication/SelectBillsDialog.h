@@ -15,13 +15,16 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_SELECT_BILLS };
+	CString getSelectBill() { return m_selectBill; }
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-public:
+
+protected:
 	CListBox m_billsListbox;
+	CString m_selectBill;
 	virtual BOOL OnInitDialog();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

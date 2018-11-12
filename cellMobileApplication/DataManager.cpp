@@ -203,6 +203,13 @@ void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
 	ret.assign(tmpbuff);
 }
 
+CStringA CDataManager::getOrderWithBill(CStringA bill)
+{
+	CStringA ret;	
+	ret.Format("%s%s%s%s", ErpCode.c_str(), NodeCode.c_str(), bill.GetString(), OrderStaticEnd.c_str());
+	return ret;
+}
+
 void CDataManager::guidToString(std::string& ret)
 {
 	GUID guid;
@@ -351,16 +358,33 @@ BOOL CDataManager::getlastBills(std::vector<CString>& billVtr, int wantNum)
 				break;
 			}
 			_variant_t va, vaIndex;
-			while (!m_pRecordset->adoEOF && wantNum-->0)
+			while (!m_pRecordset->adoEOF && wantNum>0)
 			{
 				va = m_pRecordset->GetCollect("BillNumber");
 
 				if (va.vt != VT_NULL)
 				{
 					CString valStr = _bstr_t(va);
-					billVtr.push_back(valStr);
+					bool repeat = false;
+					for (auto itr = billVtr.begin(); itr != billVtr.end(); ++itr)
+					{
+						if (0 == itr->Compare(valStr))
+						{
+							repeat = true;
+							break;
+						}
+					}
+					if (!repeat)
+					{
+						billVtr.push_back(valStr);
+						--wantNum;
+					}
 				}
 				m_pRecordset->MovePrevious();
+				VARIANT_BOOL bl;
+				m_pRecordset->get_BOF(&bl);
+				if (-1 == bl)
+					break;
 			}
 		}
 		catch (_com_error * e)

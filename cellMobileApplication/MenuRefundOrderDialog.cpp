@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 
+
 using namespace std;
 
 // CMenuRefundOrderDialog 对话框
@@ -105,6 +106,7 @@ BOOL CMenuRefundOrderDialog::PreTranslateMessage(MSG* pMsg)
 void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 {
 	
+
 	// TODO: 在此添加控件通知处理程序代码
 	CRefundResultDialog dlg;
 	CString orderNo;
@@ -267,7 +269,7 @@ void CMenuRefundOrderDialog::updateOrderAndFee()
 void CMenuRefundOrderDialog::OnSetfocusEditOrderId()
 {
 	// TODO: Add your control notification handler code here
-	m_orderNoCtrl.SetSel(0, -1);
+ 	m_orderNoCtrl.SetSel(0, -1);
 }
 
 

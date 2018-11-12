@@ -9,6 +9,7 @@
 #include "commonMicro.h"
 #include "ResultPayDialog.h"
 #include "DataManager.h"
+#include "SelectBillsDialog.h"
 
 // CQRCodePayDialog 对话框
 
@@ -55,8 +56,6 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	m_willPayFeeCtrl.SetWindowText(csTotalFee);
 	m_payFeeCtrl.SetWindowText(csTotalFee);
 
-
-
 	m_authCodeCtrl.SetFocus();
 
 	SetActive(m_hWnd);
@@ -68,6 +67,7 @@ BOOL CQRCodePayDialog::OnInitDialog()
 
 BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 {
+	static bool CtrlIndex = false;
 	// TODO: 在此添加专用代码和/或调用基类
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
 	{
@@ -108,6 +108,37 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_UP && pMsg->wParam)
 	{
 		updateEditFocus(-1);
+	}
+	//
+	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_CONTROL && pMsg->wParam)
+	{
+		CtrlIndex = true;
+	}
+	else if (pMsg->message == WM_KEYUP && pMsg->wParam == VK_CONTROL && pMsg->wParam)
+	{
+		CtrlIndex = false;
+	}
+	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_F6 && pMsg->wParam)
+	{
+		CtrlIndex = false;
+		CSelectBillsDialog dlg2;
+		dlg2.DoModal();
+		CString systemOrder = dlg2.getSelectBill();
+		//if (!systemOrder.IsEmpty())
+		if (false)
+		{
+			CStringA systemOrderW(systemOrder);
+			CStringA order = DataMgrInstanceEx.getOrderWithBill(systemOrderW);
+			m_outTradeNoCtrl.SetWindowText(CString(order));
+
+			CString csTotalFee;
+			DataMgrInstanceEx.getGoodsInfoTotalFee(systemOrder, csTotalFee);
+			m_willPayFeeCtrl.SetWindowText(csTotalFee);
+			m_payFeeCtrl.SetWindowText(csTotalFee);
+
+		}
+		SetActive(m_hWnd);
+		::PostMessage(m_authCodeCtrl.m_hWnd, WM_SETFOCUS, 0, 0);
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
