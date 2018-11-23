@@ -33,4 +33,6 @@ public:
 	CEdit m_payFeeCtrl;
 	int m_keyUpDownIndex;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnSetfocusEditZhifujiner();
+	afx_msg void OnSetfocusEditFukuanma();
 };

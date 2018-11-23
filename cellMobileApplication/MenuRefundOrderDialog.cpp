@@ -128,7 +128,7 @@ void CMenuRefundOrderDialog::OnBnClickedButtonSure()
 	CString serialNo;
 	m_serialCtrl.GetWindowText(serialNo);
 	
-
+	//serialNo中心流水，orderNo原单据号
 	dlg.requestRefundOrder(serialNo, orderNo, m_outRefundNo, totalfee, totalfee);
 	dlg.DoModal();
 	

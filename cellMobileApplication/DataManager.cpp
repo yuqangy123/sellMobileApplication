@@ -48,7 +48,8 @@ BOOL ODBCConnect(CString strDBFile)
 DECLARE_SINGLETON_MEMBER(CDataManager);
 CDataManager::CDataManager()
 {
-	
+	EscKeyTag = 0;
+
 	OrderStaticEnd = "000001";
 
 	CParseIniFile iniParse;
@@ -310,7 +311,7 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 
 		totalFee *= 10;
 		double floor_t = floor(totalFee + 0.5);
-		totalFee = totalFee < floor_t ? floor_t/10 : ceil(totalFee)/10;
+		totalFee = totalFee < floor_t ? floor_t/10 : floor(totalFee)/10;
 
 		csTotalFee.Format(L"%.2f", totalFee);
 	} while (false);
@@ -321,7 +322,7 @@ BOOL CDataManager::getGoodsInfoTotalFee(const CString& BillNumber, CString& csTo
 	return true;
 }
 
-BOOL CDataManager::getlastBills(std::vector<CString>& billVtr, int wantNum)
+BOOL CDataManager::getlastBills(std::vector<double>& billVtr, int wantNum)
 {
 	//test code
 	//csTotalFee = "0.01";
@@ -358,17 +359,28 @@ BOOL CDataManager::getlastBills(std::vector<CString>& billVtr, int wantNum)
 				break;
 			}
 			_variant_t va, vaIndex;
+			char tmpBuf[128] = {};
 			while (!m_pRecordset->adoEOF && wantNum>0)
 			{
 				va = m_pRecordset->GetCollect("BillNumber");
 
 				if (va.vt != VT_NULL)
 				{
-					CString valStr = _bstr_t(va);
+					CStringA valStr = _bstr_t(va);
+					sprintf_s(tmpBuf, "%s", valStr.GetString());
+					
+					double valL = 0;
+					int tmpLen = strlen(tmpBuf);
+					double mult = 1.0;
+					while (--tmpLen >= 0)
+					{
+						valL += (tmpBuf[tmpLen] - '0')*mult;
+						mult *= 10.0;
+					}
 					bool repeat = false;
 					for (auto itr = billVtr.begin(); itr != billVtr.end(); ++itr)
 					{
-						if (0 == itr->Compare(valStr))
+						if (valL == *itr)
 						{
 							repeat = true;
 							break;
@@ -376,7 +388,7 @@ BOOL CDataManager::getlastBills(std::vector<CString>& billVtr, int wantNum)
 					}
 					if (!repeat)
 					{
-						billVtr.push_back(valStr);
+						billVtr.push_back(valL);
 						--wantNum;
 					}
 				}

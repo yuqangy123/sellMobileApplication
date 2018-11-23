@@ -235,7 +235,9 @@ BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 			{
 				PostQuitMessage(0);
 			}*/
-			::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+			if(0 == DataMgrInstanceEx.EscKeyTag)
+				::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+			DataMgrInstanceEx.EscKeyTag = 0;
 			return TRUE;
 		}
 		else if ((pMsg->wParam == VK_RETURN || pMsg->wParam == VK_DOWN || pMsg->wParam == VK_SPACE) && pMsg->wParam)

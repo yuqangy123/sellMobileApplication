@@ -944,7 +944,7 @@ bool CPrinterDevice::printPayOrder(const char* tradeType, const char* orderNo, c
 		printData.push_back(printBuff);
 	}
 
-	//打印第二次
+
 	std::vector<CStringA> secPrintData(printData);
 
 	for (int n = 0; n<6; ++n) printData.push_back("");
@@ -1055,11 +1055,16 @@ bool CPrinterDevice::printRefundOrder(const refundOrderInfo* info)
 	std::vector<CStringA> secPrintData(printData);
 
 	for(int n=0;n<6;++n) printData.push_back("");
-	printData.push_back("-------------------------------");
-	for (int n = 0; n<6; ++n) printData.push_back("");
 
-	for (auto itr = secPrintData.begin(); itr != secPrintData.end(); ++itr)
-		printData.push_back(*itr);
+	if (DataMgrInstanceEx.printPageNum == 2)
+	{
+		printData.push_back("-------------------------------");
+		for (int n = 0; n<6; ++n) printData.push_back("");
+
+		for (auto itr = secPrintData.begin(); itr != secPrintData.end(); ++itr)
+			printData.push_back(*itr);
+	}
+	
 
 	for (int n = 0; n<5; ++n) printData.push_back("");
 	printData.push_back("-------------------------------");

@@ -167,7 +167,7 @@ LRESULT CRefundResultDialog::OnRefundOrderNotify(WPARAM wParam, LPARAM lParam)
 		m_info = (refundOrderInfo*)lParam;
 		
 		m_timer_orderQuery = SetTimer(TIMER_ID_ORDER_QUERY, 1000 * 3, NULL);
-		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_orderNo.GetString());
+		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_outOrderNo.GetString(), m_orderNo.GetString());
 	}break;
 	}
 
@@ -190,7 +190,7 @@ void CRefundResultDialog::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent)
 	{
 	case TIMER_ID_ORDER_QUERY: {
-		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_orderNo.GetString());
+			sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_outOrderNo.GetString(), m_orderNo.GetString());
 	}break;
 	}
 	

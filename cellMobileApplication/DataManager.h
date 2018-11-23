@@ -81,7 +81,7 @@ public:
 	//获取订单总金额
 	BOOL getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee);
 	//获取最后x个订单
-	BOOL getlastBills(std::vector<CString>& billVtr, int wantNum);
+	BOOL getlastBills(std::vector<double>& billVtr, int wantNum);
 
 	void guidToString(std::string& ret);
 
@@ -111,5 +111,6 @@ public:
 	int printPageNum;//一次性打印张数
 	std::string store_id;//门店ID
 	std::string cashier_id;//收银员ID
+	int EscKeyTag;
 };
 

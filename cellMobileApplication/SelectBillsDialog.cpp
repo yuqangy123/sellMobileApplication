@@ -6,6 +6,7 @@
 #include "afxdialogex.h"
 #include "DataManager.h"
 #include "commonMicro.h"
+#include <algorithm>
 
 // CSelectBillsDialog dialog
 
@@ -34,25 +35,39 @@ END_MESSAGE_MAP()
 
 // CSelectBillsDialog message handlers
 
+bool compFunc(const double& a, const double& b)
+{
+	return a < b;
+}
 
 BOOL CSelectBillsDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	// TODO:  Add extra initialization here
-	std::vector<CString> vtr;
-	int cnt = 10;
+	std::vector<double> vtr;
+	int cnt = 20;
 	DataMgrInstanceEx.getlastBills(vtr, cnt);
+	sort(vtr.begin(), vtr.end(), compFunc);
+
 	for(int n = 0; n < vtr.size(); ++n)
 	{
-		if (vtr[n].IsEmpty())
+		if (vtr[n] <= 0.0)
 			break;
-		m_billsListbox.AddString(vtr[n]);
+
+		CString str;
+		long long x = vtr[n];
+		str.Format(L"%I64d", x);
+		while (str.GetLength() < 12)
+			str.Insert(0, L"0");
+		
+		m_billsListbox.AddString(str);
 	}
 	if (vtr.size() > 0)
 	{
 		m_billsListbox.SetCapture();
-		m_billsListbox.SetCurSel(0);
+		m_billsListbox.SetCurSel(vtr.size()-1);
 	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -72,8 +87,7 @@ BOOL CSelectBillsDialog::PreTranslateMessage(MSG* pMsg)
 	}
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE && pMsg->wParam)
 	{
-		//::SendMessage(::GetActiveWindow(), WM_CLOSE, 0, 0);
-		::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 12);
+		DataMgrInstanceEx.EscKeyTag = 1;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
 }

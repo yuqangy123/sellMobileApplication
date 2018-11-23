@@ -214,7 +214,7 @@ void CResultPayDialog::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent)
 	{
 	case TIMER_ID_ORDER_QUERY: {
-		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd());
+			sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_strAOrderNoCode.GetString());
 	}break;
 
 	case TIMER_ID_BUTTON_COUNTDOWN: {
@@ -248,7 +248,7 @@ LRESULT CResultPayDialog::OnOrderRequestOk(WPARAM wParam, LPARAM lParam)
 	if (wParam == 0)
 	{
 		m_timer_orderQuery = SetTimer(TIMER_ID_ORDER_QUERY, 1000 * 3, NULL);
-		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd());
+		sellMobileSystemInstance->requestOrderQuery(GetSafeHwnd(), m_strAOrderNoCode.GetString());
 	}
 	else if(-1 == wParam)
 	{

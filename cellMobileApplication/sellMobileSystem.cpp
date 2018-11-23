@@ -96,13 +96,13 @@ void sellMobileSystem::setMainDialogHwnd(HWND hnd)
 }
 
 //订单查询
-bool sellMobileSystem::requestOrderQuery(HWND objHwnd, const char* order)
+bool sellMobileSystem::requestOrderQuery(HWND objHwnd, const char* out_trade_no, const char* order_no)
 {
 	m_orderQueryHwnd = objHwnd;
 	map<string, string> params;
 	params["mch_id"] = m_mch_id;
-	if (nullptr != order)params["out_trade_no"] = order;
-	else params["out_trade_no"] = m_order_no;
+	params["out_trade_no"] = out_trade_no;
+	params["order_no"] = order_no;
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
 
@@ -181,8 +181,8 @@ bool sellMobileSystem::requestMicropay(HWND objHwnd, const char* fee, const char
 	params["auth_code"] = auth_code;
 	params["body"] = KS_ANSI_to_UTF8("移动支付");
 	params["spbill_create_ip"] = DataMgrInstanceEx.PosFontEndIP;
-	params["store_id"] = DataMgrInstanceEx.store_id;
-	params["cashier_id"] = DataMgrInstanceEx.cashier_id;
+	if(!DataMgrInstanceEx.store_id.empty()) params["store_id"] = DataMgrInstanceEx.store_id;
+	if(!DataMgrInstanceEx.cashier_id.empty())params["cashier_id"] = DataMgrInstanceEx.cashier_id;
 	params["nonce_str"] = m_nonce_str;
 	params["sign"] = makeSign(params);
 	
@@ -465,7 +465,10 @@ string sellMobileSystem::makeSign(const std::map<std::string, std::string>& para
 	vector<string> keyVtr;
 	for (auto itr = paramsMap.begin(); itr != paramsMap.end(); ++itr)
 	{
-		keyVtr.push_back(itr->first);
+		if (!itr->second.empty())
+		{
+			keyVtr.push_back(itr->first);
+		}
 	}
 	sort(keyVtr.begin(), keyVtr.end(), comp);
 

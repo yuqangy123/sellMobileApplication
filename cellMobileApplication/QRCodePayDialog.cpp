@@ -36,6 +36,8 @@ void CQRCodePayDialog::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CQRCodePayDialog, CDialogEx)
+	ON_EN_SETFOCUS(IDC_EDIT_ZHIFUJINER, &CQRCodePayDialog::OnSetfocusEditZhifujiner)
+	ON_EN_SETFOCUS(IDC_EDIT_FUKUANMA, &CQRCodePayDialog::OnSetfocusEditFukuanma)
 END_MESSAGE_MAP()
 
 
@@ -124,8 +126,8 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 		CSelectBillsDialog dlg2;
 		dlg2.DoModal();
 		CString systemOrder = dlg2.getSelectBill();
-		//if (!systemOrder.IsEmpty())
-		if (false)
+		if (!systemOrder.IsEmpty())
+		//if (false)
 		{
 			CStringA systemOrderW(systemOrder);
 			CStringA order = DataMgrInstanceEx.getOrderWithBill(systemOrderW);
@@ -175,4 +177,18 @@ void CQRCodePayDialog::updateEditFocus(int n)
 			   m_payFeeCtrl.SetFocus();
 	}break;
 	}
+}
+
+
+void CQRCodePayDialog::OnSetfocusEditZhifujiner()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_payFeeCtrl.SetSel(0, -1);
+}
+
+
+void CQRCodePayDialog::OnSetfocusEditFukuanma()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_authCodeCtrl.SetSel(0, -1);
 }
