@@ -1,9 +1,9 @@
-﻿// Created by Microsoft (R) C/C++ Compiler Version 12.00.21005.1 (8cd5f0ce).
+﻿// Created by Microsoft (R) C/C++ Compiler Version 14.00.24215.1 (b9bd2cc2).
 //
-// f:\work\yuqiang\sellmobileapplication\cellmobileapplication\debug\msado15.tlh
+// e:\yiyou\work\sellmobileapplication\cellmobileapplication\debug\msado15.tlh
 //
 // C++ source equivalent of Win32 type library msado15.dll
-// compiler-generated file created 11/22/18 at 19:55:57 - DO NOT EDIT!
+// compiler-generated file created 12/01/18 at 15:20:21 - DO NOT EDIT!
 
 #pragma once
 #pragma pack(push, 8)
@@ -5022,6 +5022,6 @@ RecordsetEventsVt_Deprecated : IUnknown
 // Wrapper method implementations
 //
 
-#include "f:\work\yuqiang\sellmobileapplication\cellmobileapplication\debug\msado15.tli"
+#include "e:\yiyou\work\sellmobileapplication\cellmobileapplication\debug\msado15.tli"
 
 #pragma pack(pop)

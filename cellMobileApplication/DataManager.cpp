@@ -164,7 +164,7 @@ CDataManager::~CDataManager()
 {
 }
 
-void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
+std::string CDataManager::getSystemOrder()
 {
 	char tmpbuff[MAX_PATH] = { 0 };
 	SYSTEMTIME systm;
@@ -176,7 +176,7 @@ void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
 		char log[256];
 		sprintf_s(log, "file open error! %s", tmpbuff);
 		writeLog(log);
-		return;
+		return "";
 	}
 
 	string line, lastline;
@@ -188,26 +188,54 @@ void CDataManager::getGoodsInfoOrder(std::string& ret, std::string& systemOrder)
 	if (-1 == spaceIndex)
 	{
 		writeLog("lastline.find  fail");
-		return;
+		return "";
 	}
 
 	auto dIndex = lastline.find(",");
 	if (-1 == dIndex)
 	{
 		writeLog("lastline.find , fail");
-		return ;
+		return "";
 	}
 
-	systemOrder = lastline.substr(spaceIndex + 1, dIndex - spaceIndex - 1);
-	
-	sprintf_s(tmpbuff, "%s%s%s%s", ErpCode.c_str(), NodeCode.c_str(), systemOrder.c_str(), OrderStaticEnd.c_str());
-	ret.assign(tmpbuff);
+	std::string systemOrder = lastline.substr(spaceIndex + 1, dIndex - spaceIndex - 1);
+	return systemOrder;
 }
 
-CStringA CDataManager::getOrderWithBill(CStringA bill)
+void CDataManager::getGoodsInfoOrder(std::string& sellOrder, std::string& systemOrder)
 {
-	CStringA ret;	
-	ret.Format("%s%s%s%s", ErpCode.c_str(), NodeCode.c_str(), bill.GetString(), OrderStaticEnd.c_str());
+	char tmpbuff[MAX_PATH] = { 0 };
+
+	if (systemOrder.empty())
+	{
+		systemOrder = getSystemOrder();
+	}
+	
+	SYSTEMTIME systm;
+	GetLocalTime(&systm);
+	int m1 = int(systm.wYear / 1000) * 1000;
+	m1 = systm.wYear - m1;
+	systm.wYear = m1;
+	m1 = int(m1 / 100) * 100;
+	systm.wYear = systm.wYear - m1;
+
+	sprintf_s(tmpbuff, "%s%s%s%02d%02d%02d", ErpCode.c_str(), NodeCode.c_str(), systemOrder.c_str(), 
+		systm.wYear, systm.wMonth, systm.wDay);
+
+	sellOrder.assign(tmpbuff);
+}
+CStringA CDataManager::getSellOrderWithSystemOrder(CStringA systemOrder)
+{
+	CStringA ret;
+	SYSTEMTIME systm;
+	GetLocalTime(&systm);
+	int m1 = int(systm.wYear / 1000) * 1000;
+	m1 = systm.wYear - m1;
+	systm.wYear = m1;
+	m1 = int(m1 / 100) * 100;
+	systm.wYear = systm.wYear - m1;
+	ret.Format("%s%s%s%02d%02d%02d", ErpCode.c_str(), NodeCode.c_str(), systemOrder.GetString(), 
+		systm.wYear, systm.wMonth, systm.wDay);
 	return ret;
 }
 

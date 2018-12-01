@@ -233,7 +233,7 @@ int curlManager::curl_http_post()
 			printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(return_code));
 			ret = 0;
 			char cmsg[64] = { 0 };
-			sprintf_s(cmsg, "request error(%d)", return_code);
+			sprintf_s(cmsg, "网络不通，请检查是否联网(%d)", return_code);
 			stackHttpCallback(std::string(cmsg));
 		}
 
@@ -347,7 +347,7 @@ int curlManager::curl_http_download_file()
 		{
 			printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(return_code));
 			char cmsg[64] = { 0 };
-			sprintf_s(cmsg, "request error(%d)", return_code);
+			sprintf_s(cmsg, "网络不通，请检查是否联网(%d)", return_code);
 			stackHttpCallback(std::string(cmsg));
 			ret = 0;
 		}

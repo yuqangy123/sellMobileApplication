@@ -49,9 +49,9 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 
-	std::string order, systemOrder;
-	DataMgrInstanceEx.getGoodsInfoOrder(order, systemOrder);
-	m_outTradeNoCtrl.SetWindowText(CString(order.c_str()));
+	std::string systemOrder;
+	systemOrder = DataMgrInstanceEx.getSystemOrder();
+	m_outTradeNoCtrl.SetWindowText(CString(systemOrder.c_str()));
 
 	CString csTotalFee;
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
@@ -81,8 +81,8 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 	//屏蔽回车关闭窗体,但会导致回车在窗体上失效.
 	else if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && pMsg->wParam)
 	{
-		CString strOrderNoCode;
-		m_outTradeNoCtrl.GetWindowText(strOrderNoCode);
+		CString strSystemOrder;
+		m_outTradeNoCtrl.GetWindowText(strSystemOrder);
 		
 		CString strAuthCode;
 		m_authCodeCtrl.GetWindowText(strAuthCode);
@@ -96,7 +96,9 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 		CResultPayDialog dlg;
-		dlg.requestPay(strFee, strOrderNoCode, strAuthCode);
+		CStringA strSystemOrderA(strSystemOrder), cellOrderA;
+		cellOrderA = DataMgrInstanceEx.getSellOrderWithSystemOrder(strSystemOrderA);
+		dlg.requestPay(strFee, CString(cellOrderA), strAuthCode);
 		dlg.DoModal();
 
 		//
@@ -129,9 +131,7 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 		if (!systemOrder.IsEmpty())
 		//if (false)
 		{
-			CStringA systemOrderW(systemOrder);
-			CStringA order = DataMgrInstanceEx.getOrderWithBill(systemOrderW);
-			m_outTradeNoCtrl.SetWindowText(CString(order));
+			m_outTradeNoCtrl.SetWindowText(systemOrder);
 
 			CString csTotalFee;
 			DataMgrInstanceEx.getGoodsInfoTotalFee(systemOrder, csTotalFee);

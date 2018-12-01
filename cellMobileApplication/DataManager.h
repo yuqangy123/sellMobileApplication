@@ -76,8 +76,13 @@ public:
 	CDataManager();
 	~CDataManager();
 
-	//获取订单号
-	void getGoodsInfoOrder(std::string& ret, std::string& systemOrder);
+	//获取单号
+	std::string getSystemOrder();
+	//获取单号，销售单号
+	void getGoodsInfoOrder(std::string& sellOrder, std::string& systemOrder);
+	//根据单号获取销售单号
+	CStringA getSellOrderWithSystemOrder(CStringA systemOrder);
+
 	//获取订单总金额
 	BOOL getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee);
 	//获取最后x个订单
@@ -87,7 +92,6 @@ public:
 
 	void writeLog(const char* ret);
 
-	CStringA getOrderWithBill(CStringA bill);
 	
 
 protected:
