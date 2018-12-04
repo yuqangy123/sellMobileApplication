@@ -1178,7 +1178,7 @@ void CPrinterDevice::printDataWithDC(std::vector<CStringA>& dataList)
 	}
 	else
 	{
-		AfxMessageBox(L"打印出差，请检查是否安装打印驱动或打印机是否连接正常");
+		AfxMessageBox(L"打印出错，请检查是否安装打印驱动或打印机是否连接正常");
 	}
 }
 

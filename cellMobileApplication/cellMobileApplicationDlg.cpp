@@ -22,6 +22,7 @@
 #define new DEBUG_NEW
 #endif
 
+static bool st_unHideDlg = false;
 
 CcellMobileApplicationDlg::CcellMobileApplicationDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CcellMobileApplicationDlg::IDD, pParent)
@@ -279,16 +280,37 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	switch (wParam)
 	{
 	case ctrl_key_cov | VK_F3: {
+		CWnd *pWnd = FindWindow(nullptr, _T("CQRCodePayDialog"));
+		if (pWnd)
+		{
+			pWnd->SendMessage(WM_CLOSE);
+			st_unHideDlg = true;
+		}	
+
 		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(2);
 	}break;
 
 	case ctrl_key_cov | VK_F2: {
+		CWnd *pWnd = FindWindow(nullptr, _T("CQRCodePayDialog"));
+		if (pWnd)
+		{
+			pWnd->SendMessage(WM_CLOSE);
+			st_unHideDlg = true;
+		}
+
 		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(1);
 	}break;
 
 	case ctrl_key_cov | VK_F1: {
+		CWnd *pWnd = FindWindow(nullptr, _T("CQRCodePayDialog"));
+		if (pWnd)
+		{
+			pWnd->SendMessage(WM_CLOSE);
+			st_unHideDlg = true;
+		}
+
 		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(0);
 	}break;
@@ -320,7 +342,12 @@ LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 		CQRCodePayDialog dlgtest;
 		dlgtest.DoModal();
 		ShowWindow(SW_NORMAL);
-		::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+
+		if (!st_unHideDlg)
+		{
+			::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
+			st_unHideDlg = false;
+		}
 		//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_KILLFOCUS, 0, 0);
 		bshowPayView = false;
 	}

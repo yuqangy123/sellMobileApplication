@@ -220,7 +220,7 @@ void CDataManager::getGoodsInfoOrder(std::string& sellOrder, std::string& system
 	systm.wYear = systm.wYear - m1;
 
 	sprintf_s(tmpbuff, "%s%s%s%02d%02d%02d", ErpCode.c_str(), NodeCode.c_str(), systemOrder.c_str(), 
-		systm.wYear, systm.wMonth, systm.wDay);
+		systm.wHour, systm.wMinute, systm.wSecond);
 
 	sellOrder.assign(tmpbuff);
 }
@@ -235,7 +235,7 @@ CStringA CDataManager::getSellOrderWithSystemOrder(CStringA systemOrder)
 	m1 = int(m1 / 100) * 100;
 	systm.wYear = systm.wYear - m1;
 	ret.Format("%s%s%s%02d%02d%02d", ErpCode.c_str(), NodeCode.c_str(), systemOrder.GetString(), 
-		systm.wYear, systm.wMonth, systm.wDay);
+		systm.wHour, systm.wMinute, systm.wSecond);
 	return ret;
 }
 

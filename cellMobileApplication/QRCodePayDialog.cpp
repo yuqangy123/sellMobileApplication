@@ -48,6 +48,7 @@ BOOL CQRCodePayDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	this->SetWindowText(_T("CQRCodePayDialog"));
 
 	std::string systemOrder;
 	systemOrder = DataMgrInstanceEx.getSystemOrder();
