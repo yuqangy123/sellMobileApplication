@@ -280,7 +280,7 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	switch (wParam)
 	{
 	case ctrl_key_cov | VK_F3: {
-		CWnd *pWnd = FindWindow(nullptr, _T("CQRCodePayDialog"));
+		CWnd *pWnd = FindWindow(nullptr, _T("请确认金额后，扫码顾客二维码"));
 		if (pWnd)
 		{
 			pWnd->SendMessage(WM_CLOSE);
@@ -292,7 +292,7 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	}break;
 
 	case ctrl_key_cov | VK_F2: {
-		CWnd *pWnd = FindWindow(nullptr, _T("CQRCodePayDialog"));
+		CWnd *pWnd = FindWindow(nullptr, _T("请确认金额后，扫码顾客二维码"));
 		if (pWnd)
 		{
 			pWnd->SendMessage(WM_CLOSE);
@@ -304,7 +304,7 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 	}break;
 
 	case ctrl_key_cov | VK_F1: {
-		CWnd *pWnd = FindWindow(nullptr, _T("CQRCodePayDialog"));
+		CWnd *pWnd = FindWindow(nullptr, _T("请确认金额后，扫码顾客二维码"));
 		if (pWnd)
 		{
 			pWnd->SendMessage(WM_CLOSE);
