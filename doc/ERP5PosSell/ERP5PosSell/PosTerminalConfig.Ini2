@@ -1,0 +1,113 @@
+[ParaCate]
+;类名,是否自动更新(AutoSetting)
+System=系统参数
+Sell=销售参数
+HARDWARE=硬件配置
+PRINTCONTROL=打印控制
+BILLCOL=收银小票配置
+
+
+;参数设置说明:以逗号分隔,1为参数名,2为值,3为选项(无需设置,系统自动维护)
+;如:PosFontEndIP=前置机IP地址,192.168.0.1 表示IP这192.168.0.1,选项为空
+;系统参数
+[System]
+TimeOut=数据传送超时(秒),120
+ConTimeOut=连接超时(秒),0
+SpyNetWork=实时监视联网,1,YesNO
+ExitOper=系统退出时操作,1
+IsCanOffline=允许断网销售,0
+SellType=销售类型,0,SellType
+SellModeOption=销售模式选择,0,YesNO
+CardLogin=刷卡登录,0,YesNO
+DoubleDisp=双屏启用,0,YesNO
+CashInfPayRest=现金接口支付余额,1,YesNO
+ResetMemPrice=刷卡重取会员价,1,YesNO
+BankUnion=银联接口,
+Compatibility=兼容模式,1,YesNO
+DispCashier=显示收银员,1,YesNo
+HandReAgio=手工折扣折上折,1,YesNo
+GiftGrant=前台发放赠品,1
+UseAgioCard=折扣卡启用,0,YesNo
+
+;销售参数
+[Sell]
+IsSingleSellGroup=启用单一柜组,0,YesNO
+SellGroupID=单一柜组编码,
+IsSingleSellMan=启用单一营业员,1,YesNO
+SellManID=单一营业员编码,9999
+AssignType=智能联想顺序,012,AssignType
+IsDbzRun=允许多包装销售,1,YesNo
+IsDbzCount=允许多包装盘点,1,YesNo
+PrintMode=销售打印模式,1,PrintMode
+DelGoodsMode=错误商品处理,0,DelGoodsMode
+IsHYKRun=使用会员卡,1,YesNO
+IsBarCard=会员卡类型,0,MemCardType
+SaveRetryCount=保存重试次数,0
+PrintDelayTime=打印延时(毫秒),0
+ZeroPriceSale=启用零价销售,0,YesNO
+CardTimeDiff=刷卡时间差(毫秒),300
+MemSwipeCardOnly=会员刷卡控制,0
+RealTimeIntegral=实时积分,1,YesNO
+
+;硬件配置
+[HARDWARE]
+OPOSCompatibility=OPOS兼容模式,0,YesNO
+OPOSCashDrawer=OPOS钱箱名,OmronCashDrawer
+OPOSLineDisplay=OPOS客显名,OmronDisplay
+OPOSKeyBoard=OPOS键盘名
+ICCardPort=IC卡COM口,0
+ICCardType=IC卡读卡器类型,0,ICType
+FilterScanLetter=过滤扫码字母,1,YesNO
+
+;打印控制
+[PRINTCONTROL]
+OPOSPrinter=OPOS打印机名,SP_POS802_1
+CharcterSet=打印机字符集,936
+LineInterval=行间距,12
+StaticRowNum=每页打印行数,0
+SingleLineCharCount=行宽,120
+PrintZpz=打印机站号,2
+AsyncMode=使用异步模式,0,YesNo
+OPOSPrinter1=第二OPOS打印机名,SP_POS802_1
+StaticRowNum1=第二打印机每页行数,0
+PrintMode1=第二打印机打印模式,1
+SingleLineCharCount1=第二打印机行宽,40
+BillPrintCount=小票打印份数,1
+PageTailCutPaper=页脚切纸量,0
+BillTailCutPaper=单据尾切纸量,0
+
+;收银小票配置
+[BILLCOL]
+PagePHHead=页眉,
+BillHead=单据头信息,       欢迎光临华达购物
+PageHead=商品眉,[Pos([NodeName],32,M)]# #顾客    [IIF([Overtype]=1,<重打小票>)]# #日期:[Copy([SaleTime],1,4)].[Copy([SaleTime],5,2)].[Copy([SaleTime],7,2)]
+[IIF([SaleTag]=1,销售_[BillNo])][IIF([SaleTag]=-1,退货_[BillNo])]# #收银机号:[terminalno]        收银员:[CashierCode]# #[Pos(商品名称,10,L)] [Pos(条码,4,L)] [Pos(数量,4,M)] [Pos(金额,4,M)] [Pos(折扣,4,M)]# #================================
+GoodsData=商品明细,[Pos([GoodsName],30,L)]# #[Pos([BarCode],13,L)] [Pos([Math([Amount],[DecimalBit])],5,M)][Pos([Math([Money])],8,R)][Pos([Math([agio])],5,R)]
+PageTail=商品脚,================================# #小计  [SubtotalRows]件  [IIF([SaleTag]=1,应收:)][IIF([SaleTag]=-1,应退:)][SubtotalMoney]# #=========交易时刻:[Copy([SaleTime],9,2)]:[Copy([SaleTime],11,2)]
+=========
+PayHead=支付列眉,合计:[TotalRows]件        总折扣:[ToTalAgio]# #[IIF([SaleTag]=1,实收金额:[Math([TotalMoney]+[ChangeMoney])])][IIF([SaleTag]=-1,实退金额:[Math([TotalMoney]+[ChangeMoney])])]      找零:[ChangeMoney]# #[IIF([CentAgio]=0.00,,舍分:[CentAgio])]
+PayData=支付明细,[PayName]:[PayMoney] [IIF([InterFaceType]=2,卡号:[CardCode])]# #[IIF(([InterFaceType]=2 and [Overtype]=0),余额:[CardBalance])][IIF([InterFaceType]=6,券号:[CardCode])]# #
+BillTail=单据尾信息,[IIF([MemCardCode]=,,卡号:[MemCardCode]# #本次积分:[Math([MemBillPoint],1)] 总积分:[Math([MemCardPoints]+[MemBillPoint],1)])]# # 请您保管好购物小票，以便退换货# #
+[IIF([GiftSumAmount]<>0.00,[Pos(赠品名称,25,M)][Pos(数量,5,R)]# #[GiftInfo][Pos([GiftName],25,M)]  [Pos([GiftAmount],5,M)]# #)]
+PagePTTail=页脚,[Newline]# #[Newline]# #[CutPaper(5)]
+
+VolumeTail=卷尾信息,[BlankLine(5)] 本卷税票合计打印金额：[TotalMoney]
+CountTable=盘点表配置,日期:[Year].[Month].[Day] [NewLine] 商品编码 商品名称 数量 # #[CountInfo][GoodsCode]  [GoodsName]  [SaleAmount] # # 合计行:[TotalRow] 合计数量[TotalAmount] 合计金额[TotalMoney][NewLine]
+CounterPay=柜组收款配置,日期:[Year].[Month].[Day] [NewLine] # #[CounterInfo][CounterName] [SaleMoney] [CounterPayInfo][PaymentName][PaymentMoney]
+CashierPay=收银员交款,日期:[Year].[Month].[Day] [NewLine] 支付方式 发生金额 发生笔数 # #[CashierInfo] [PaymentName] [PaidMoney] [IncomeStrokeCount] # #[NewLine]
+MobileRecharge=移动充值,日期:[Year]-[Month]-[Day] [Hour]:[Minute]:[Second] # # 手机号:[Code]# # 充值金额:[Money] [NewLine(3)]
+VoucherPrinterID=券打印机序号,0
+VoucherPrintMode=券打印方式,1
+VoucherPrint=券打印模版,     # #此券限一次使用不兑换现金不找零# #活动名称:# #[ThemeName]# #有效期:[ReclaimBeginDate]-[ReclaimEndDate]# #赠券面值: [VoucherMoney] 元# #券号:# #[BarCode:[Copy([VoucherCode],6,13)]]
+
+
+;--选择项配置--
+[ChoiceItem]
+YesNo=否|是,0|1
+ExitOper=关机或重启|正常退出,0|1
+SellType=超市|商场|议价,0|1|2
+DelGoodsMode=冲红|删除,0|1
+PrintMode=逐行|整单|模板|不打印|Pos及模板,0|1|2|3|4
+AssignType=条码|编码|货号,0|1|2,Combination
+ICType=明华|诚希|德诚,0|1|2
+MemCardType=磁卡|条码卡,0|1
