@@ -24,6 +24,7 @@ protected:
 
 protected:
 	CListBox m_billsListbox;
+	CFont m_billsListFont;
 	CString m_selectBill;
 	virtual BOOL OnInitDialog();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);

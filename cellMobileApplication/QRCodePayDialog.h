@@ -28,9 +28,13 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	CEdit m_outTradeNoCtrl;
+	CFont m_outTradeNoFont;
 	CEdit m_willPayFeeCtrl;
+	CFont m_willPayFeeFont;
 	CEdit m_authCodeCtrl;
+	CFont m_authCodeFont;
 	CEdit m_payFeeCtrl;
+	CFont m_payFeeFont;
 	int m_keyUpDownIndex;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnSetfocusEditZhifujiner();

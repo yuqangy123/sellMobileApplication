@@ -53,11 +53,25 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	std::string systemOrder;
 	systemOrder = DataMgrInstanceEx.getSystemOrder();
 	m_outTradeNoCtrl.SetWindowText(CString(systemOrder.c_str()));
+	
 
 	CString csTotalFee;
 	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
 	m_willPayFeeCtrl.SetWindowText(csTotalFee);
 	m_payFeeCtrl.SetWindowText(csTotalFee);
+
+	m_outTradeNoFont.CreatePointFont(180, L"宋体");
+	m_outTradeNoCtrl.SetFont(&m_outTradeNoFont);
+
+	m_payFeeFont.CreatePointFont(180, L"宋体");
+	m_payFeeCtrl.SetFont(&m_payFeeFont);
+
+	m_authCodeFont.CreatePointFont(180, L"宋体");
+	m_authCodeCtrl.SetFont(&m_authCodeFont);
+
+	m_willPayFeeFont.CreatePointFont(180, L"宋体");
+	m_willPayFeeCtrl.SetFont(&m_willPayFeeFont);
+	
 
 	m_authCodeCtrl.SetFocus();
 
@@ -84,21 +98,32 @@ BOOL CQRCodePayDialog::PreTranslateMessage(MSG* pMsg)
 	{
 		CString strSystemOrder;
 		m_outTradeNoCtrl.GetWindowText(strSystemOrder);
+		CStringA strSystemOrderA(strSystemOrder);
 		
 		CString strAuthCode;
 		m_authCodeCtrl.GetWindowText(strAuthCode);
+		CStringA strAuthCodeA(strAuthCode);
 		
 		CString strFee;
 		m_payFeeCtrl.GetWindowText(strFee);
+		CStringA strFeeA(strFee);
 		if (!stringIsNumber(strFee.GetString()))
 		{
 			MessageBox(L"支付金额输入有误，请重新输入", L"提示");
 			m_payFeeCtrl.SetFocus();
 			return TRUE;
 		}
+
+		CString strWillFee;
+		m_willPayFeeCtrl.GetWindowText(strWillFee);
+		CStringA strWillFeeA(strWillFee);
+
+		char qrLog[512] = {0};
+		sprintf_s(qrLog, "销售单号：%s, 应付金额：%s, 支付金额：%s\n", strSystemOrderA.GetString(), strWillFeeA.GetString(), strFeeA.GetString());
+		DataMgrInstanceEx.writeLog(qrLog);
+
 		CResultPayDialog dlg;
-		CStringA strSystemOrderA(strSystemOrder), cellOrderA;
-		cellOrderA = DataMgrInstanceEx.getSellOrderWithSystemOrder(strSystemOrderA);
+		CStringA cellOrderA = DataMgrInstanceEx.getSellOrderWithSystemOrder(strSystemOrderA);
 		dlg.requestPay(strFee, CString(cellOrderA), strAuthCode);
 		dlg.DoModal();
 

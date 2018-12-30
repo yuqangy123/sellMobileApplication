@@ -116,5 +116,5 @@ public:
 	std::string store_id;//门店ID
 	std::string cashier_id;//收银员ID
 	int EscKeyTag;
+	int customKeyboard;//收款界面快捷键
 };
-

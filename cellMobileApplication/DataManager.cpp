@@ -52,6 +52,8 @@ CDataManager::CDataManager()
 
 	OrderStaticEnd = "000001";
 
+	customKeyboard = VK_F11;
+
 	CParseIniFile iniParse;
 	map<string, string> valueMap;
 
@@ -93,6 +95,25 @@ CDataManager::CDataManager()
 			PaySystemPath.assign(strModule);
 	}
 
+	if (valueMap.find("QRCodeKeyboard") != valueMap.end())
+	{
+		std::string val = valueMap["QRCodeKeyboard"];
+		val = val.substr(1);
+		int vali = atoi(val.c_str());
+		if (1 <= vali && 12 >= vali)
+		{
+			customKeyboard = VK_F1 - 1 + vali;
+		}
+	}
+
+
+
+
+
+
+
+
+
 	valueMap.clear();
 	char sellSystemPath[MAX_PATH] = { 0 };
 	sprintf_s(sellSystemPath, "%s//SellSystem.ini", PaySystemPath.c_str());
@@ -103,6 +124,13 @@ CDataManager::CDataManager()
 	PosFontEndIP = valueMap["PosFontEndIP"];
 
 	
+
+
+
+
+
+
+
 
 	valueMap.clear();
 	sellSystemPath[0] = { 0 };

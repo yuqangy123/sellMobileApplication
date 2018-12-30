@@ -112,7 +112,7 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 		lpfnDllFuncHook = (HOOKPROC)GetProcAddress(hDLL, "SetHook");
 		if (lpfnDllFuncHook != NULL) {			// call the function
 			char hookKeyboardList[256] = { 0 };
-			sprintf_s(hookKeyboardList, "%d,%d,%d,%d", VK_F11, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3);
+			sprintf_s(hookKeyboardList, "%d,%d,%d,%d", DataMgrInstanceEx.customKeyboard, ctrl_key_cov | VK_F1, ctrl_key_cov | VK_F2, ctrl_key_cov | VK_F3);
 
 			lpfnDllFuncHook(m_hWnd, hookKeyboardList, strlen(hookKeyboardList));
 		}
@@ -277,6 +277,12 @@ LRESULT CcellMobileApplicationDlg::DefWindowProc(UINT message, WPARAM wParam, LP
 
 LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM lParam)
 {
+	if (wParam == DataMgrInstanceEx.customKeyboard)
+	{
+		PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);
+		return 0;
+	}
+
 	switch (wParam)
 	{
 	case ctrl_key_cov | VK_F3: {
@@ -313,10 +319,6 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 
 		OnHookKeboardShowHide(ctrl_key_cov | VK_F4, 12);
 		selectShowTabMenu(0);
-	}break;
-
-	case VK_F11:{
-		PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);
 	}break;
 
 	case ctrl_key_cov | VK_F4:{

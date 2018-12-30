@@ -45,6 +45,9 @@ BOOL CSelectBillsDialog::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
+	m_billsListFont.CreatePointFont(180, L"ËÎÌו");
+	m_billsListbox.SetFont(&m_billsListFont);
+
 	// TODO:  Add extra initialization here
 	std::vector<double> vtr;
 	int cnt = 20;
