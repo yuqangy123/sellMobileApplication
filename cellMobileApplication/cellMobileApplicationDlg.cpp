@@ -49,11 +49,82 @@ BEGIN_MESSAGE_MAP(CcellMobileApplicationDlg, CDialogEx)
 	ON_MESSAGE(UM_ESC_KEYBOARD_NOTIFY, &CcellMobileApplicationDlg::OnEscKeyboardNotify)
 END_MESSAGE_MAP()
 
+HWND m_hWndTarget = 0;
+CRect rtWin(0, 0, 0, 0);
+BOOL PtInWinRect(HWND hWnd, CPoint pt)
+{
+	GetWindowRect(hWnd, &rtWin);
+
+	wchar_t winText[128] = { 0 };
+	GetWindowText(hWnd, winText, 128 );
+	return PtInRect(&rtWin, pt);
+}
+
+BOOL CALLBACK EnumChildRealTimeProc(HWND hWnd, LPARAM lParam)
+{
+	if (!PtInWinRect(hWnd, CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)))) return TRUE;
+
+	//if (ShouldWinBeFiltered(hwnd)) return TRUE;
+
+	m_hWndTarget = hWnd;
+	EnumChildWindows(hWnd, EnumChildRealTimeProc, lParam);
+
+	return FALSE;
+}
+
+BOOL CALLBACK EnumWindowsRealTimeProc(HWND hwnd, LPARAM lParam)
+{
+	if (!PtInWinRect(hwnd, CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)))) return TRUE;
+
+	//if (ShouldWinBeFiltered(hwnd))  return TRUE;
+
+	//m_hWndTarget = hwnd;
+
+	//if (CWinFilterTraits::IsTargetPopupWindow()) return FALSE; //this is the target window, exit search
+
+	EnumChildWindows(hwnd, EnumChildRealTimeProc, lParam);
+
+	return FALSE;
+}
+
 BOOL CcellMobileApplicationDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	/*
+	//test code
+	DWORD dw = GetProcessIDFromName(L"SellSystem.exe");
+	HWND sellSystemHwnd = getWindowHandleByPID(dw);
+	::EnumChildWindows(sellSystemHwnd, EnumChildRealTimeProc, 0);
+	//GetWindowedChildCount();
 
+	HWND lhwnd = ::FindWindow(L"TFrmBalance",NULL);
 
+	POINT p;
+	p.x = 1920/2; p.y = 1080/2;
+	CWnd* hwnd = WindowFromPoint(p);
+
+	EnumWindows(EnumWindowsRealTimeProc, MAKELPARAM(p.x, p.y));
+	if (hwnd)
+	{
+		CRect rctB;
+		::GetWindowRect(hwnd->GetSafeHwnd(), &rctB);
+		int n = 0;
+		++n;
+		::EnumChildWindows(hwnd->GetSafeHwnd(), EnumChildRealTimeProc, 0);
+	}
+	//lhwnd = sellSystemHwnd;
+	if (NULL != lhwnd)
+	{
+		CRect rctA;
+		::GetWindowRect(lhwnd, &rctA);
+		
+		CWnd* deskHwnd = GetDesktopWindow();
+		CRect rctB;
+		::GetWindowRect(deskHwnd->GetSafeHwnd(), &rctB);
+		int n=0;
+		++n;
+	}
+	*/
 	/*
 	CStringA testchar;
 	testchar = "中心流水：810201810291232381964";
@@ -103,7 +174,15 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 
 	m_tabMenu.SetCurSel(m_CurSelTab);
 	
+	setHook();
 	
+	
+
+	return TRUE;
+}
+
+void CcellMobileApplicationDlg::setHook()
+{
 	//hook keyboard
 	typedef void(*HOOKPROC)(HWND hwnd, const char* hookKeyboard, int hookKeyboardLen);
 	HOOKPROC lpfnDllFuncHook;    // Function pointer
@@ -117,9 +196,6 @@ BOOL CcellMobileApplicationDlg::OnInitDialog()
 			lpfnDllFuncHook(m_hWnd, hookKeyboardList, strlen(hookKeyboardList));
 		}
 	}
-	
-
-	return TRUE;
 }
 
 void CcellMobileApplicationDlg::OnPaint()
@@ -236,7 +312,10 @@ BOOL CcellMobileApplicationDlg::PreTranslateMessage(MSG* pMsg)
 			{
 				PostQuitMessage(0);
 			}*/
-			if(0 == DataMgrInstanceEx.EscKeyTag)
+			char log[128];
+			sprintf_s(log, "CcellMobileApplicationDlg::PreTranslateMessage DataMgrInstanceEx.EscKeyTag %d,", DataMgrInstanceEx.EscKeyTag);
+			DataMgrInstanceEx.writeLog(log);
+			if(0 == DataMgrInstanceEx.EscKeyTag && !DataMgrInstanceEx.tessing)
 				::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
 			DataMgrInstanceEx.EscKeyTag = 0;
 			return TRUE;
@@ -279,6 +358,7 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 {
 	if (wParam == DataMgrInstanceEx.customKeyboard)
 	{
+		DataMgrInstanceEx.writeLog("PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);");
 		PostMessage(UM_SHOWQRCODE_PAY_NOTIFY, 0, 0);
 		return 0;
 	}
@@ -337,19 +417,31 @@ LRESULT CcellMobileApplicationDlg::OnHookKeboardShowHide(WPARAM wParam, LPARAM l
 
 LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 {
+	if (DataMgrInstanceEx.tessing)
+		return 0;
+
+	DataMgrInstanceEx.writeLog("CcellMobileApplicationDlg::OnShowQRCodeDlg begin");
 	static bool bshowPayView = false;
 	if (!bshowPayView)
 	{
 		bshowPayView = true;
 		CQRCodePayDialog dlgtest;
 		dlgtest.DoModal();
-		ShowWindow(SW_NORMAL);
-
+		ShowWindow(SW_NORMAL);	
+		DataMgrInstanceEx.writeLog("CcellMobileApplicationDlg::OnShowQRCodeDlg end");
 		if (!st_unHideDlg)
 		{
 			::SendMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), UM_HOOK_KEYBOARD_SHOW_HIDE, ctrl_key_cov | VK_F4, 11);
 			st_unHideDlg = false;
 		}
+		static int test = 0;
+		if (DataMgrInstanceEx.resetHookTimes != 0 && test++ >= DataMgrInstanceEx.resetHookTimes)
+		{
+			test = 0;
+			//setHook();
+		}
+		setHook();
+		
 		//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_KILLFOCUS, 0, 0);
 		bshowPayView = false;
 	}

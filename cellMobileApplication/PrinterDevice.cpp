@@ -72,6 +72,24 @@ typedef struct FILE_BASIC_INFORMATION {
 	ULONG  FileAttributes; //文件属性
 } FILE_BASIC_INFORMATION, *PFILE_BASIC_INFORMATION;
 
+HWND getWindowHandleByPID(DWORD dwProcessID)
+{
+	HWND h = GetTopWindow(0);
+	while (h)
+	{
+		DWORD pid = 0;
+		DWORD dwThreadId = GetWindowThreadProcessId(h, &pid);
+		if (dwThreadId != 0)
+		{
+			if (pid == dwProcessID)
+			{
+				return h;
+			}
+		}
+		h = GetNextWindow(h, GW_HWNDNEXT);
+	}
+	return NULL;
+}
 
 DWORD GetProcessIDFromName(wchar_t *name)
 {

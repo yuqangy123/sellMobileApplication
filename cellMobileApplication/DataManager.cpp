@@ -5,10 +5,12 @@
 //#include "afxwin.h"
 #include "FileUnit.h"
 #include "Math.h"
+#include "MakePNG.h"
+#include "Winuser.h"
 
 static _RecordsetPtr m_pRecordset;
 static _ConnectionPtr m_pConnection;
-
+bool CDataManager::tessing = false;
 /*
 #include "afxdb.h"
 BOOL ODBCConnect(CString strDBFile)
@@ -53,6 +55,8 @@ CDataManager::CDataManager()
 	OrderStaticEnd = "000001";
 
 	customKeyboard = VK_F11;
+
+	resetHookTimes = 9;
 
 	CParseIniFile iniParse;
 	map<string, string> valueMap;
@@ -105,12 +109,17 @@ CDataManager::CDataManager()
 			customKeyboard = VK_F1 - 1 + vali;
 		}
 	}
+	//获取图像识别的图片坐标大小
+	tesser_x = tesser_x = 0;
+	tesser_w = tesser_h = 1;
+	if (valueMap.find("tesser_x") != valueMap.end())tesser_x = atoi(valueMap["tesser_x"].c_str());
+	if (valueMap.find("tesser_y") != valueMap.end())tesser_y = atoi(valueMap["tesser_y"].c_str());
+	if (valueMap.find("tesser_w") != valueMap.end())tesser_w = atoi(valueMap["tesser_w"].c_str());
+	if (valueMap.find("tesser_h") != valueMap.end())tesser_h = atoi(valueMap["tesser_h"].c_str());
 
 
-
-
-
-
+	if (valueMap.find("resetHookTimes") != valueMap.end())
+		resetHookTimes = atoi(valueMap["resetHookTimes"].c_str());
 
 
 
@@ -133,7 +142,7 @@ CDataManager::CDataManager()
 
 
 	valueMap.clear();
-	sellSystemPath[0] = { 0 };
+	sellSystemPath[0] = 0;
 	sprintf_s(sellSystemPath, "%s\\SellSystemConfig.ini", PaySystemPath.c_str());
 	iniParse.ReadConfig(sellSystemPath, valueMap, "Terminal");
 	if (0 == valueMap.size()) AfxMessageBox(L"SellSystemConfig.ini为空");
@@ -155,6 +164,11 @@ CDataManager::CDataManager()
 	wsprintfA(strModule + strlen(strModule), "\\sellMobileLog");
 	LogFilePath.assign(strModule);
 	CreateDirectoryA(strModule, NULL);
+	CStringA tesserImagePathA;
+	tesserImagePathA.Format("%s\\tesser.jpg", LogFilePath.c_str());
+	tesserImagePath = tesserImagePathA;
+
+	tesserResultPath.Format("%s\\result", LogFilePath.c_str());
 
 	AfxOleInit();
 	::CoInitialize(NULL);
@@ -466,4 +480,178 @@ BOOL CDataManager::getlastBills(std::vector<double>& billVtr, int wantNum)
 
 
 	return true;
+}
+
+
+void captureTesserImage(int x, int y, int w, int h, wchar_t* pImgPath)
+{
+	HWND hDesktop = GetDesktopWindow();
+	CWnd* pDesktop = CWnd::FromHandle(hDesktop);
+	CDC *pDC = pDesktop->GetDC();
+	CMakePNG MakePNG;
+	CRect rect(x, y, x+w, y + h);
+	MakePNG.MakePNG(pDC->m_hDC, rect, pImgPath);
+	ReleaseDC(hDesktop, pDC->m_hDC);
+	return;
+
+	HDC hdcSrc = GetDC(NULL);
+	int nBitPerPixel = GetDeviceCaps(hdcSrc, BITSPIXEL);
+	int nWidth = GetDeviceCaps(hdcSrc, HORZRES);
+	int nHeight = GetDeviceCaps(hdcSrc, VERTRES);
+	CImage image;
+	image.Create(nWidth, nHeight, nBitPerPixel);
+	BitBlt(image.GetDC(), x, y, w, h, hdcSrc, 0, 0, SRCCOPY);
+	ReleaseDC(NULL, hdcSrc);
+	image.ReleaseDC();
+	image.Save(pImgPath, Gdiplus::ImageFormatJPEG);//ImageFormatJPEG
+	
+}
+
+double CDataManager::getBillByTesserImage(const char* args)
+{
+	CDataManager::tessing = true;
+	captureTesserImage(tesser_x, tesser_y, tesser_w, tesser_h, tesserImagePath.GetBuffer());
+	CString csJpg(tesserImagePath.GetBuffer());
+	CStringA csAJpg(csJpg);
+
+	writeLog("CDataManager::getBillByTesserImage begin");
+	char cmd[512] = { 0 };
+	//tesserResultPath.Format("result");
+	//sprintf_s(cmd, "tesseract %s %s -l eng", csAJpg.GetString(), tesserResultPath.GetString());
+	//sprintf_s(cmd, "tesseract %s %s -psm 7 -l chi_sim", csAJpg.GetString(), tesserResultPath.GetString());
+	sprintf_s(cmd, "tesseract %s %s %s", csAJpg.GetString(), tesserResultPath.GetString(), args);
+	//WinExec(cmd, SW_HIDE);
+
+	
+	// TODO: Add extra validation here
+	SECURITY_ATTRIBUTES sa;
+	HANDLE hRead, hWrite;
+
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.lpSecurityDescriptor = NULL;
+	sa.bInheritHandle = TRUE;
+
+	if (!CreatePipe(&hRead, &hWrite, &sa, 0))
+	{
+		//MessageBox("CreatePipe Failed");
+		return 0;
+	}
+
+	STARTUPINFOA si;
+	PROCESS_INFORMATION pi;
+
+	ZeroMemory(&si, sizeof(STARTUPINFO));
+	si.cb = sizeof(STARTUPINFO);
+	GetStartupInfoA(&si);
+	si.hStdError = hWrite;
+	si.hStdOutput = hWrite;
+	si.wShowWindow = SW_HIDE;
+	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+
+	
+	if (!CreateProcessA(NULL, cmd, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
+	{
+		//MessageBox("CreateProcess failed!");
+		return 0;
+	}
+	CloseHandle(hWrite);
+
+	char buffer[4096] = { 0 };
+	CString strOutput;
+	DWORD bytesRead;
+
+	while (1)
+	{
+		if (NULL == ReadFile(hRead, buffer, 4095, &bytesRead, NULL))
+		{
+			break;
+		}
+		strOutput += buffer;
+		
+		Sleep(500);
+	}
+	CloseHandle(hRead);
+	
+	writeLog("CDataManager::getBillByTesserImage end");
+	CDataManager::tessing = false;
+
+
+
+	
+	//Sleep(1000);
+	CStringA csAResult(tesserResultPath);
+	csAResult.Append(".txt");
+	
+	FILE* pf = NULL;
+	fopen_s(&pf, csAResult.GetString(), "r");
+	if(NULL == pf)return .0f;
+	
+	char cResultBuff[256] = { 0 };
+	fread(cResultBuff, 256, 1, pf);
+	fclose(pf);
+
+	//check result have some abcd... , if find, tesser only number
+	{
+		char* tag = cResultBuff;
+		bool isBak = false;
+		while (*tag != 0 && *tag != '.')
+		{
+			if ((*tag >= 'a' && *tag <= 'z') ||
+				(*tag >= 'A' && *tag <= 'Z' && *tag != 'T'))
+			{
+				isBak = true;
+				break;
+			}
+			++tag;
+		}
+		if (isBak)
+			return getBillByTesserImage("-psm 7");
+	}
+
+	char* tag = cResultBuff;
+	int izhengshu = 0;
+	int ixiaoshu = 0;
+	while (*tag != 0 && *tag != '.')
+	{
+		if (*tag == 'T')
+		{
+			izhengshu *= 10;
+			izhengshu += 7;
+		}
+		else if (*tag >= '0' && *tag <= '9')
+		{
+			izhengshu *= 10;
+			izhengshu += (*tag - '0');
+		}
+		++tag;
+	}
+	if (*tag == '.')
+	{
+		++tag;
+		while (*tag != 0 && *tag != '.')
+		{
+			if (*tag == 'T')
+			{
+				ixiaoshu *= 10;
+				ixiaoshu += 7;
+			}
+			else if (*tag >= '0' && *tag <= '9')
+			{
+				ixiaoshu *= 10;
+				ixiaoshu += (*tag - '0');
+			}
+			++tag;
+		}
+	}
+
+	
+	int xiaoshuTmp = ixiaoshu;
+	int xiaoshuMult = 10;
+	while (xiaoshuTmp / 10 > 0)
+	{
+		xiaoshuMult *= 10;
+		xiaoshuTmp /= 10;
+	}
+
+	return izhengshu + (float)ixiaoshu / (float)xiaoshuMult;
 }

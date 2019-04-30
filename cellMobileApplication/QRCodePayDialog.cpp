@@ -56,7 +56,12 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	
 
 	CString csTotalFee;
-	DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
+	
+	//DataMgrInstanceEx.getGoodsInfoTotalFee(CString(systemOrder.c_str()), csTotalFee);
+	
+	double bills = DataMgrInstanceEx.getBillByTesserImage();
+	csTotalFee.Format(L"%.2f", bills);
+
 	m_willPayFeeCtrl.SetWindowText(csTotalFee);
 	m_payFeeCtrl.SetWindowText(csTotalFee);
 

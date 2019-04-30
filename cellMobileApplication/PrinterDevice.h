@@ -29,3 +29,5 @@ protected:
 	void closeDevice();
 };
 
+DWORD GetProcessIDFromName(wchar_t *name);
+HWND getWindowHandleByPID(DWORD dwProcessID);

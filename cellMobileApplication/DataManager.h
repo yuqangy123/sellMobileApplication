@@ -70,7 +70,7 @@ typedef struct refundOrderInfo_
 
 
 #define DataMgrInstanceEx CDataManager::InstanceEx()
-class CDataManager :public CSingleton<CDataManager>
+class CDataManager : public CSingleton<CDataManager>
 {
 public:
 	CDataManager();
@@ -82,7 +82,6 @@ public:
 	void getGoodsInfoOrder(std::string& sellOrder, std::string& systemOrder);
 	//根据单号获取销售单号
 	CStringA getSellOrderWithSystemOrder(CStringA systemOrder);
-
 	//获取订单总金额
 	BOOL getGoodsInfoTotalFee(const CString& BillNumber, CString& csTotalFee);
 	//获取最后x个订单
@@ -92,7 +91,8 @@ public:
 
 	void writeLog(const char* ret);
 
-	
+	double getBillByTesserImage(const char* args="-psm 7 -l chi_sim");
+
 
 protected:
 	void init();
@@ -117,4 +117,16 @@ public:
 	std::string cashier_id;//收银员ID
 	int EscKeyTag;
 	int customKeyboard;//收款界面快捷键
+	int resetHookTimes;//重置hook的条件次数
+
+	//图像识别
+	int tesser_x;
+	int tesser_y;
+	int tesser_w;
+	int tesser_h;
+	CString tesserImagePath;
+	CStringA tesserResultPath;
+	static bool tessing;
 };
+
+void captureTesserImage(int x, int y, int w, int h, wchar_t* pImgPath);

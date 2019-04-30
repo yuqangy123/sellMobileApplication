@@ -27,7 +27,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
-	//msg event
+	void setHook();
 	
 
 // 实现

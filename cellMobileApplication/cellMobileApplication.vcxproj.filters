@@ -372,6 +372,9 @@
     <ClInclude Include="SelectBillsDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MakePNG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cellMobileApplication.cpp">
@@ -447,6 +450,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectBillsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MakePNG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
