@@ -200,6 +200,27 @@ CDataManager::CDataManager()
 	}
 	//::CoUninitialize();
 	
+
+
+
+
+
+
+
+
+	//读取replace.ini替换表
+	valueMap.clear();
+	iniParse.ReadConfig("replace.ini", valueMap, "SYSTEM");
+	if (0 == valueMap.size())AfxMessageBox(L"replace.ini为空");
+	for (auto itr = valueMap.begin(); itr != valueMap.end(); ++itr)
+	{
+		const char* c = itr->second.c_str();
+		const unsigned char* k = (const unsigned char*)itr->first.c_str();
+		if (*c >= '0' && *c <= '9')
+		{
+			replaceMap[*k] = *c - '0';
+		}
+	}
 }
 
 CDataManager::~CDataManager()
@@ -589,15 +610,24 @@ double CDataManager::getBillByTesserImage(const char* args)
 	char cResultBuff[256] = { 0 };
 	fread(cResultBuff, 256, 1, pf);
 	fclose(pf);
-
+	
 	//check result have some abcd... , if find, tesser only number
+	//char cResultBuff[] = "7了.01";
 	{
 		char* tag = cResultBuff;
 		bool isBak = false;
 		while (*tag != 0 && *tag != '.')
 		{
+			//有英文
 			if ((*tag >= 'a' && *tag <= 'z') ||
-				(*tag >= 'A' && *tag <= 'Z' && *tag != 'T'))
+				(*tag >= 'A' && *tag <= 'Z'))
+			{
+				isBak = true;
+				break;
+			}
+
+			//有中文
+			if (*tag & 0x80 && *(tag + 1) & 0x80)
 			{
 				isBak = true;
 				break;
@@ -613,15 +643,19 @@ double CDataManager::getBillByTesserImage(const char* args)
 	int ixiaoshu = 0;
 	while (*tag != 0 && *tag != '.')
 	{
-		if (*tag == 'T')
-		{
-			izhengshu *= 10;
-			izhengshu += 7;
-		}
-		else if (*tag >= '0' && *tag <= '9')
+		if (*tag >= '0' && *tag <= '9')
 		{
 			izhengshu *= 10;
 			izhengshu += (*tag - '0');
+		}
+		else
+		{
+			unsigned char k = *tag;
+			if (replaceMap.find(k) != replaceMap.end())
+			{
+				izhengshu *= 10;
+				izhengshu += (replaceMap[k]);
+			}
 		}
 		++tag;
 	}
@@ -630,15 +664,19 @@ double CDataManager::getBillByTesserImage(const char* args)
 		++tag;
 		while (*tag != 0 && *tag != '.')
 		{
-			if (*tag == 'T')
-			{
-				ixiaoshu *= 10;
-				ixiaoshu += 7;
-			}
-			else if (*tag >= '0' && *tag <= '9')
+			if (*tag >= '0' && *tag <= '9')
 			{
 				ixiaoshu *= 10;
 				ixiaoshu += (*tag - '0');
+			}
+			else
+			{
+				unsigned char k = *tag;
+				if (replaceMap.find(k) != replaceMap.end())
+				{
+					ixiaoshu *= 10;
+					ixiaoshu += (replaceMap[k]);
+				}
 			}
 			++tag;
 		}

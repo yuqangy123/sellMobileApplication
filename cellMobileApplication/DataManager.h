@@ -2,6 +2,9 @@
 #include "Singleton.h"
 #include <string>
 #include <vector>
+#include <map>
+
+using namespace std;
 
 //订单付款数据
 struct payOrderInfo
@@ -127,6 +130,8 @@ public:
 	CString tesserImagePath;
 	CStringA tesserResultPath;
 	static bool tessing;
+
+	map<unsigned char, int> replaceMap;
 };
 
 void captureTesserImage(int x, int y, int w, int h, wchar_t* pImgPath);
