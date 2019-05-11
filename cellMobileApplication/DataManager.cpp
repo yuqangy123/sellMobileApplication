@@ -535,7 +535,7 @@ double CDataManager::getBillByTesserImage(const char* args)
 	CString csJpg(tesserImagePath.GetBuffer());
 	CStringA csAJpg(csJpg);
 
-	writeLog("CDataManager::getBillByTesserImage begin");
+	//writeLog("CDataManager::getBillByTesserImage begin");
 	char cmd[512] = { 0 };
 	//tesserResultPath.Format("result");
 	//sprintf_s(cmd, "tesseract %s %s -l eng", csAJpg.GetString(), tesserResultPath.GetString());
@@ -593,7 +593,7 @@ double CDataManager::getBillByTesserImage(const char* args)
 	}
 	CloseHandle(hRead);
 	
-	writeLog("CDataManager::getBillByTesserImage end");
+	//writeLog("CDataManager::getBillByTesserImage end");
 	CDataManager::tessing = false;
 
 
@@ -610,7 +610,11 @@ double CDataManager::getBillByTesserImage(const char* args)
 	char cResultBuff[256] = { 0 };
 	fread(cResultBuff, 256, 1, pf);
 	fclose(pf);
+
+	string log("解析：");
+	log.append(cResultBuff);
 	
+	//writeLog(log.c_str());
 	//check result have some abcd... , if find, tesser only number
 	//char cResultBuff[] = "7了.01";
 	{
@@ -618,17 +622,20 @@ double CDataManager::getBillByTesserImage(const char* args)
 		bool isBak = false;
 		while (*tag != 0 && *tag != '.')
 		{
+			/*
 			//有英文
 			if ((*tag >= 'a' && *tag <= 'z') ||
 				(*tag >= 'A' && *tag <= 'Z'))
 			{
+				writeLog("发现英文");
 				isBak = true;
 				break;
-			}
+			}*/
 
 			//有中文
 			if (*tag & 0x80 && *(tag + 1) & 0x80)
 			{
+				//writeLog("发现中文");
 				isBak = true;
 				break;
 			}
@@ -638,6 +645,7 @@ double CDataManager::getBillByTesserImage(const char* args)
 			return getBillByTesserImage("-psm 7");
 	}
 
+	//writeLog("解析整数");
 	char* tag = cResultBuff;
 	int izhengshu = 0;
 	int ixiaoshu = 0;
@@ -682,7 +690,7 @@ double CDataManager::getBillByTesserImage(const char* args)
 		}
 	}
 
-	
+	//writeLog("解析小数");
 	int xiaoshuTmp = ixiaoshu;
 	int xiaoshuMult = 10;
 	while (xiaoshuTmp / 10 > 0)
