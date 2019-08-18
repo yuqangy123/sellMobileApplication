@@ -78,9 +78,7 @@ BOOL CQRCodePayDialog::OnInitDialog()
 	m_willPayFeeCtrl.SetFont(&m_willPayFeeFont);
 	
 
-	m_authCodeCtrl.SetFocus();
-
-	SetActive(m_hWnd);
+	setBestFocus();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -222,4 +220,11 @@ void CQRCodePayDialog::OnSetfocusEditFukuanma()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	m_authCodeCtrl.SetSel(0, -1);
+}
+
+void CQRCodePayDialog::setBestFocus()
+{
+	m_authCodeCtrl.SetFocus();
+
+	SetActive(m_hWnd);
 }

@@ -555,6 +555,7 @@ double CDataManager::getBillByTesserImage(const char* args)
 	if (!CreatePipe(&hRead, &hWrite, &sa, 0))
 	{
 		//MessageBox("CreatePipe Failed");
+		CDataManager::tessing = false;
 		return 0;
 	}
 
@@ -573,6 +574,7 @@ double CDataManager::getBillByTesserImage(const char* args)
 	if (!CreateProcessA(NULL, cmd, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
 	{
 		//MessageBox("CreateProcess failed!");
+		CDataManager::tessing = false;
 		return 0;
 	}
 	CloseHandle(hWrite);
@@ -605,7 +607,11 @@ double CDataManager::getBillByTesserImage(const char* args)
 	
 	FILE* pf = NULL;
 	fopen_s(&pf, csAResult.GetString(), "r");
-	if(NULL == pf)return .0f;
+	if (NULL == pf)
+	{
+		CDataManager::tessing = false;
+		return .0f;
+	}
 	
 	char cResultBuff[256] = { 0 };
 	fread(cResultBuff, 256, 1, pf);

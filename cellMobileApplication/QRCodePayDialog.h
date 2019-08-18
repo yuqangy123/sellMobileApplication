@@ -11,6 +11,7 @@ class CQRCodePayDialog : public CDialogEx
 public:
 	CQRCodePayDialog(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CQRCodePayDialog();
+	void setBestFocus();
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME

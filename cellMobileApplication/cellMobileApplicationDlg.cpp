@@ -421,11 +421,11 @@ LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	DataMgrInstanceEx.writeLog("CcellMobileApplicationDlg::OnShowQRCodeDlg begin");
-	static bool bshowPayView = false;
-	if (!bshowPayView)
+	static CQRCodePayDialog* st_pDialog = nullptr;
+	if (nullptr == st_pDialog)
 	{
-		bshowPayView = true;
 		CQRCodePayDialog dlgtest;
+		st_pDialog = &dlgtest;
 		dlgtest.DoModal();
 		ShowWindow(SW_NORMAL);	
 		DataMgrInstanceEx.writeLog("CcellMobileApplicationDlg::OnShowQRCodeDlg end");
@@ -443,7 +443,11 @@ LRESULT CcellMobileApplicationDlg::OnShowQRCodeDlg(WPARAM wParam, LPARAM lParam)
 		setHook();
 		
 		//::PostMessage(AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_KILLFOCUS, 0, 0);
-		bshowPayView = false;
+		st_pDialog = nullptr;
+	}
+	else
+	{
+		st_pDialog->setBestFocus();
 	}
 	
 	return 0;
